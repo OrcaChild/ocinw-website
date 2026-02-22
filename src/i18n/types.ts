@@ -1,4 +1,4 @@
-import { routing } from "./routing";
+import type { routing } from "./routing";
 import type en from "../../messages/en.json";
 
 declare module "next-intl" {

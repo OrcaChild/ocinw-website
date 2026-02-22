@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, Nunito, JetBrains_Mono } from "next/font/google";
+import { ThemeProvider } from "next-themes";
+import { Toaster } from "@/components/ui/sonner";
 import "./globals.css";
 
 const inter = Inter({
@@ -26,7 +28,7 @@ export const metadata: Metadata = {
     default: "Orca Child in the Wild",
   },
   description:
-    "Youth-run nonprofit dedicated to aquatic conservation, marine education, and coastal community engagement in the Pacific Northwest.",
+    "Youth-run nonprofit dedicated to aquatic conservation, marine education, and coastal community engagement in Southern California.",
 };
 
 export default function RootLayout({
@@ -39,7 +41,15 @@ export default function RootLayout({
       <body
         className={`${inter.variable} ${nunito.variable} ${jetbrainsMono.variable} antialiased`}
       >
-        {children}
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+        >
+          {children}
+          <Toaster position="bottom-right" />
+        </ThemeProvider>
       </body>
     </html>
   );

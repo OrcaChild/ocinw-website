@@ -3,6 +3,9 @@ import { hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { NextIntlClientProvider } from "next-intl";
 import { routing } from "@/i18n/routing";
+import { SkipToContent } from "@/components/shared/SkipToContent";
+import { Header } from "@/components/layout/Header";
+import { Footer } from "@/components/layout/Footer";
 
 type Props = {
   children: React.ReactNode;
@@ -24,7 +27,12 @@ export default async function LocaleLayout({ children, params }: Props) {
 
   return (
     <NextIntlClientProvider>
-      {children}
+      <SkipToContent />
+      <Header />
+      <main id="main-content" className="min-h-screen">
+        {children}
+      </main>
+      <Footer />
     </NextIntlClientProvider>
   );
 }

@@ -14,6 +14,7 @@
 | #1 | 2026-02-21 | Planning (all phases defined) | 6 |
 | #2 | 2026-02-21 | Audit & Improvements (all files) | 1 |
 | #3 | 2026-02-21/22 | Phase 4 — Project Scaffolding + GitHub | 2 |
+| #4 | 2026-02-22 | Phase 5 — Core Website Development | 1 |
 
 ---
 
@@ -197,6 +198,47 @@
 - **Artifacts:** Remote configured at `origin` → `https://github.com/OrcaChild/ocinw-website.git`
 - **Acceptance Criteria:** All 11 commits visible on GitHub, branch is `main`
 - **Unblocks:** CI pipeline can run on push, Vercel deployment possible
+
+---
+
+## [PHASE 5] 2026-02-22 — Session #4: Core Website Development
+
+### 1. Complete Phase 5 Implementation (10 Steps)
+- **What:** Built the full website shell — all pages share a consistent layout with header, navigation, footer, and error handling
+- **Scope:**
+  - **Step 1: Translation files** — Fixed "Pacific Northwest" → "Southern California" bug in EN/ES. Expanded translations from ~35 to ~250+ keys covering 8 namespaces (common, nav, header, footer, home, about, contact, error, legal)
+  - **Step 2: Root layout** — Added ThemeProvider (next-themes, light/dark/system), Sonner toast container, SkipToContent accessibility link, ThemeToggle component
+  - **Step 3: Header + Desktop Navigation** — Sticky header with backdrop-blur on scroll (IntersectionObserver), NavigationMenu with 3 dropdown menus (About, Learn, Conservation), language toggle (EN/ES), theme toggle, Donate CTA button. Responsive — hidden on mobile
+  - **Step 4: Mobile Navigation** — Sheet drawer from left, Accordion sub-menus for About/Learn/Conservation, Donate CTA prominently at top, language and theme toggles at bottom. Focus trap via Radix Dialog
+  - **Step 5: Footer + Newsletter** — 4-column responsive layout (brand+tagline, Explore links, Get Involved links, newsletter signup). Social media links (Instagram, TikTok, YouTube, Facebook, X). Bottom bar: copyright with dynamic year, "Founded by Jordyn Rosario", 501(c)(3) notice, Privacy/Terms links. Newsletter form with Zod validation and stubbed server action
+  - **Step 6: Homepage (7 sections)** — HeroSection (gradient background, h1, subtitle, 2 CTAs, scroll indicator), MissionCards (Protect/Educate/Connect with icons and links), ImpactCounter (animated count-up with IntersectionObserver, respects prefers-reduced-motion), WeatherPreview (stub card), FeaturedContent (placeholder article/species/event cards), GetInvolvedCTA (volunteer + donate side-by-side cards), PartnersSection (placeholder logos)
+  - **Step 7: About pages (3 sub-pages)** — Main about page (origin story, milestones, mission preview, vision, focus area map placeholder), Team page (founder profile + youth council placeholders), Mission & Values page (mission, vision, 5 core values with icons, 4 strategic goals). Shared sub-navigation between about pages
+  - **Step 8: Contact page** — ContactForm using react-hook-form + zodResolver + Zod contactFormSchema, server action (stubbed), inline field validation, toast notifications for success/error, FAQ accordion (5 questions), contact info sidebar with email
+  - **Step 9: Error + Legal pages** — Custom 404 not-found.tsx (ocean-themed, popular page links), error.tsx boundary (try again + go home), global-error.tsx (catches root layout errors, plain HTML/CSS fallback). Privacy policy stub (7 sections: intro, collection, cookies, third-party, COPPA, retention/CCPA, contact). Terms of use stub (7 sections: acceptance, usage, content, donations, liability, governing law, contact). Both marked DRAFT
+  - **Step 10: Security headers + Quality gates** — Added to next.config.ts: CSP (dev/prod split), X-Frame-Options: DENY, X-Content-Type-Options: nosniff, Referrer-Policy: strict-origin-when-cross-origin, Permissions-Policy. Fixed 8 ESLint errors (unused imports, setState-in-effect, no-html-link-for-pages)
+- **Artifacts:**
+  - Pages: `[locale]/page.tsx`, `[locale]/about/page.tsx`, `[locale]/about/team/page.tsx`, `[locale]/about/mission/page.tsx`, `[locale]/contact/page.tsx`, `[locale]/privacy/page.tsx`, `[locale]/terms/page.tsx`, `[locale]/not-found.tsx`, `[locale]/error.tsx`, `global-error.tsx`
+  - Layout components: `Header.tsx`, `DesktopNav.tsx`, `MobileNav.tsx`, `LanguageToggle.tsx`, `Footer.tsx`
+  - Shared components: `SkipToContent.tsx`, `ThemeToggle.tsx`, `NewsletterForm.tsx`, `ContactForm.tsx`
+  - Home components: `HeroSection.tsx`, `MissionCards.tsx`, `ImpactCounter.tsx`, `WeatherPreview.tsx`, `FeaturedContent.tsx`, `GetInvolvedCTA.tsx`, `PartnersSection.tsx`
+  - Server actions: `actions/contact.ts`, `actions/newsletter.ts`
+  - Config: `next.config.ts` (security headers), `messages/en.json`, `messages/es.json`
+- **Acceptance Criteria:**
+  - [x] All pages render without errors (17 pages built across EN/ES)
+  - [x] Navigation works (desktop dropdown menus + mobile Sheet drawer)
+  - [x] Language switching works (EN/ES via locale-aware navigation)
+  - [x] Skip-to-content link present and keyboard-accessible
+  - [x] `pnpm build` passes (17 static pages generated)
+  - [x] `pnpm lint` passes with zero errors/warnings
+  - [x] `pnpm type-check` passes with zero TypeScript errors
+- **Unblocks:** Phase 6 (Weather & Tides), Phase 7 (Donations), Phase 8 (Volunteers) all have a layout to work within
+- **Noteworthy:**
+  - All user-visible strings use translation keys (no hardcoded English)
+  - Server components by default; client components only where interactivity requires it (Header, MobileNav, forms, ImpactCounter, ThemeToggle, LanguageToggle, SkipToContent)
+  - Form server actions are stubbed — return success after Zod validation, ready for Supabase integration
+  - ImpactCounter uses IntersectionObserver for scroll-triggered animation and respects prefers-reduced-motion
+  - Security headers include environment-aware CSP (dev allows unsafe-eval for HMR, prod does not)
+  - Global error boundary uses plain HTML/CSS (no React components) as fallback when root layout fails
 
 ---
 

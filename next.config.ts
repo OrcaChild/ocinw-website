@@ -14,7 +14,7 @@ const cspDirectives = [
     : "script-src 'self' 'unsafe-inline'",
   "style-src 'self' 'unsafe-inline'",
   "img-src 'self' data: https:",
-  "connect-src 'self' https://api.open-meteo.com https://marine-api.open-meteo.com https://api.tidesandcurrents.noaa.gov https://*.supabase.co",
+  "connect-src 'self' https://api.open-meteo.com https://marine-api.open-meteo.com https://api.tidesandcurrents.noaa.gov https://*.supabase.co https://nominatim.openstreetmap.org",
   "frame-src https://www.zeffy.com",
   "font-src 'self'",
 ];

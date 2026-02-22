@@ -15,6 +15,8 @@
 | #2 | 2026-02-21 | Audit & Improvements (all files) | 1 |
 | #3 | 2026-02-21/22 | Phase 4 — Project Scaffolding + GitHub | 2 |
 | #4 | 2026-02-22 | Phase 5 — Core Website Development | 1 |
+| #5 | 2026-02-22 | Phase 6 — Weather & Tides System | 1 |
+| #6 | 2026-02-22 | Phase 6 — Bug Fixes & UX Improvements | 1 |
 
 ---
 
@@ -239,6 +241,85 @@
   - ImpactCounter uses IntersectionObserver for scroll-triggered animation and respects prefers-reduced-motion
   - Security headers include environment-aware CSP (dev allows unsafe-eval for HMR, prod does not)
   - Global error boundary uses plain HTML/CSS (no React components) as fallback when root layout fails
+
+---
+
+## [PHASE 6] 2026-02-22 — Session #5: Weather & Tides System
+
+### 1. Complete Phase 6 Implementation (12 Steps)
+- **What:** Built the full live Weather & Tides system — geolocation, two external API integrations, interactive tide chart, and complete dashboard
+- **Scope:**
+  - **Step 1: Type definitions** — Rewrote `weather.ts` (CurrentWeather, MarineConditions, HourlyForecastEntry, DailyForecastEntry, WeatherData, OpenMeteoForecastResponse, OpenMeteoMarineResponse, WeatherCodeInfo). Rewrote `tides.ts` (TideStation, TidePrediction, CurrentTideStatus, TideData, NoaaTidesResponse, NoaaQueryParams). Created `geolocation.ts` (LocationState, LocationSource, BeachLocation). Updated barrel export.
+  - **Step 2: SoCal beach data** — `src/lib/data/socal-beaches.ts`: 7 NOAA tide stations (Santa Monica → Imperial Beach), 18 popular beach locations with EN/ES names and nearest station mapping, 45 ZIP code→coordinate entries covering coastal and inland LA–San Diego area.
+  - **Step 3: WMO weather codes** — `src/lib/data/weather-codes.ts`: Full mapping of WMO codes 0–99 to English/Spanish descriptions and Lucide icon names (Sun, CloudSun, Cloud, CloudFog, CloudDrizzle, CloudRain, CloudRainWind, CloudSnow, CloudLightning).
+  - **Step 4: Open-Meteo API client** — `src/lib/api/weather.ts`: Parallel fetch of forecast + marine APIs. Fahrenheit/mph/inch units. 15-minute Map-based cache keyed on rounded coordinates. 10-second AbortController timeout. Parses current, hourly (168h), daily (7d), and marine conditions.
+  - **Step 5: NOAA CO-OPS API client** — `src/lib/api/tides.ts`: Fetches hi/lo predictions (7 days) and hourly data (2 days for chart). 6-hour Map-based cache. Cosine interpolation for current height estimation. Rising/falling status detection. `application: OrcaChildInTheWild` courtesy parameter.
+  - **Step 6: Geolocation system** — `src/lib/api/geolocation.ts`: Browser Geolocation API wrapper with HTTPS requirement, 10s timeout, 5-min cache acceptance. ZIP code lookup with regex validation. localStorage save/load/clear for return visits.
+  - **Step 7: Utilities** — `src/lib/utils/geo.ts`: Haversine distance formula, nearest station finder. `src/lib/utils/weather-format.ts`: formatTemperature, formatWindSpeed, formatWindDirection (16 cardinals), formatTideHeight, formatUvIndex (5 levels EN/ES), formatPrecipitation, formatWaveHeight (m→ft), formatWavePeriod, formatTime, formatDate, formatRelativeTime.
+  - **Step 8: Custom hooks** — `useGeolocation` (GPS request, ZIP code set, manual location set, localStorage persistence, clear), `useWeather` (auto-fetch on coord change, useReducer pattern, fetch-ID race condition guard, refetch), `useTides` (same pattern). Used `useReducer` instead of `useState` to satisfy react-hooks/set-state-in-effect lint rule.
+  - **Step 9: Translations** — Added ~70 keys to both `en.json` and `es.json` under `weather` namespace: location selector UI, conditions labels, marine terms, tide terminology, forecast labels, safety advisories, activity tips, error/loading states.
+  - **Step 10: Weather components (7)** — LocationSelector (GPS button + ZIP form + 18 beach quick-select buttons), CurrentConditions (5xl temp, 6-item detail grid), MarineConditionsCard (wave/swell height/period/direction), TideStatus (rising/falling indicator, next hi/lo with relative time), TideChart (24h Recharts AreaChart, linear gradient fill, current-time reference line, hi/lo annotation badges), DailyForecast (7-day cards with dynamic weather icons), SafetyAdvisory (UV alert + 4 activity cards).
+  - **Step 11: Dashboard + page** — `WeatherDashboard.tsx`: Client component orchestrating LocationSelector → loading skeletons → error alerts → CurrentConditions + TideStatus row → MarineConditions → TideChart → DailyForecast → SafetyAdvisory. Refresh button with last-updated timestamp. `weather/page.tsx`: Server page with SEO metadata via getTranslations, locale validation, h1 + description.
+  - **Step 12: WeatherPreview updated** — Polished CTA card on homepage with description text and ArrowRight icon. Kept as server component.
+- **Artifacts:**
+  - Types: `types/weather.ts` (updated), `types/tides.ts` (updated), `types/geolocation.ts` (new), `types/index.ts` (updated)
+  - Data: `lib/data/socal-beaches.ts` (new), `lib/data/weather-codes.ts` (new)
+  - API clients: `lib/api/weather.ts` (new), `lib/api/tides.ts` (new), `lib/api/geolocation.ts` (new)
+  - Hooks: `lib/hooks/useGeolocation.ts` (new), `lib/hooks/useWeather.ts` (new), `lib/hooks/useTides.ts` (new)
+  - Utils: `lib/utils/weather-format.ts` (new), `lib/utils/geo.ts` (new)
+  - Components: `weather/WeatherDashboard.tsx`, `weather/LocationSelector.tsx`, `weather/CurrentConditions.tsx`, `weather/MarineConditionsCard.tsx`, `weather/TideStatus.tsx`, `weather/TideChart.tsx`, `weather/DailyForecast.tsx`, `weather/SafetyAdvisory.tsx`, `weather/WeatherIcon.tsx` (all new)
+  - Page: `app/[locale]/weather/page.tsx` (new)
+  - Updated: `home/WeatherPreview.tsx`, `messages/en.json`, `messages/es.json`
+- **Acceptance Criteria:**
+  - [x] Weather page at `/en/weather` and `/es/weather`
+  - [x] Geolocation: GPS, ZIP code, manual beach selection
+  - [x] Open-Meteo: current, hourly, daily, marine data
+  - [x] NOAA: tide predictions, hi/lo, hourly for chart
+  - [x] TideChart: 24h Recharts area chart with current-time marker
+  - [x] 7-day forecast with dynamic weather icons
+  - [x] Safety advisories and beach activity tips
+  - [x] Full EN/ES translations (~70 new keys each)
+  - [x] `pnpm lint` passes (zero errors/warnings)
+  - [x] `pnpm type-check` passes (zero TS errors)
+  - [x] `pnpm build` passes (19 static pages including /en/weather, /es/weather)
+- **Unblocks:** Phase 7 (Donations), Phase 8 (Volunteers), Phase 9 (Education Content) can all proceed
+- **Noteworthy:**
+  - Used `useReducer` instead of `useState` in data-fetching hooks to comply with react-hooks/set-state-in-effect lint rule (React 19 strict mode)
+  - WeatherIcon is a wrapper component (not a function returning a component) to satisfy react-hooks/static-components lint rule
+  - Marine API data is optional — fails gracefully if unavailable (inland locations)
+  - Tide height interpolation uses cosine curve (not linear) for realistic sine-wave tide representation
+  - Fetch-ID ref pattern prevents race conditions when coordinates change rapidly
+
+---
+
+## [PHASE 6] 2026-02-22 — Session #6: Weather & Tides Bug Fixes & UX Improvements
+
+### 1. Critical Bug Fixes + UX Enhancements
+- **What:** Fixed 4 critical bugs that crashed the weather page for inland users, added 3 UX improvements for location clarity and station switching
+- **Scope:**
+  - **Bug: Marine API null values** — Open-Meteo Marine API returns `null` for all wave/swell fields at inland locations (e.g., Lake Elsinore). `parseMarine` now returns `null` when all values are null. Updated `OpenMeteoMarineResponse` type to `number | null`. Root cause: `null.toFixed(1)` → TypeError in `formatWavePeriod`.
+  - **Bug: Recharts SSR crash** — Split TideChart into TideChart + TideChartInner with `next/dynamic` `ssr: false` to prevent Recharts browser API access during SSR.
+  - **Bug: localStorage poisoning** — `clearLocation()` now calls `clearSavedLocation()`. Save effect only persists settled states (`!loading && !error`). Error boundary provides "Reset Location & Retry" button.
+  - **Bug: Circular import** — Moved `ChartDataPoint` type from TideChart to TideChartInner to break Turbopack circular dependency.
+  - **UX: Reverse geocoding** — Added Nominatim (OpenStreetMap) reverse geocoding to resolve GPS coordinates to city names. Added to CSP connect-src. Falls back gracefully on failure.
+  - **UX: Station switcher** — New `StationSwitcher` component with dropdown to switch between 7 NOAA tide stations. Shows "(nearest)" label for auto-selected station. `useTides` hook accepts optional `stationId` override.
+  - **UX: Error boundary** — `WeatherErrorBoundary` class component wraps WeatherDashboard. On crash: shows error message + "Reset Location & Retry" button that clears localStorage.
+  - **Data: Inland Empire ZIPs** — Added 14 ZIP codes: Lake Elsinore (92530, 92532), Murrieta, Temecula, Corona, Perris, Moreno Valley, Riverside, Rancho Cucamonga, Fontana, San Bernardino.
+  - **Data: Translation keys** — Added `switchStation`, `nearest` to both EN/ES.
+- **Artifacts:**
+  - New: `weather/TideChartInner.tsx`, `weather/WeatherErrorBoundary.tsx`, `weather/StationSwitcher.tsx`, `ui/dropdown-menu.tsx`
+  - Modified: `weather/TideChart.tsx`, `weather/WeatherDashboard.tsx`, `types/weather.ts`, `api/weather.ts`, `api/geolocation.ts`, `hooks/useGeolocation.ts`, `hooks/useTides.ts`, `data/socal-beaches.ts`, `next.config.ts`, `[locale]/weather/page.tsx`, `messages/en.json`, `messages/es.json`
+- **Acceptance Criteria:**
+  - [x] Inland locations (Lake Elsinore) load without crash
+  - [x] GPS resolves to city name (e.g., "Lake Elsinore")
+  - [x] Station switcher allows changing NOAA stations live
+  - [x] Error boundary catches crashes with recovery button
+  - [x] Marine card hidden for inland locations
+  - [x] ZIP code 92530 resolves to Lake Elsinore
+  - [x] `pnpm lint` — zero errors
+  - [x] `pnpm type-check` — zero errors
+  - [x] `pnpm build` — 19 pages
+- **Unblocks:** Weather system is now production-ready for all SoCal locations (coastal + inland)
 
 ---
 

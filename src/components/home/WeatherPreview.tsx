@@ -2,7 +2,7 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { CloudSun, Waves } from "lucide-react";
+import { CloudSun, Waves, ArrowRight } from "lucide-react";
 
 export function WeatherPreview() {
   const t = useTranslations("home");
@@ -28,11 +28,14 @@ export function WeatherPreview() {
                 aria-hidden="true"
               />
             </div>
-            <p className="text-sm text-muted-foreground">
-              {t("weatherComingSoon")}
+            <p className="font-medium">
+              {t("weatherDescription")}
             </p>
-            <Button asChild variant="outline" size="sm">
-              <Link href="/weather">{t("weatherCta")}</Link>
+            <Button asChild className="gap-2">
+              <Link href="/weather">
+                {t("weatherCta")}
+                <ArrowRight className="size-4" aria-hidden="true" />
+              </Link>
             </Button>
           </CardContent>
         </Card>

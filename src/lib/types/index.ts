@@ -1,5 +1,6 @@
 export type * from "./weather";
 export type * from "./tides";
+export type * from "./geolocation";
 export type * from "./content";
 export {
   contactFormSchema,

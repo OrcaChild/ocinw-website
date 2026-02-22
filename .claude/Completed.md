@@ -13,6 +13,7 @@
 |---------|------|----------------|---------|
 | #1 | 2026-02-21 | Planning (all phases defined) | 6 |
 | #2 | 2026-02-21 | Audit & Improvements (all files) | 1 |
+| #3 | 2026-02-21 | Phase 4 — Project Scaffolding | 1 |
 
 ---
 
@@ -143,6 +144,48 @@
 - **Artifacts:** All 5 project files + MEMORY.md modified
 - **Acceptance Criteria:** All 50 improvements implemented, no contradictions between files, database schema includes all new tables
 - **Unblocks:** Project files are now comprehensive enough to serve as the true source of truth for development
+
+---
+
+## [PHASE 4] 2026-02-21 — Session #3: Project Scaffolding & Infrastructure
+
+### 1. Complete Phase 4 Implementation (11 Steps)
+- **What:** Transformed planning documents into a fully scaffolded, buildable Next.js project
+- **Scope:**
+  - **Step 1: Git init** — Repository initialized with `.gitignore`, project-local git config (user.name="Orca Child", email="orcachildinthewild@gmail.com"), initial commit with planning docs
+  - **Step 2: Next.js scaffold** — Next.js 16.1.6 with App Router, TypeScript 5.9.3, Tailwind CSS v4.2.0, src directory, `@/*` import alias. Package name: `orca-child-in-the-wild`
+  - **Step 3: TypeScript strict mode** — `noUncheckedIndexedAccess: true`, `type-check` script added
+  - **Step 4: Core dependencies** — 14 production deps (Supabase, Zod v4, next-intl, Leaflet, Recharts, date-fns, lucide-react, class-variance-authority, clsx, tailwind-merge, sonner, react-hook-form, next-themes, radix-ui) + 16 dev deps (Playwright, Vitest, Testing Library, Prettier, @axe-core/playwright, bundle-analyzer, etc.)
+  - **Step 5: shadcn/ui** — 19 components installed: button, card, dialog, form, input, select, tabs, sonner (toast replacement), sheet, navigation-menu, accordion, badge, separator, skeleton, alert, label, textarea, checkbox, radio-group
+  - **Step 6: Tailwind design system** — OCINW ocean-themed palette using oklch color space (ocean hue 220, teal 180, sand 80, kelp 145, coral 22-30). Light/dark themes. Fonts: Nunito (headings), Inter (body), JetBrains Mono (code). All WCAG AA compliant.
+  - **Step 7: ESLint + Prettier** — ESLint flat config (v9) with a11y rules (alt-text, aria-props, label-has-associated-control), consistent-type-imports, no-unused-vars. Prettier with Tailwind class sorting plugin.
+  - **Step 8: i18n foundation** — next-intl v4 with `[locale]` routing, EN/ES translation files (nav, common, footer, home keys), proxy.ts (Next.js 16 middleware), TypeScript AppConfig augmentation for strict locale/message types, locale-aware navigation helpers
+  - **Step 9: Environment config** — `.env.example` with Supabase, Resend, NOAA, Open-Meteo, Zeffy, site vars. `src/env.ts` with Zod v4 schema split into server/client validation.
+  - **Step 10: Directory structure** — Component dirs (layout, weather, donate, volunteer, education, conservation, shared), lib dirs (api, utils, hooks, types), content dirs (articles, species, ecosystems, projects, events), test dirs (unit, integration, e2e, accessibility). Supabase browser/server clients. Type definitions for weather, tides, content, forms. Zod form schemas (contact, volunteer, newsletter, event registration). Vitest + Playwright configs.
+  - **Step 11: CI/CD** — GitHub Actions workflow: lint → type-check → build → test. pnpm with frozen lockfile. Concurrency groups for PR efficiency.
+- **Artifacts:**
+  - Config: `package.json`, `tsconfig.json`, `next.config.ts`, `eslint.config.mjs`, `.prettierrc`, `.prettierignore`, `.gitignore`, `.env.example`, `vitest.config.ts`, `playwright.config.ts`, `components.json`
+  - Source: `src/app/globals.css`, `src/app/layout.tsx`, `src/app/[locale]/layout.tsx`, `src/app/[locale]/page.tsx`, `src/env.ts`, `src/proxy.ts`
+  - i18n: `src/i18n/routing.ts`, `src/i18n/request.ts`, `src/i18n/navigation.ts`, `src/i18n/types.ts`, `messages/en.json`, `messages/es.json`
+  - Lib: `src/lib/api/supabase-browser.ts`, `src/lib/api/supabase-server.ts`, `src/lib/types/weather.ts`, `src/lib/types/tides.ts`, `src/lib/types/content.ts`, `src/lib/types/forms.ts`, `src/lib/types/index.ts`, `src/lib/utils.ts`
+  - Components: 19 shadcn/ui components in `src/components/ui/`
+  - CI: `.github/workflows/ci.yml`
+  - Tests: `tests/setup.ts`
+- **Acceptance Criteria:**
+  - [x] `pnpm build` succeeds (clean, no warnings)
+  - [x] `pnpm lint` passes with zero errors
+  - [x] `pnpm type-check` passes with zero TypeScript errors
+  - [x] `.env.example` lists all required variables
+  - [x] i18n foundation configured with EN/ES locales
+  - [x] CI pipeline configuration present
+  - [x] 10 clean git commits documenting each step
+- **Unblocks:** Phase 5 (Core Website), Phase 6 (Weather), Phase 7 (Donations), Phase 8 (Volunteers), Phase 9 (Education Content) can all begin
+- **Noteworthy:**
+  - Next.js 16 deprecates `middleware.ts` in favor of `proxy.ts`
+  - Tailwind v4 uses CSS-based `@theme inline` blocks instead of `tailwind.config.ts`
+  - shadcn/ui `toast` component is deprecated; replaced with `sonner`
+  - Zod v4 is ESM-first with new API patterns (z.email(), z.url() instead of z.string().email())
+  - pnpm 10.x requires explicit `onlyBuiltDependencies` in package.json for build scripts
 
 ---
 

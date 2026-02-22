@@ -1,0 +1,35 @@
+{
+  "common": {
+    "siteName": "Orca Child in the Wild",
+    "tagline": "Youth-run aquatic conservation in the Pacific Northwest",
+    "loading": "Loading...",
+    "error": "Something went wrong",
+    "retry": "Try again",
+    "backToHome": "Back to home"
+  },
+  "nav": {
+    "home": "Home",
+    "about": "About",
+    "conservation": "Conservation",
+    "education": "Education",
+    "weather": "Weather & Tides",
+    "events": "Events",
+    "volunteer": "Volunteer",
+    "donate": "Donate",
+    "contact": "Contact"
+  },
+  "footer": {
+    "copyright": "© {year} Orca Child in the Wild. All rights reserved.",
+    "nonprofit": "A youth-run 501(c)(3) nonprofit organization",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Use",
+    "accessibility": "Accessibility"
+  },
+  "home": {
+    "title": "Protecting Our Waters, One Wave at a Time",
+    "subtitle": "Youth-led aquatic conservation dedicated to marine education, coastal restoration, and community engagement in the Pacific Northwest.",
+    "ctaDonate": "Support Our Mission",
+    "ctaVolunteer": "Join Our Team",
+    "ctaLearnMore": "Learn More"
+  }
+}

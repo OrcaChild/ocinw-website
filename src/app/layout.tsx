@@ -21,7 +21,10 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Orca Child in the Wild",
+  title: {
+    template: "%s | Orca Child in the Wild",
+    default: "Orca Child in the Wild",
+  },
   description:
     "Youth-run nonprofit dedicated to aquatic conservation, marine education, and coastal community engagement in the Pacific Northwest.",
 };
@@ -32,7 +35,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html suppressHydrationWarning>
       <body
         className={`${inter.variable} ${nunito.variable} ${jetbrainsMono.variable} antialiased`}
       >

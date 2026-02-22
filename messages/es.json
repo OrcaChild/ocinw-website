@@ -1,0 +1,35 @@
+{
+  "common": {
+    "siteName": "Orca Child in the Wild",
+    "tagline": "Conservación acuática dirigida por jóvenes en el noroeste del Pacífico",
+    "loading": "Cargando...",
+    "error": "Algo salió mal",
+    "retry": "Intentar de nuevo",
+    "backToHome": "Volver al inicio"
+  },
+  "nav": {
+    "home": "Inicio",
+    "about": "Acerca de",
+    "conservation": "Conservación",
+    "education": "Educación",
+    "weather": "Clima y mareas",
+    "events": "Eventos",
+    "volunteer": "Voluntariado",
+    "donate": "Donar",
+    "contact": "Contacto"
+  },
+  "footer": {
+    "copyright": "© {year} Orca Child in the Wild. Todos los derechos reservados.",
+    "nonprofit": "Una organización sin fines de lucro 501(c)(3) dirigida por jóvenes",
+    "privacy": "Política de privacidad",
+    "terms": "Términos de uso",
+    "accessibility": "Accesibilidad"
+  },
+  "home": {
+    "title": "Protegiendo nuestras aguas, una ola a la vez",
+    "subtitle": "Conservación acuática liderada por jóvenes dedicada a la educación marina, la restauración costera y la participación comunitaria en el noroeste del Pacífico.",
+    "ctaDonate": "Apoya nuestra misión",
+    "ctaVolunteer": "Únete a nuestro equipo",
+    "ctaLearnMore": "Más información"
+  }
+}

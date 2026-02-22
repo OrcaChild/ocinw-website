@@ -1,14 +1,14 @@
 # Handoff — Orca Child in the Wild
 
 > **Session Continuity Document**
-> Last updated: 2026-02-21
-> Session: #3 (Phase 4 — Project Scaffolding & Infrastructure)
+> Last updated: 2026-02-22
+> Session: #4 (ready to start — Phase 5: Core Website)
 
 ---
 
 ## At A Glance
 
-**Current Phase:** Phase 4 COMPLETE — Phase 5 (Core Website) READY TO START | **Blockers:** 0 critical (5 non-blocking) | **Next Action:** Build root layout, navigation, and homepage
+**Current Phase:** Phase 5 (Core Website) — READY TO START | **Blockers:** 0 critical (4 non-blocking) | **Next Action:** Build root layout with header, navigation, and footer
 
 ---
 
@@ -19,13 +19,13 @@
 | Phase 1 — Legal Foundation | NOT STARTED | None | Independent of website dev; can run in parallel |
 | Phase 2 — Brand Identity | NOT STARTED | None | Design system defined in plan; no assets created |
 | Phase 3 — Tech Stack | DECIDED | None | All technology choices locked in OCINW.MD |
-| Phase 4 — Project Scaffolding | **COMPLETE** | None | All 11 steps done, build passes |
-| Phase 5 — Core Website | NOT STARTED | Phase 4 ✅ | **Next task to execute** |
-| Phase 6 — Weather & Tides | NOT STARTED | Phase 4, 5 | Requires core layout and API infrastructure |
+| Phase 4 — Project Scaffolding | **COMPLETE** | None | 11 steps, 11 commits, all gates pass |
+| Phase 5 — Core Website | **NEXT** | Phase 4 ✅ | Root layout, nav, homepage, about, contact, errors |
+| Phase 6 — Weather & Tides | NOT STARTED | Phase 4 ✅, Phase 5 | Requires core layout and API infrastructure |
 | Phase 7 — Donation System | NOT STARTED | Phase 1 (Zeffy needs nonprofit status) | Zeffy embed can be stubbed without 501(c)(3) |
-| Phase 8 — Volunteer System | NOT STARTED | Phase 4, 5 | Requires DB schema and core layout |
-| Phase 9 — Education Content | NOT STARTED | Phase 4 (MDX infra) | Content writing can start as soon as MDX schema defined |
-| Phase 10 — Accessibility/i18n | NOT STARTED | Phase 4 (i18n foundation moved here) | Translation *content* happens here; i18n *infrastructure* is in Phase 4.7 |
+| Phase 8 — Volunteer System | NOT STARTED | Phase 4 ✅, Phase 5 | Requires DB schema and core layout |
+| Phase 9 — Education Content | NOT STARTED | Phase 4 ✅ (MDX infra) | Content writing can start as soon as MDX schema defined |
+| Phase 10 — Accessibility/i18n | NOT STARTED | Phase 4 ✅ | Translation *content* happens here; i18n *infrastructure* done |
 | Phase 11 — Testing | NOT STARTED | Phase 5+ | Tests written alongside features, comprehensive pass here |
 | Phase 12 — Pre-Launch | NOT STARTED | Phase 5-11 | All features must be built |
 | Phase 13 — Launch | NOT STARTED | Phase 12 | Pre-launch checklist must pass |
@@ -33,87 +33,69 @@
 
 ---
 
-## What Was Completed This Session
-
-### Session #3 — 2026-02-21 (Phase 4 — Project Scaffolding & Infrastructure)
-
-All 11 steps of Phase 4 completed:
-
-1. **Git init** — Repository initialized, .gitignore created, planning docs committed
-2. **Next.js 16.1.6 scaffold** — App Router, TypeScript 5.9.3, Tailwind CSS v4.2.0
-3. **TypeScript strict mode** — noUncheckedIndexedAccess enabled
-4. **Core dependencies installed** — Supabase, Zod v4, next-intl, Leaflet, Recharts, date-fns, etc.
-5. **shadcn/ui initialized** — 19 components (button, card, dialog, form, input, select, tabs, sonner, sheet, navigation-menu, accordion, badge, separator, skeleton, alert, label, textarea, checkbox, radio-group)
-6. **Tailwind design system** — OCINW ocean-themed palette (ocean, teal, sand, kelp, coral) with oklch, light/dark themes, Nunito + Inter + JetBrains Mono fonts
-7. **ESLint + Prettier** — a11y rules, consistent-type-imports, Tailwind class sorting
-8. **i18n foundation** — next-intl v4, EN/ES locales, locale routing, typed messages, proxy.ts
-9. **Environment config** — .env.example with all vars, src/env.ts with Zod validation
-10. **Directory structure** — components/, lib/api/, lib/types/, content/, tests/ with Supabase clients, type definitions, Zod form schemas, Vitest & Playwright configs
-11. **CI/CD pipeline** — GitHub Actions workflow for lint, type-check, build, test
-
-### Session #2 — 2026-02-21 (Comprehensive File Audit & Improvements)
-
-1. **Audited all 5 project files** — 3 specialist agents, found 144 issues
-2. **Implemented 50 improvements** across all files
-
-### Session #1 — 2026-02-21 (Initial Planning)
-
-1. Created all 5 planning documents (OCINW.MD, CLAUDE.md, Handoff.md, Completed.md, Teams.md) + MEMORY.md
-
----
-
 ## Currently In-Progress
 
-Nothing currently in-progress. Phase 4 is complete.
+Nothing currently in-progress. Ready for Phase 5.
 
 ---
 
 ## What Should Be Done Next
 
-### Phase 4 Acceptance Criteria — VERIFIED
-- [x] `git status` shows clean working tree
-- [x] `pnpm install` succeeds without errors
-- [x] `pnpm build` produces a successful production build
-- [x] `pnpm lint` passes with zero errors
-- [x] `pnpm type-check` passes with zero TypeScript errors
-- [x] `.env.example` lists all required environment variables
-- [ ] Supabase schema deployed with all 8 tables and RLS policies (requires Supabase project creation)
-- [x] CI pipeline configuration present (.github/workflows/ci.yml)
-- [x] i18n foundation configured (next-intl v4, EN/ES translation files)
+### Phase 5 — Core Website Development
 
-### Immediate Next Step: Phase 5 — Core Website
+Build the website shell — all pages share a consistent layout with header, nav, and footer.
 
-Build the shell first:
-1. **Root layout** — Header with navigation, footer with links
-2. **Navigation** — Desktop navbar + mobile hamburger menu (responsive)
-3. **Homepage** — Hero section, mission statement, weather preview stub, featured content, impact counter, CTAs (Donate, Volunteer)
-4. **About page** — Mission, team, history
-5. **Contact page** — Form with Zod validation
-6. **Error pages** — 404, error boundary
-7. **Legal pages** — Privacy policy, terms of use stubs
+**Consult OCINW.MD Phase 5 for full specifications.** Key deliverables:
 
-### Still Needed (Non-blocking)
-- **Supabase project creation** — requires user account setup at supabase.com
-- **GitHub repository** — local only, needs `git remote add origin` and push
-- **Domain name** — orcachildinthewild.org should be registered
+1. **Root layout enhancements** — Skip-to-content link, Sonner toast provider, theme provider (light/dark)
+2. **Header + Navigation** — Desktop navbar with logo + nav links + language switcher + CTA button. Mobile hamburger menu via Sheet component. Sticky header with scroll behavior.
+3. **Footer** — Site links, social media, newsletter signup stub, copyright with dynamic year, language switcher
+4. **Homepage** (`/`) — Hero section with CTA buttons, mission statement, featured content cards, impact counter, weather preview stub, upcoming events stub
+5. **About page** (`/about`) — Mission, team members, organization history, partners
+6. **Contact page** (`/contact`) — Form with Zod validation (name, email, subject, message), success/error states
+7. **Error pages** — Custom 404 (`not-found.tsx`), error boundary (`error.tsx`), global error boundary
+8. **Legal pages** — Privacy policy stub (`/privacy`), terms of use stub (`/terms`)
+
+**All pages must:**
+- Use translation keys from `messages/en.json` and `messages/es.json` (never hardcode English)
+- Be server components by default (`"use client"` only for interactivity)
+- Include proper metadata (title, description) for SEO
+- Be keyboard-accessible and meet WCAG 2.1 AA
+- Work at desktop (1280px) and mobile (375px) viewports
+
+### Phase 5 Acceptance Criteria
+- [ ] All pages render without errors
+- [ ] Navigation works (desktop + mobile responsive)
+- [ ] Language switching works (EN/ES)
+- [ ] Skip-to-content link present
+- [ ] `pnpm build` passes
+- [ ] `pnpm lint` passes with zero errors/warnings
+- [ ] `pnpm type-check` passes
+
+---
+
+## Repository
+
+- **GitHub:** `https://github.com/OrcaChild/ocinw-website`
+- **Branch:** `main`
+- **11 commits** (Phase 4 complete)
+- **Git config:** user.name="Orca Child", user.email="orcachildinthewild@gmail.com"
+- **GitHub CLI:** installed (`gh` v2.87.2) — auth via `gh auth login` in terminal when needed
 
 ---
 
 ## Blockers & Open Questions
 
-1. **Domain name not yet registered** — `orcachildinthewild.org` should be secured before any deployment
-2. **Supabase project not created** — need to create free-tier project and get credentials
-3. **Zeffy account not created** — requires registered nonprofit status for full setup
-4. **No logo or visual assets yet** — can use placeholder for development, but brand identity (Phase 2) should be started in parallel
-5. **501(c)(3) status** — legal formation (Phase 1) is independent of website development and can proceed in parallel
+1. **Domain name not yet registered** — `orcachildinthewild.org` should be secured before deployment
+2. **Supabase project not created** — need free-tier project for DB features (Phase 8+)
+3. **Zeffy account not created** — requires registered nonprofit status for full donation setup
+4. **No logo or visual assets yet** — use placeholder for development; brand identity (Phase 2) in parallel
 
-*None of these block Phase 4 scaffolding. All can proceed in parallel with development.*
+*None of these block Phase 5. All can proceed in parallel with development.*
 
 ---
 
 ## Infrastructure Free-Tier Limits
-
-Monitor these to avoid unexpected costs or service interruptions:
 
 | Service | Free Tier Limit | Action If Exceeded |
 |---------|----------------|-------------------|
@@ -145,19 +127,21 @@ Monitor these to avoid unexpected costs or service interruptions:
 | Testing | Vitest + Playwright | Fast, modern, multi-browser | Medium | #1 |
 | Package manager | pnpm | Fast, strict, disk-efficient | Easy | #1 |
 | Timeline | No fixed deadline | Quality over speed | — | #1 |
-| i18n in Phase 4 | Moved from Phase 10 to 4.7 | Build with translation keys from day one, not retrofit | — | #2 |
+| i18n in Phase 4 | Moved from Phase 10 to 4.7 | Build with translation keys from day one | — | #2 |
 | Background checks | Sterling Volunteers | Nonprofit rates, youth-org specialist | Easy (swap provider) | #2 |
 | Newsletter delivery | Resend Broadcast | Already in stack, free tier sufficient | Easy (swap to Loops.so) | #2 |
+| GitHub org | OrcaChild | Matches brand name | Easy | #3 |
 
 ---
 
 ## Environment Setup Notes
 
 - Development machine: Windows 11 Pro
-- Shell: bash (Git Bash / WSL)
+- Shell: bash (Git Bash)
 - Working directory: `c:\OrcaChild`
-- Node.js: Required (ensure latest LTS installed)
-- pnpm: Required (install via `npm install -g pnpm` or `corepack enable`)
+- Node.js: v20.18.0
+- pnpm: 10.10.0
+- GitHub CLI: v2.87.2 (installed via winget)
 
 ---
 

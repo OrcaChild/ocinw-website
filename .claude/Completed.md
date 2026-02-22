@@ -13,7 +13,7 @@
 |---------|------|----------------|---------|
 | #1 | 2026-02-21 | Planning (all phases defined) | 6 |
 | #2 | 2026-02-21 | Audit & Improvements (all files) | 1 |
-| #3 | 2026-02-21 | Phase 4 — Project Scaffolding | 1 |
+| #3 | 2026-02-21/22 | Phase 4 — Project Scaffolding + GitHub | 2 |
 
 ---
 
@@ -186,6 +186,17 @@
   - shadcn/ui `toast` component is deprecated; replaced with `sonner`
   - Zod v4 is ESM-first with new API patterns (z.email(), z.url() instead of z.string().email())
   - pnpm 10.x requires explicit `onlyBuiltDependencies` in package.json for build scripts
+
+### 2. GitHub Repository Setup
+- **What:** Created GitHub repository and pushed all Phase 4 commits
+- **Scope:**
+  - Installed GitHub CLI (`gh` v2.87.2) via winget
+  - User created repo at `https://github.com/OrcaChild/ocinw-website`
+  - Added remote, renamed branch `master` → `main`, force-pushed 11 commits
+  - Updated Handoff.md with repo info
+- **Artifacts:** Remote configured at `origin` → `https://github.com/OrcaChild/ocinw-website.git`
+- **Acceptance Criteria:** All 11 commits visible on GitHub, branch is `main`
+- **Unblocks:** CI pipeline can run on push, Vercel deployment possible
 
 ---
 

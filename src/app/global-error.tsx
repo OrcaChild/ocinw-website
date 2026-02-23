@@ -1,5 +1,8 @@
 "use client";
 
+// global-error.tsx replaces the root layout, so Tailwind classes are unavailable.
+// All styles must be inline. Colors match the OCINW ocean theme.
+
 type Props = {
   error: Error & { digest?: string };
   reset: () => void;
@@ -8,23 +11,56 @@ type Props = {
 export default function GlobalError({ reset }: Props) {
   return (
     <html lang="en">
-      <body className="flex min-h-screen flex-col items-center justify-center bg-white px-4 py-16 text-center text-gray-900">
-        <h1 className="text-3xl font-bold">Something Went Wrong</h1>
-        <p className="mt-4 max-w-md text-gray-600">
+      <body
+        style={{
+          display: "flex",
+          minHeight: "100vh",
+          flexDirection: "column",
+          alignItems: "center",
+          justifyContent: "center",
+          padding: "4rem 1rem",
+          textAlign: "center",
+          fontFamily: "system-ui, -apple-system, sans-serif",
+          backgroundColor: "#f7fafc",
+          color: "#1a2332",
+          margin: 0,
+        }}
+      >
+        <h1 style={{ fontSize: "1.875rem", fontWeight: 700, margin: 0 }}>
+          Something Went Wrong
+        </h1>
+        <p style={{ marginTop: "1rem", maxWidth: "28rem", color: "#506070" }}>
           An unexpected error occurred. Please try again, or head back to the
           homepage.
         </p>
-        <div className="mt-8 flex gap-4">
+        <div style={{ marginTop: "2rem", display: "flex", gap: "1rem" }}>
           <button
             onClick={reset}
-            className="rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700"
+            style={{
+              borderRadius: "0.625rem",
+              backgroundColor: "#1a5f9e",
+              padding: "0.5rem 1rem",
+              fontSize: "0.875rem",
+              fontWeight: 500,
+              color: "white",
+              border: "none",
+              cursor: "pointer",
+            }}
           >
             Try Again
           </button>
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- global-error replaces root layout, so next/link is unavailable */}
           <a
             href="/"
-            className="rounded-md border border-gray-300 px-4 py-2 text-sm font-medium hover:bg-gray-50"
+            style={{
+              borderRadius: "0.625rem",
+              border: "1px solid #c7d2da",
+              padding: "0.5rem 1rem",
+              fontSize: "0.875rem",
+              fontWeight: 500,
+              color: "#1a2332",
+              textDecoration: "none",
+            }}
           >
             Go to Homepage
           </a>

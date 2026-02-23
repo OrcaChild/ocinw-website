@@ -18,7 +18,7 @@ export function GetInvolvedCTA() {
           <Card className="transition-shadow hover:shadow-md">
             <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
               <div className="flex size-14 items-center justify-center rounded-full bg-teal-50 dark:bg-teal-950/30">
-                <Users className="size-7 text-teal-600 dark:text-teal-400" />
+                <Users className="size-7 text-teal-600 dark:text-teal-400" aria-hidden="true" />
               </div>
               <h3 className="font-heading text-xl font-semibold">
                 {t("involvedVolunteerTitle")}
@@ -36,7 +36,7 @@ export function GetInvolvedCTA() {
           <Card className="transition-shadow hover:shadow-md">
             <CardContent className="flex flex-col items-center gap-4 p-8 text-center">
               <div className="flex size-14 items-center justify-center rounded-full bg-coral-50 dark:bg-coral-950/30">
-                <Heart className="size-7 text-coral-600 dark:text-coral-400" />
+                <Heart className="size-7 text-coral-600 dark:text-coral-400" aria-hidden="true" />
               </div>
               <h3 className="font-heading text-xl font-semibold">
                 {t("involvedDonateTitle")}

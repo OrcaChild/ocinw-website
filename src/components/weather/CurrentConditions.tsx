@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
   Droplets,
   Eye,
@@ -24,7 +24,10 @@ type CurrentConditionsProps = {
 
 export function CurrentConditions({ weather }: CurrentConditionsProps) {
   const t = useTranslations("weather");
+  const locale = useLocale();
   const uv = formatUvIndex(weather.uvIndex);
+  const unitMph = t("unitMph");
+  const unitIn = t("unitIn");
 
   return (
     <Card>
@@ -63,22 +66,22 @@ export function CurrentConditions({ weather }: CurrentConditionsProps) {
           <DetailItem
             icon={<Wind className="size-4" aria-hidden="true" />}
             label={t("wind")}
-            value={`${formatWindSpeed(weather.windSpeed)} ${formatWindDirection(weather.windDirection)}`}
+            value={`${formatWindSpeed(weather.windSpeed, unitMph)} ${formatWindDirection(weather.windDirection)}`}
           />
           <DetailItem
             icon={<Wind className="size-4" aria-hidden="true" />}
             label={t("windGusts")}
-            value={formatWindSpeed(weather.windGusts)}
+            value={formatWindSpeed(weather.windGusts, unitMph)}
           />
           <DetailItem
             icon={<Eye className="size-4" aria-hidden="true" />}
             label={t("uvIndex")}
-            value={`${uv.value} (${uv.level})`}
+            value={`${uv.value} (${locale.startsWith("es") ? uv.levelEs : uv.level})`}
           />
           <DetailItem
             icon={<Droplets className="size-4" aria-hidden="true" />}
             label={t("precipitation")}
-            value={`${weather.precipitation} in`}
+            value={`${weather.precipitation} ${unitIn}`}
           />
         </div>
       </CardContent>

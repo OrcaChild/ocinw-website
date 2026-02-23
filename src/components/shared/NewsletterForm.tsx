@@ -62,28 +62,24 @@ export function NewsletterForm() {
           disabled={status === "submitting"}
           className="h-9"
         >
-          <Send className="size-4" />
+          <Send className="size-4" aria-hidden="true" />
           <span className="sr-only sm:not-sr-only">{t("newsletterSubmit")}</span>
         </Button>
       </div>
-      {status === "error" ? (
-        <p
-          id="newsletter-error"
-          className="text-sm text-destructive"
-          role="alert"
-        >
-          {t("newsletterError")}
-        </p>
-      ) : null}
-      {status === "duplicate" ? (
-        <p
-          id="newsletter-duplicate"
-          className="text-sm text-muted-foreground"
-          role="alert"
-        >
-          {t("newsletterDuplicate")}
-        </p>
-      ) : null}
+      <p
+        id="newsletter-error"
+        className={`text-sm text-destructive ${status === "error" ? "" : "hidden"}`}
+        aria-live="polite"
+      >
+        {status === "error" ? t("newsletterError") : ""}
+      </p>
+      <p
+        id="newsletter-duplicate"
+        className={`text-sm text-muted-foreground ${status === "duplicate" ? "" : "hidden"}`}
+        aria-live="polite"
+      >
+        {status === "duplicate" ? t("newsletterDuplicate") : ""}
+      </p>
     </form>
   );
 }

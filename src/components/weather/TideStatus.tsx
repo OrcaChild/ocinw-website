@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { ArrowDown, ArrowUp, Waves } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { TideData } from "@/lib/types/tides";
@@ -12,6 +12,8 @@ type TideStatusProps = {
 
 export function TideStatus({ tides }: TideStatusProps) {
   const t = useTranslations("weather");
+  const locale = useLocale();
+  const unitFt = t("unitFt");
   const { currentTide, station } = tides;
 
   const isRising = currentTide.status === "rising";
@@ -40,7 +42,7 @@ export function TideStatus({ tides }: TideStatusProps) {
               {isRising ? t("tideRising") : t("tideFalling")}
             </p>
             <p className="text-sm text-muted-foreground">
-              {t("currentHeight")}: {formatTideHeight(currentTide.currentEstimatedHeight)}
+              {t("currentHeight")}: {formatTideHeight(currentTide.currentEstimatedHeight, unitFt)}
             </p>
           </div>
         </div>
@@ -51,13 +53,13 @@ export function TideStatus({ tides }: TideStatusProps) {
             <div className="rounded-lg border p-3">
               <p className="text-xs font-medium text-muted-foreground">{t("nextHigh")}</p>
               <p className="mt-1 font-semibold">
-                {formatTideHeight(currentTide.nextHigh.height)}
+                {formatTideHeight(currentTide.nextHigh.height, unitFt)}
               </p>
               <p className="text-xs text-muted-foreground">
-                {formatTime(currentTide.nextHigh.time)}
+                {formatTime(currentTide.nextHigh.time, locale)}
               </p>
               <p className="text-xs text-ocean-500">
-                {formatRelativeTime(currentTide.nextHigh.time)}
+                {formatRelativeTime(currentTide.nextHigh.time, locale)}
               </p>
             </div>
           ) : null}
@@ -65,13 +67,13 @@ export function TideStatus({ tides }: TideStatusProps) {
             <div className="rounded-lg border p-3">
               <p className="text-xs font-medium text-muted-foreground">{t("nextLow")}</p>
               <p className="mt-1 font-semibold">
-                {formatTideHeight(currentTide.nextLow.height)}
+                {formatTideHeight(currentTide.nextLow.height, unitFt)}
               </p>
               <p className="text-xs text-muted-foreground">
-                {formatTime(currentTide.nextLow.time)}
+                {formatTime(currentTide.nextLow.time, locale)}
               </p>
               <p className="text-xs text-ocean-500">
-                {formatRelativeTime(currentTide.nextLow.time)}
+                {formatRelativeTime(currentTide.nextLow.time, locale)}
               </p>
             </div>
           ) : null}

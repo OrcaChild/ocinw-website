@@ -58,7 +58,7 @@ export function MobileNav() {
         aria-label={t("openMenu")}
         className="size-9"
       >
-        <Menu className="size-5" />
+        <Menu className="size-5" aria-hidden="true" />
       </Button>
 
       <Sheet open={open} onOpenChange={setOpen}>
@@ -80,7 +80,7 @@ export function MobileNav() {
               onClick={closeMenu}
             >
               <Link href="/donate">
-                <Heart className="size-4" />
+                <Heart className="size-4" aria-hidden="true" />
                 {t("donate")}
               </Link>
             </Button>

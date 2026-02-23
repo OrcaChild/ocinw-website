@@ -16,6 +16,7 @@ type MarineConditionsCardProps = {
 
 export function MarineConditionsCard({ marine }: MarineConditionsCardProps) {
   const t = useTranslations("weather");
+  const unitFt = t("unitFt");
 
   return (
     <Card>
@@ -29,7 +30,7 @@ export function MarineConditionsCard({ marine }: MarineConditionsCardProps) {
         <div className="grid grid-cols-2 gap-4">
           <div>
             <p className="text-xs text-muted-foreground">{t("waveHeight")}</p>
-            <p className="text-lg font-semibold">{formatWaveHeight(marine.waveHeight)}</p>
+            <p className="text-lg font-semibold">{formatWaveHeight(marine.waveHeight, unitFt)}</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">{t("wavePeriod")}</p>
@@ -37,7 +38,7 @@ export function MarineConditionsCard({ marine }: MarineConditionsCardProps) {
           </div>
           <div>
             <p className="text-xs text-muted-foreground">{t("swellHeight")}</p>
-            <p className="text-lg font-semibold">{formatWaveHeight(marine.swellHeight)}</p>
+            <p className="text-lg font-semibold">{formatWaveHeight(marine.swellHeight, unitFt)}</p>
           </div>
           <div>
             <p className="text-xs text-muted-foreground">{t("swellPeriod")}</p>

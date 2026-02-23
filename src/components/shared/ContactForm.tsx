@@ -130,7 +130,7 @@ export function ContactForm() {
             t("submitting")
           ) : (
             <>
-              <Send className="size-4" />
+              <Send className="size-4" aria-hidden="true" />
               {t("submitButton")}
             </>
           )}

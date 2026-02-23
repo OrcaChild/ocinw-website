@@ -39,7 +39,7 @@ export class WeatherErrorBoundary extends Component<Props, State> {
     if (this.state.hasError) {
       return (
         <Alert variant="destructive" className="mx-auto max-w-lg">
-          <AlertTriangle className="size-4" />
+          <AlertTriangle className="size-4" aria-hidden="true" />
           <AlertTitle>Weather data error</AlertTitle>
           <AlertDescription className="mt-2">
             <p className="mb-4">

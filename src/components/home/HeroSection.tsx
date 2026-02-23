@@ -28,7 +28,7 @@ export function HeroSection() {
         <div className="mt-8 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">
           <Button asChild size="lg" className="w-full sm:w-auto">
             <Link href="/volunteer">
-              <Users className="size-5" />
+              <Users className="size-5" aria-hidden="true" />
               {t("ctaVolunteer")}
             </Link>
           </Button>
@@ -39,7 +39,7 @@ export function HeroSection() {
             className="w-full sm:w-auto"
           >
             <Link href="/donate">
-              <Heart className="size-5" />
+              <Heart className="size-5" aria-hidden="true" />
               {t("ctaDonate")}
             </Link>
           </Button>
@@ -49,7 +49,7 @@ export function HeroSection() {
       {/* Scroll indicator */}
       <div className="absolute bottom-8 flex animate-bounce flex-col items-center text-muted-foreground motion-reduce:animate-none">
         <span className="text-xs">{t("heroScrollHint")}</span>
-        <ChevronDown className="mt-1 size-4" />
+        <ChevronDown className="mt-1 size-4" aria-hidden="true" />
       </div>
     </section>
   );

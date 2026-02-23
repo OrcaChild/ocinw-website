@@ -3,6 +3,7 @@
 // Provides location data for weather and tide lookups.
 // =============================================================================
 
+import { z } from "zod/v4";
 import type { LocationState } from "@/lib/types/geolocation";
 import { ZIP_COORDINATES } from "@/lib/data/socal-beaches";
 
@@ -62,6 +63,17 @@ export function requestBrowserLocation(): Promise<{ latitude: number; longitude:
 
 const REVERSE_GEO_TIMEOUT_MS = 5_000;
 
+/** Zod schema for Nominatim reverse geocoding response */
+const nominatimResponseSchema = z.object({
+  address: z.object({
+    city: z.string().optional(),
+    town: z.string().optional(),
+    village: z.string().optional(),
+    suburb: z.string().optional(),
+    county: z.string().optional(),
+  }).optional(),
+});
+
 /**
  * Reverse-geocode coordinates to a human-readable location name.
  * Returns the city/town name, or null on failure (non-critical).
@@ -82,17 +94,11 @@ export async function reverseGeocode(latitude: number, longitude: number): Promi
 
     if (!response.ok) return null;
 
-    const data = (await response.json()) as {
-      address?: {
-        city?: string;
-        town?: string;
-        village?: string;
-        suburb?: string;
-        county?: string;
-      };
-    };
+    const json: unknown = await response.json();
+    const parsed = nominatimResponseSchema.safeParse(json);
+    if (!parsed.success) return null;
 
-    const addr = data.address;
+    const addr = parsed.data.address;
     if (!addr) return null;
 
     // Prefer city > town > village > suburb > county

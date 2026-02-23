@@ -266,7 +266,11 @@
     "refreshData": "Actualizar datos",
     "noLocationSelected": "Selecciona una ubicación",
     "noLocationMessage": "Elige una playa o ingresa tu código postal para ver las condiciones del clima y las mareas.",
-    "now": "Ahora"
+    "now": "Ahora",
+    "unitMph": "mph",
+    "unitFt": "pie",
+    "unitIn": "pulg",
+    "unitSeconds": "s"
   },
   "error": {
     "notFoundTitle": "Página no encontrada",

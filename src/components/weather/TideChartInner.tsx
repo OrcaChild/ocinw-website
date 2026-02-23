@@ -21,10 +21,12 @@ export type ChartDataPoint = {
 type TideChartInnerProps = {
   chartData: ChartDataPoint[];
   nowLabel: string;
+  locale?: string;
+  unitFt?: string;
 };
 
-export default function TideChartInner({ chartData, nowLabel }: TideChartInnerProps) {
-  const currentTimeLabel = formatTime(new Date().toISOString());
+export default function TideChartInner({ chartData, nowLabel, locale = "en-US", unitFt = "ft" }: TideChartInnerProps) {
+  const currentTimeLabel = formatTime(new Date().toISOString(), locale);
 
   return (
     <ResponsiveContainer width="100%" height={250}>
@@ -47,7 +49,7 @@ export default function TideChartInner({ chartData, nowLabel }: TideChartInnerPr
         />
         <YAxis
           tick={{ fontSize: 11 }}
-          tickFormatter={(v: number) => `${v}ft`}
+          tickFormatter={(v: number) => `${v}${unitFt}`}
           domain={["dataMin - 0.5", "dataMax + 0.5"]}
         />
         <Tooltip
@@ -58,7 +60,7 @@ export default function TideChartInner({ chartData, nowLabel }: TideChartInnerPr
               <div className="rounded-md border bg-popover p-2 text-sm shadow-md">
                 <p className="font-medium">{point.timeLabel}</p>
                 <p className="text-muted-foreground">
-                  {formatTideHeight(point.height)}
+                  {formatTideHeight(point.height, unitFt)}
                 </p>
               </div>
             );

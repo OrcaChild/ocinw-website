@@ -24,7 +24,7 @@ export function LanguageToggle() {
       aria-label={t("languageLabel")}
       className="gap-1.5 text-sm"
     >
-      <Globe className="size-4" />
+      <Globe className="size-4" aria-hidden="true" />
       <span>{t("switchLanguage")}</span>
     </Button>
   );

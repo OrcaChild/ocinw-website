@@ -10,9 +10,9 @@ export function formatTemperature(temp: number): string {
   return `${Math.round(temp)}°F`;
 }
 
-/** Format wind speed in mph */
-export function formatWindSpeed(speed: number): string {
-  return `${Math.round(speed)} mph`;
+/** Format wind speed with configurable unit label */
+export function formatWindSpeed(speed: number, unit: string = "mph"): string {
+  return `${Math.round(speed)} ${unit}`;
 }
 
 /** Format wind direction as cardinal (e.g. 225° → "SW") */
@@ -22,9 +22,9 @@ export function formatWindDirection(degrees: number): string {
   return directions[index] ?? "N";
 }
 
-/** Format tide height in feet with 1 decimal place */
-export function formatTideHeight(feet: number): string {
-  return `${feet.toFixed(1)} ft`;
+/** Format tide height with configurable unit label */
+export function formatTideHeight(feet: number, unit: string = "ft"): string {
+  return `${feet.toFixed(1)} ${unit}`;
 }
 
 /** Format UV index with risk label */
@@ -41,11 +41,11 @@ export function formatPrecipitation(probability: number): string {
   return `${Math.round(probability)}%`;
 }
 
-/** Format wave height in feet */
-export function formatWaveHeight(meters: number): string {
+/** Format wave height with configurable unit label */
+export function formatWaveHeight(meters: number, unit: string = "ft"): string {
   // Open-Meteo Marine API returns meters; convert to feet
   const feet = meters * 3.28084;
-  return `${feet.toFixed(1)} ft`;
+  return `${feet.toFixed(1)} ${unit}`;
 }
 
 /** Format wave period in seconds */
@@ -55,11 +55,11 @@ export function formatWavePeriod(seconds: number): string {
 
 /**
  * Format time from ISO string for display (e.g. "3:00 PM").
- * Uses the user's locale settings.
+ * Accepts locale string for i18n support (defaults to "en-US").
  */
-export function formatTime(isoString: string): string {
+export function formatTime(isoString: string, locale: string = "en-US"): string {
   const date = new Date(isoString);
-  return date.toLocaleTimeString("en-US", {
+  return date.toLocaleTimeString(locale, {
     hour: "numeric",
     minute: "2-digit",
     hour12: true,
@@ -68,10 +68,11 @@ export function formatTime(isoString: string): string {
 
 /**
  * Format date from ISO string for display (e.g. "Mon, Feb 22").
+ * Accepts locale string for i18n support (defaults to "en-US").
  */
-export function formatDate(isoString: string): string {
+export function formatDate(isoString: string, locale: string = "en-US"): string {
   const date = new Date(isoString);
-  return date.toLocaleDateString("en-US", {
+  return date.toLocaleDateString(locale, {
     weekday: "short",
     month: "short",
     day: "numeric",
@@ -80,8 +81,9 @@ export function formatDate(isoString: string): string {
 
 /**
  * Format relative time (e.g. "in 2h 15m" or "45m ago").
+ * Accepts locale to localize "in"/"ago" labels (defaults to "en").
  */
-export function formatRelativeTime(targetTime: string): string {
+export function formatRelativeTime(targetTime: string, locale: string = "en"): string {
   const now = Date.now();
   const target = new Date(targetTime).getTime();
   const diffMs = target - now;
@@ -97,5 +99,9 @@ export function formatRelativeTime(targetTime: string): string {
     timeStr = `${minutes}m`;
   }
 
-  return diffMs > 0 ? `in ${timeStr}` : `${timeStr} ago`;
+  const isSpanish = locale.startsWith("es");
+  if (diffMs > 0) {
+    return isSpanish ? `en ${timeStr}` : `in ${timeStr}`;
+  }
+  return isSpanish ? `hace ${timeStr}` : `${timeStr} ago`;
 }

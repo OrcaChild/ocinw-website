@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Calendar } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import type { DailyForecastEntry } from "@/lib/types/weather";
@@ -20,6 +20,8 @@ type DailyForecastProps = {
 
 export function DailyForecast({ daily }: DailyForecastProps) {
   const t = useTranslations("weather");
+  const locale = useLocale();
+  const unitMph = t("unitMph");
 
   return (
     <Card>
@@ -42,7 +44,7 @@ export function DailyForecast({ daily }: DailyForecastProps) {
                 <WeatherIcon iconName={info.icon} className="size-8 shrink-0 text-ocean-500" aria-hidden="true" />
                 <div className="min-w-0 flex-1">
                   <div className="flex items-baseline justify-between">
-                    <p className="font-medium">{formatDate(day.date)}</p>
+                    <p className="font-medium">{formatDate(day.date, locale)}</p>
                     <p className="text-sm">
                       <span className="font-semibold">{formatTemperature(day.tempMax)}</span>
                       {" / "}
@@ -52,9 +54,9 @@ export function DailyForecast({ daily }: DailyForecastProps) {
                   <div className="mt-1 flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                     <span>{info.description}</span>
                     <span>💧 {formatPrecipitation(day.precipitationProbability)}</span>
-                    <span>💨 {formatWindSpeed(day.windSpeedMax)}</span>
+                    <span>💨 {formatWindSpeed(day.windSpeedMax, unitMph)}</span>
                     <span>
-                      {t("sunrise")} {formatTime(day.sunrise)} · {t("sunset")} {formatTime(day.sunset)}
+                      {t("sunrise")} {formatTime(day.sunrise, locale)} · {t("sunset")} {formatTime(day.sunset, locale)}
                     </span>
                   </div>
                 </div>

@@ -9,14 +9,16 @@
 
 ## Session Index
 
-| Session | Date | Phases Covered | Entries |
-|---------|------|----------------|---------|
-| #1 | 2026-02-21 | Planning (all phases defined) | 6 |
-| #2 | 2026-02-21 | Audit & Improvements (all files) | 1 |
-| #3 | 2026-02-21/22 | Phase 4 — Project Scaffolding + GitHub | 2 |
-| #4 | 2026-02-22 | Phase 5 — Core Website Development | 1 |
-| #5 | 2026-02-22 | Phase 6 — Weather & Tides System | 1 |
-| #6 | 2026-02-22 | Phase 6 — Bug Fixes & UX Improvements | 1 |
+| Session | Date        | Phases Covered                          | Entries |
+| ------- | ----------- | --------------------------------------- | ------- |
+| #1      | 2026-02-21  | Planning (all phases defined)           | 6       |
+| #2      | 2026-02-21  | Audit & Improvements (all files)        | 1       |
+| #3      | 2026-02-21/22| Phase 4 — Project Scaffolding + GitHub  | 2       |
+| #4      | 2026-02-22  | Phase 5 — Core Website Development      | 1       |
+| #5      | 2026-02-22  | Phase 6 — Weather & Tides System        | 1       |
+| #6      | 2026-02-22  | Phase 6 — Bug Fixes & UX Improvements   | 1       |
+| #7      | 2026-02-22  | Pre-Phase 7 — Comprehensive Audit       | 1       |
+| #8      | 2026-02-22  | Grade Remediation (Security/i18n/A11y)  | 1       |
 
 ---
 
@@ -320,6 +322,87 @@
   - [x] `pnpm type-check` — zero errors
   - [x] `pnpm build` — 19 pages
 - **Unblocks:** Weather system is now production-ready for all SoCal locations (coastal + inland)
+
+---
+
+## [AUDIT] 2026-02-22 — Session #7: Pre-Phase 7 Comprehensive Audit
+
+### 1. Full Codebase Audit & Critical Fixes
+- **What:** 8-dimension comprehensive audit of the entire codebase before proceeding to Phase 7, with creation of ProjectHealth.md for ongoing health tracking
+- **Scope:**
+  - **Audit dimensions (8):** Project structure, code quality, security, accessibility, performance, i18n, dependencies, tech debt
+  - **Audit method:** 4 parallel specialist agents covering all 89 source files
+  - **Findings:** 18 issues identified (1 CRITICAL, 3 HIGH, 7 MEDIUM, 7 LOW)
+  - **Fixes applied (4):**
+    1. **CRITICAL — PII logging removed:** `console.log` in `contact.ts:32` and `newsletter.ts:28` logged user email addresses, violating COPPA. Removed entirely.
+    2. **MEDIUM — Non-null assertions eliminated:** Replaced `!` assertions in `supabase-browser.ts` and `supabase-server.ts` with Zod-validated `env` import.
+    3. **MEDIUM — Non-null assertion in geo.ts:** Replaced `return nearest!` with proper undefined check + throw.
+    4. **LOW — Unused dependency removed:** `date-fns` was declared in `package.json` but never imported. Removed via `pnpm remove date-fns`.
+  - **ProjectHealth.md created:** Comprehensive health dashboard with scores across 12 dimensions, full issue tracker (fixed + open + deferred), codebase metrics, security posture, accessibility compliance, i18n completeness, test coverage gap analysis, tech debt register, dependency health, and audit re-run instructions.
+- **Artifacts:**
+  - New: `.claude/ProjectHealth.md`
+  - Modified: `src/app/actions/contact.ts`, `src/app/actions/newsletter.ts`, `src/lib/api/supabase-browser.ts`, `src/lib/api/supabase-server.ts`, `src/lib/utils/geo.ts`, `package.json`, `pnpm-lock.yaml`
+  - Updated: `.claude/Handoff.md`, `.claude/Completed.md`
+- **Acceptance Criteria:**
+  - [x] All 8 audit dimensions reviewed
+  - [x] CRITICAL PII logging issue fixed
+  - [x] Non-null assertions eliminated
+  - [x] Unused dependency removed
+  - [x] `pnpm lint` — zero errors/warnings (post-fix)
+  - [x] `pnpm type-check` — zero TypeScript errors (post-fix)
+  - [x] `pnpm build` — 19 static pages (post-fix)
+  - [x] ProjectHealth.md created with full tracking
+- **Unblocks:** Phase 7+ can proceed with clean health baseline; ongoing health tracking via ProjectHealth.md
+- **Key findings for future phases:**
+  - Test coverage is 0% (CRITICAL gap — infrastructure ready, no tests written)
+  - Server actions need CSRF origin verification before production
+  - Weather formatting has hardcoded `"en-US"` locale (fix in Phase 10)
+  - Weather units (`mph`, `ft`, `in`) not translatable yet (fix in Phase 10)
+
+---
+
+## [REMEDIATION] 2026-02-22 — Session #8: Grade Remediation (Security, i18n, Accessibility)
+
+### 1. All 11 Open Issues Fixed — Security/i18n/Accessibility/Code Quality
+- **What:** Fixed all 11 non-test, non-Supabase issues from Session #7 audit to raise grades across security, i18n, accessibility, and code quality dimensions
+- **Scope:**
+  - **Security (B- → A+):**
+    - O2: Added CSRF origin verification to both server actions (`contact.ts`, `newsletter.ts`). Checks `Origin` header against `NEXT_PUBLIC_SITE_URL`.
+    - O4: Validated Nominatim reverse geocoding response with Zod schema in `geolocation.ts`. Replaced unsafe `as` type assertion with `safeParse`.
+    - O5: Created `src/lib/utils/rate-limit.ts` — in-memory IP-based rate limiter with auto-cleanup. Applied: 3 submissions/hr for contact, 5 attempts/hr for newsletter.
+  - **i18n (B+ → A+):**
+    - O8: Added `locale` parameter to `formatTime()`, `formatDate()`, `formatRelativeTime()`. Updated 8 weather components to pass locale from `useLocale()`. Fixed `formatRelativeTime` to support Spanish "en"/"hace" labels.
+    - O9: Added `unitMph`, `unitFt`, `unitIn`, `unitSeconds` translation keys to both EN/ES. Updated `formatWindSpeed()`, `formatTideHeight()`, `formatWaveHeight()` to accept unit strings. Fixed hardcoded `"in"` in `CurrentConditions.tsx`.
+  - **Accessibility (B- → A):**
+    - O10: Added `<label htmlFor="zip-code-input" className="sr-only">` to `LocationSelector.tsx`. Added `id` to Input. Removed redundant `aria-label`.
+    - O11: Changed `NewsletterForm.tsx` error/duplicate `<p>` elements from conditional rendering to always-in-DOM with `aria-live="polite"` and hidden class toggling. Screen readers now properly announce state changes.
+    - O13: Added `aria-hidden="true"` to 18 decorative Lucide icons across 11 files: `LanguageToggle`, `DesktopNav`, `MobileNav`, `ContactForm`, `MissionCards`, `GetInvolvedCTA`, `HeroSection`, `NewsletterForm`, `WeatherErrorBoundary`, `Sonner` (5 toast icons).
+  - **Code Quality:**
+    - O7: Added in-memory `Set<string>` for duplicate email tracking in `newsletter.ts`. Returns `{ status: "duplicate" }` for already-subscribed emails. Will be replaced by Supabase UNIQUE constraint in Phase 8.
+    - O12: Converted `global-error.tsx` from Tailwind utility classes to inline styles. WHY: global-error replaces the root layout, so Tailwind CSS is not loaded. Colors match OCINW ocean palette (#1a5f9e primary, #f7fafc bg).
+    - O14: Moved Sonner toast CSS custom properties from inline `style` prop to `globals.css` `[data-sonner-toaster]` selector. Cleaner separation of concerns.
+- **Artifacts:**
+  - New: `src/lib/utils/rate-limit.ts`
+  - Modified: `src/app/actions/contact.ts`, `src/app/actions/newsletter.ts`, `src/lib/api/geolocation.ts`, `src/lib/utils/weather-format.ts`, `src/app/globals.css`, `src/app/global-error.tsx`, `src/components/ui/sonner.tsx`, `src/components/shared/NewsletterForm.tsx`, `src/components/weather/LocationSelector.tsx`, `src/components/weather/CurrentConditions.tsx`, `src/components/weather/TideStatus.tsx`, `src/components/weather/TideChart.tsx`, `src/components/weather/TideChartInner.tsx`, `src/components/weather/DailyForecast.tsx`, `src/components/weather/MarineConditionsCard.tsx`, `src/components/weather/WeatherDashboard.tsx`, `src/components/layout/LanguageToggle.tsx`, `src/components/layout/DesktopNav.tsx`, `src/components/layout/MobileNav.tsx`, `src/components/shared/ContactForm.tsx`, `src/components/home/MissionCards.tsx`, `src/components/home/GetInvolvedCTA.tsx`, `src/components/home/HeroSection.tsx`, `src/components/weather/WeatherErrorBoundary.tsx`, `messages/en.json`, `messages/es.json`
+  - Updated: `.claude/ProjectHealth.md`, `.claude/Handoff.md`, `.claude/Completed.md`
+- **Acceptance Criteria:**
+  - [x] CSRF origin verification on all server actions
+  - [x] Nominatim response validated with Zod (no `as` assertion)
+  - [x] Rate limiting: 3/hr contact, 5/hr newsletter
+  - [x] All date/time formatters accept locale parameter
+  - [x] All weather units use translation keys
+  - [x] Zero hardcoded `"en-US"` in codebase
+  - [x] ZIP code input has proper `<label>` element
+  - [x] Newsletter errors use `aria-live="polite"`
+  - [x] All decorative icons have `aria-hidden="true"`
+  - [x] Global error page matches OCINW ocean theme
+  - [x] Sonner styles in CSS, not inline
+  - [x] Duplicate newsletter signup detected
+  - [x] `pnpm lint` — zero errors/warnings
+  - [x] `pnpm type-check` — zero TypeScript errors
+  - [x] `pnpm build` — 19 static pages
+- **Unblocks:** Security, i18n, accessibility, and code quality dimensions at A/A+ level. Only test coverage (O1) and Supabase integration (O3) remain before Phase 7+.
+- **ProjectHealth.md updated:** Overall score 7.1/10 → 8.0/10. Open issues reduced from 14 to 3.
 
 ---
 

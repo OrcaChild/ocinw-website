@@ -130,7 +130,7 @@ export function DesktopNav() {
         <NavigationMenuItem>
           <Button asChild size="sm" className="bg-accent text-accent-foreground hover:bg-accent/90">
             <Link href="/donate">
-              <Heart className="size-4" />
+              <Heart className="size-4" aria-hidden="true" />
               {t("donate")}
             </Link>
           </Button>

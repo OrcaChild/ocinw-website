@@ -49,7 +49,7 @@ export function MissionCards() {
                     <div
                       className={`mb-4 flex size-14 items-center justify-center rounded-full ${mission.bg}`}
                     >
-                      <Icon className={`size-7 ${mission.color}`} />
+                      <Icon className={`size-7 ${mission.color}`} aria-hidden="true" />
                     </div>
                     <h3 className="font-heading text-xl font-semibold group-hover:text-primary">
                       {t(mission.titleKey)}

@@ -39,7 +39,7 @@ export function findNearestStation(
   longitude: number,
   stations: TideStation[],
 ): TideStation {
-  let nearest = stations[0];
+  let nearest: TideStation | undefined;
   let minDist = Infinity;
 
   for (const station of stations) {
@@ -50,6 +50,9 @@ export function findNearestStation(
     }
   }
 
-  // nearest is always assigned since stations is non-empty
-  return nearest!;
+  if (!nearest) {
+    throw new Error("No tide stations available");
+  }
+
+  return nearest;
 }

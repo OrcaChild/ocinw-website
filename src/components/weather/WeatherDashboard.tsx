@@ -6,7 +6,7 @@
 // =============================================================================
 
 import { useState, useCallback } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { RefreshCw, MapPin } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -27,6 +27,7 @@ import { StationSwitcher } from "./StationSwitcher";
 
 export function WeatherDashboard() {
   const t = useTranslations("weather");
+  const locale = useLocale();
   const geo = useGeolocation();
   const weather = useWeather(geo.latitude, geo.longitude);
 
@@ -104,7 +105,7 @@ export function WeatherDashboard() {
           <div className="flex items-center justify-end gap-2">
             <span className="text-xs text-muted-foreground">
               {t("lastUpdated", {
-                time: new Date(weather.data.fetchedAt).toLocaleTimeString("en-US", {
+                time: new Date(weather.data.fetchedAt).toLocaleTimeString(locale, {
                   hour: "numeric",
                   minute: "2-digit",
                 }),

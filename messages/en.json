@@ -266,7 +266,11 @@
     "refreshData": "Refresh Data",
     "noLocationSelected": "Select a Location",
     "noLocationMessage": "Choose a beach or enter your ZIP code to see weather and tide conditions.",
-    "now": "Now"
+    "now": "Now",
+    "unitMph": "mph",
+    "unitFt": "ft",
+    "unitIn": "in",
+    "unitSeconds": "s"
   },
   "error": {
     "notFoundTitle": "Page Not Found",

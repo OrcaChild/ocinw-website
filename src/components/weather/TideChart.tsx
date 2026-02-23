@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Waves } from "lucide-react";
@@ -26,6 +26,8 @@ type TideChartProps = {
 
 export function TideChart({ tides }: TideChartProps) {
   const t = useTranslations("weather");
+  const locale = useLocale();
+  const unitFt = t("unitFt");
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -47,7 +49,7 @@ export function TideChart({ tides }: TideChartProps) {
 
         const data: ChartDataPoint[] = filtered.map((p) => ({
           time: p.time,
-          timeLabel: formatTime(p.time),
+          timeLabel: formatTime(p.time, locale),
           height: Math.round(p.height * 100) / 100,
         }));
 
@@ -56,7 +58,7 @@ export function TideChart({ tides }: TideChartProps) {
         // Fallback: use hi/lo predictions as chart points
         const data: ChartDataPoint[] = tides.predictions.slice(0, 8).map((p) => ({
           time: p.time,
-          timeLabel: formatTime(p.time),
+          timeLabel: formatTime(p.time, locale),
           height: Math.round(p.height * 100) / 100,
         }));
         if (!cancelled) setChartData(data);
@@ -67,7 +69,7 @@ export function TideChart({ tides }: TideChartProps) {
 
     void loadHourly();
     return () => { cancelled = true; };
-  }, [tides.station.id, tides.predictions]);
+  }, [tides.station.id, tides.predictions, locale]);
 
   // Hi/Lo annotations
   const annotations = tides.predictions
@@ -97,7 +99,7 @@ export function TideChart({ tides }: TideChartProps) {
           </p>
         ) : (
           <div aria-label={t("tideChartLabel")} role="img">
-            <LazyChart chartData={chartData} nowLabel={t("now")} />
+            <LazyChart chartData={chartData} nowLabel={t("now")} locale={locale} unitFt={unitFt} />
 
             {/* Hi/Lo annotations below chart */}
             {annotations.length > 0 ? (
@@ -112,7 +114,7 @@ export function TideChart({ tides }: TideChartProps) {
                     }`}
                   >
                     {a.type === "H" ? t("highTide") : t("lowTide")}{" "}
-                    {formatTideHeight(a.height)} at {formatTime(a.time)}
+                    {formatTideHeight(a.height, unitFt)} at {formatTime(a.time, locale)}
                   </span>
                 ))}
               </div>

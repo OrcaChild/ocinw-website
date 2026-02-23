@@ -94,8 +94,12 @@ export function LocationSelector({
         {/* ZIP Code Input */}
         <form onSubmit={handleZipSubmit} className="flex gap-2">
           <div className="relative flex-1">
+            <label htmlFor="zip-code-input" className="sr-only">
+              {t("zipPlaceholder")}
+            </label>
             <Search className="absolute left-3 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
             <Input
+              id="zip-code-input"
               type="text"
               inputMode="numeric"
               pattern="\d{5}"
@@ -104,7 +108,6 @@ export function LocationSelector({
               onChange={(e) => setZip(e.target.value.replace(/\D/g, ""))}
               placeholder={t("zipPlaceholder")}
               className="pl-9"
-              aria-label={t("zipPlaceholder")}
             />
           </div>
           <Button type="submit" variant="secondary" disabled={zip.length !== 5}>

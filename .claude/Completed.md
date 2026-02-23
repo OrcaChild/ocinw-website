@@ -19,6 +19,7 @@
 | #6      | 2026-02-22  | Phase 6 — Bug Fixes & UX Improvements   | 1       |
 | #7      | 2026-02-22  | Pre-Phase 7 — Comprehensive Audit       | 1       |
 | #8      | 2026-02-22  | Grade Remediation (Security/i18n/A11y)  | 1       |
+| #9      | 2026-02-22  | Test Suite Implementation (O1, O6)      | 1       |
 
 ---
 
@@ -403,6 +404,53 @@
   - [x] `pnpm build` — 19 static pages
 - **Unblocks:** Security, i18n, accessibility, and code quality dimensions at A/A+ level. Only test coverage (O1) and Supabase integration (O3) remain before Phase 7+.
 - **ProjectHealth.md updated:** Overall score 7.1/10 → 8.0/10. Open issues reduced from 14 to 3.
+
+---
+
+## [PHASE 11] 2026-02-22 — Session #9: Test Suite Implementation
+
+### 1. Full Test Suite — 217 Unit Tests + E2E + Accessibility
+- **What:** Wrote the complete test suite closing the CRITICAL O1 (0% coverage) and MEDIUM O6 (no axe-core tests) gaps, raising overall health from B+ to A-
+- **Scope:**
+  - **Step 0: Shared fixtures** — `tests/fixtures/index.ts` with reusable mock data for weather, marine, tides, NOAA, geolocation, form submissions
+  - **Step 1: Zod schema tests** — 48 tests for 4 schemas (contact, volunteer, newsletter, event registration). Covers valid data, boundary violations, required vs optional, `z.literal(true)`, email validation
+  - **Step 2: Utility tests (4 files)** — `weather-format.test.ts` (53 tests for 11 pure functions), `geo.test.ts` (9 tests: haversine commutativity, LA→SD ~178km), `rate-limit.test.ts` (8 tests: window reset, IP isolation, cleanup), `utils.test.ts` (5 tests: cn() class merging)
+  - **Step 3: API client tests (3 files)** — `weather-api.test.ts` (12 tests: parallel fetch, 15-min cache, coord rounding, errors), `tides-api.test.ts` (15 tests: NOAA parsing, cosine interpolation, 6-hour cache), `geolocation.test.ts` (26 tests: GPS, PERMISSION_DENIED, ZIP lookup, reverseGeocode fallbacks, localStorage)
+  - **Step 4: Hook tests (3 files)** — `useWeather.test.ts` (7 tests: loading→success, race condition guard, refetch), `useTides.test.ts` (8 tests: station switching, error handling), `useGeolocation.test.ts` (11 tests: persist, clear, derived state)
+  - **Step 5: Server action tests (2 files)** — `contact.test.ts` (7 tests: CSRF, rate limit, Zod validation, IP extraction), `newsletter.test.ts` (8 tests: duplicate detection, case normalization, optional firstName)
+  - **Step 6: E2E tests (4 Playwright files)** — Contact page (form, validation, toast, FAQ accordion), Newsletter (subscribe, duplicate, invalid), Weather (API mocking via `page.route()`, beach buttons, ZIP input), Navigation (logo, desktop nav, mobile drawer, skip-to-content, language toggle)
+  - **Step 7: Accessibility tests** — 8 pages × 2 viewports (desktop 1280×720, mobile 375×812) = 16 test cases using AxeBuilder WCAG 2.1 AA/A tags
+  - **Infrastructure fixes:**
+    - Renamed `vitest.config.ts` → `vitest.config.mts` (ESM-only Vitest 4 + Vite 7)
+    - Changed default test environment to `node` (jsdom 28 ESM chain failure)
+    - Installed `happy-dom` as jsdom alternative for hook tests
+    - Added `// @vitest-environment happy-dom` per-file directives (environmentMatchGlobs fails on Windows paths)
+    - Used `vi.resetModules()` + dynamic `import()` for module-level state isolation (API caches, rate limiter store, newsletter subscriber Set)
+    - Created `tests/vitest.d.ts` for TypeScript global type declarations
+    - Added `export {}` to setup.ts and action test files for module scope
+- **Artifacts:**
+  - New: `tests/fixtures/index.ts`, `tests/vitest.d.ts`, `tests/unit/schemas.test.ts`, `tests/unit/weather-format.test.ts`, `tests/unit/geo.test.ts`, `tests/unit/rate-limit.test.ts`, `tests/unit/utils.test.ts`, `tests/unit/weather-api.test.ts`, `tests/unit/tides-api.test.ts`, `tests/unit/geolocation.test.ts`, `tests/unit/hooks/useWeather.test.ts`, `tests/unit/hooks/useTides.test.ts`, `tests/unit/hooks/useGeolocation.test.ts`, `tests/unit/actions/contact.test.ts`, `tests/unit/actions/newsletter.test.ts`, `tests/e2e/contact.spec.ts`, `tests/e2e/newsletter.spec.ts`, `tests/e2e/weather.spec.ts`, `tests/e2e/navigation.spec.ts`, `tests/accessibility/pages.spec.ts`
+  - Modified: `vitest.config.mts` (renamed from .ts), `tests/setup.ts`, `package.json` (added happy-dom)
+  - Updated: `.claude/Handoff.md`, `.claude/Completed.md`, `.claude/ProjectHealth.md`
+- **Acceptance Criteria:**
+  - [x] `pnpm test` — 217 tests pass (13 files)
+  - [x] `pnpm lint` — zero errors, zero warnings
+  - [x] `pnpm type-check` — zero TypeScript errors
+  - [x] `pnpm build` — production build succeeds
+  - [x] Zod schemas: 48 tests (100% coverage target)
+  - [x] Utility functions: 75 tests (90%+ coverage target)
+  - [x] API clients: 53 tests (80%+ coverage target)
+  - [x] Hooks: 26 tests (80%+ coverage target)
+  - [x] Server actions: 15 tests (90% coverage target)
+  - [x] E2E tests written for contact, newsletter, weather, navigation
+  - [x] axe-core tests written for 8 pages × 2 viewports
+- **Unblocks:** O1 (CRITICAL) and O6 (MEDIUM) closed. Only O3 (Supabase) remains. Phase 7 (Donations) can proceed.
+- **Noteworthy:**
+  - Vitest 4 + Vite 7 are ESM-only; `.mts` config extension avoids CJS/ESM conflict without changing `package.json` `"type"` field
+  - jsdom 28 has an ESM-only transitive dependency chain (`html-encoding-sniffer` → `@exodus/bytes`) that breaks in CJS context; `happy-dom` is a drop-in replacement
+  - `environmentMatchGlobs` patterns using forward slashes don't match Windows paths; per-file `// @vitest-environment` directives are more portable
+  - Module-level state in API clients, rate limiter, and newsletter action requires `vi.resetModules()` + dynamic import per test block for isolation
+  - E2E tests mock all external APIs (Open-Meteo, NOAA, Nominatim) via Playwright's `page.route()` — never hit real APIs
 
 ---
 

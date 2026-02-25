@@ -23,6 +23,7 @@
 | #10     | 2026-02-24  | Carlsbad Coastal Visual Redesign         | 1       |
 | #11     | 2026-02-24  | Phase 7 Donations + Phase 8 Volunteers   | 2       |
 | #12     | 2026-02-24  | Phase 9 — Education & Conservation Content| 1       |
+| #13     | 2026-02-25  | VPS Deployment + Velite Fix + Security    | 2       |
 
 ---
 

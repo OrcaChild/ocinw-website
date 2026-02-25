@@ -12,7 +12,9 @@ class VeliteWebpackPlugin {
       if (VeliteWebpackPlugin.started) return;
       VeliteWebpackPlugin.started = true;
       const dev = compiler.constructor.name === "Compiler";
-      const { build } = await import("velite");
+      // Use Function constructor to prevent Next.js CJS compilation
+      // from converting dynamic import() to require() — Velite is ESM-only
+      const { build } = await (Function('return import("velite")')() as Promise<typeof import("velite")>);
       await build({ watch: dev, clean: !dev });
     });
   }

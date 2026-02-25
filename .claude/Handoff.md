@@ -1,14 +1,14 @@
 # Handoff — Orca Child in the Wild
 
 > **Session Continuity Document**
-> Last updated: 2026-02-24
-> Session: #12 (Phase 9 — Education & Conservation Content)
+> Last updated: 2026-02-25
+> Session: #13 (VPS Deployment + Velite Fix)
 
 ---
 
 ## At A Glance
 
-**Current Phase:** Phase 9 COMPLETE | **Blockers:** 0 critical (1 remaining: O3 Supabase) | **Next Action:** Phase 10 (Events System) or commit Phase 9
+**Current Phase:** Phase 9 COMPLETE, VPS DEPLOYED | **Blockers:** 0 critical (1 remaining: O3 Supabase) | **Next Action:** Phase 10 (Events System), commit Phase 9, or run remaining security hardening commands
 
 ---
 
@@ -28,104 +28,94 @@
 | Phase 10 — Events System       | NOT STARTED     | Phase 5                              | Events listing, detail, registration, calendar            |
 | Phase 11 — Testing             | **COMPLETE**    | Phase 5+                             | 217 unit tests, 4 E2E suites, axe-core a11y tests        |
 | Phase 12 — Pre-Launch          | NOT STARTED     | Phase 5-11                           | All features must be built                                |
-| Phase 13 — Launch              | NOT STARTED     | Phase 12                             | Pre-launch checklist must pass                            |
+| Phase 13 — Launch              | IN PROGRESS     | Phase 12                             | VPS deployed, HTTPS live                                  |
 | Phase 14 — Post-Launch         | NOT STARTED     | Phase 13                             | —                                                         |
 
 ---
 
 ## Currently In-Progress
 
-Nothing — Phase 9 is complete, ready for commit and next phase.
+Nothing active — deployment complete, ready for next phase.
 
 ---
 
-## What Was Completed This Session (Session #12)
+## What Was Completed This Session (Session #13)
+
+### Bug Fix — Velite ESM Import
+- Fixed `Internal Server Error` on dev server startup
+- **Root cause:** Velite 0.3.1 is ESM-only, but Next.js compiles `next.config.ts` to CJS, converting `import()` to `require()`
+- **Fix:** Used `Function` constructor pattern in `next.config.ts` to prevent static analysis from converting the dynamic import
+- File changed: `next.config.ts` (line 15-17)
+
+### VPS Deployment — Full Stack Setup
+- **Server:** Hostinger KVM 1, Ubuntu 24.04 LTS, 3.8GB RAM, 48GB disk
+- **IP:** 72.62.200.30
+- **Domain:** `orcachildinthewild.com` (DNS A record pointed from Wix)
+- **HTTPS:** Let's Encrypt SSL via Certbot (expires 2026-05-26, auto-renews)
+
+**Infrastructure installed:**
+- Node.js v22.22.0
+- pnpm 10.30.2
+- PM2 6.0.14 (process manager)
+- Nginx 1.24.0 (reverse proxy)
+- Certbot 2.9.0 (SSL)
+
+**Deployment details:**
+- Repo cloned to `/home/orcachild/ocinw-website/`
+- App built (89 static pages)
+- PM2 manages Next.js process (`ocinw`)
+- Nginx reverse proxies port 80/443 → localhost:3000
+- HTTP auto-redirects to HTTPS
+
+### VPS Security Hardening
+- SSH root login disabled (`PermitRootLogin no`)
+- SSH on non-standard port 2222 (systemd socket override)
+- SSH restricted to `orcachild` user only (`AllowUsers orcachild`)
+- SSH MaxAuthTries 3
+- UFW firewall: deny-by-default, only 80/443/2222 open
+- Fail2Ban active monitoring SSH
+- Unattended security upgrades enabled
+- Nginx security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy)
+- Server version hidden (`server_tokens off`)
+- Hidden files blocked in Nginx
+- Port 3000 blocked externally by UFW
+
+### Security — Remaining Hardening (run as root in web console)
+```
+echo "PasswordAuthentication no" > /etc/ssh/sshd_config.d/99-security.conf && systemctl restart ssh
+usermod -s /usr/sbin/nologin ubuntu
+ufw delete allow 22/tcp
+```
+
+### Local Codebase Fixes
+- Added `ssh.md` to `.gitignore` (SSH private key was in repo directory)
+- SSH key moved to `~/.ssh/orcachild_vps` with proper permissions
+
+---
+
+## What Was Completed Last Session (Session #12)
 
 ### Phase 9 — Education & Conservation Content (COMPLETE)
-
-**Infrastructure — Velite MDX Content Pipeline:**
-- Installed Velite 0.3.1 as build-time MDX processor
-- Created `velite.config.ts` with 4 collections: articles (7 fields), species (12 fields), ecosystems (10 fields), projects (14 fields)
-- Each collection uses Zod-based frontmatter schemas matching Phase 9 spec
-- VeliteWebpackPlugin integration in `next.config.ts` for seamless dev/build
-- `#content` TypeScript path alias in `tsconfig.json` → `.velite/` generated output
-- `.gitignore` updated to exclude `.velite/`
-- Build script: `"velite && next build"` in `package.json`
-
-**MDX Content Files (23 total):**
-- 7 articles: welcome-to-ocinw, why-southern-california-ocean-needs-you, what-happens-at-a-beach-cleanup, five-things-help-oceans, understanding-tides-beginners-guide, marine-protected-areas-la-to-san-diego, citizen-science-for-kids
-- 10 species: orca, gray whale, sea lion, garibaldi, giant kelp, purple sea urchin, brown pelican, green sea turtle, leopard shark, grunion
-- 4 ecosystems: kelp forests, tide pools, coastal wetlands & estuaries, sandy beaches
-- 2 projects: SoCal Beach Cleanup Program, Carlsbad Lagoon Water Quality Watch
-
-**Shared Components:**
-- `MDXContent.tsx` — client component evaluating Velite's compiled MDX function strings
-- `src/lib/content.ts` — 15+ typed query helpers (getArticles, getSpecies, getEcosystems, getProjects, etc.)
-- `src/lib/types/content.ts` — re-exports Velite-generated types
-
-**Education Hub Components (4 card components):**
-- `ArticleCard.tsx` — article listing card with image, category, reading time
-- `SpeciesCard.tsx` — species card with IUCN conservation status badge
-- `ConservationStatusBadge.tsx` — color-coded LC/NT/VU/EN/CR badges
-- `EcosystemCard.tsx` — ecosystem card with type badge, location, key species tags
-
-**Education Hub Pages (8 routes × 2 locales = 16 pages):**
-- `/learn` — landing page with hero, 4 category cards
-- `/learn/articles` — article listing grid
-- `/learn/articles/[slug]` — article detail with MDX body, tags, related articles
-- `/learn/species` — species listing grid
-- `/learn/species/[slug]` — species detail with sidebar (habitat, viewing locations, fun facts, threats, how to help)
-- `/learn/ecosystems` — ecosystem listing grid
-- `/learn/ecosystems/[slug]` — ecosystem detail with sidebar (locations, key species, threats, conservation efforts)
-- `/learn/resources` — curated external resource links (NOAA, CCC, Academic, Youth, Local)
-
-**Conservation Hub Components (1 card component):**
-- `ProjectCard.tsx` — project card with status color, type, location, impact metrics
-
-**Conservation Hub Pages (4 routes × 2 locales = 8 pages):**
-- `/conservation` — landing page with hero, quick nav cards, active projects grid
-- `/conservation/projects` — project listing
-- `/conservation/projects/[slug]` — project detail with impact metrics, MDX body, partners, volunteer CTA
-- `/conservation/impact` — impact dashboard with 6 metrics (hardcoded, ready for Supabase)
-
-**Translation Keys Added:**
-- `learn` namespace: ~80 keys (EN + ES) — page titles, filters, card labels, resource categories
-- `conservation` namespace: ~55 keys (EN + ES) — page titles, status labels, impact metrics, project details
-- `nav` namespace: added `educationResources` key (EN + ES)
-
-**Navigation Updates:**
-- Added `/learn/resources` link to DesktopNav and MobileNav
-- Removed `/conservation/events` link (page doesn't exist yet — Phase 10)
-
-**Quality Gates — All Pass:**
-- `pnpm lint` — zero errors, zero warnings
-- `pnpm type-check` — zero TypeScript errors
-- `pnpm build` — 89 static pages generated (up from 27)
-- `pnpm test` — 217 tests pass (13 files)
-
----
-
-## What Was Completed Last Session (Session #11)
-
-### Phase 7 — Donation System + Phase 8 — Volunteer System
-
 See Completed.md for full details.
 
 ---
 
 ## What Should Be Done Next
 
-### Option A: Commit Phase 9 + Push to GitHub
-All Phase 9 code is ready for commit. Stage all new/modified files and push.
+### Option A: Commit Phase 9 + Velite Fix + Push to GitHub
+Phase 9 code and the `next.config.ts` Velite fix are ready for commit.
 
 ### Option B: Phase 10 — Events System
-Events listing, detail pages, event registration, calendar view. Requires `/conservation/events` page (nav link already removed until built).
+Events listing, detail pages, event registration, calendar view.
 
-### Option C: Add Tests for Phase 9 Content
-Write unit tests for content query helpers (`getArticles`, `getSpecies`, etc.) and component rendering tests for the new card components.
+### Option C: Run Remaining Security Hardening
+3 root commands in the web console (see above).
 
-### Option D: Swap Stock Photos for Originals
-User is putting together original photos. When ready, drop them into `public/images/` matching current filenames.
+### Option D: PM2 Startup on Boot
+Run this as root in web console so the app survives server reboots:
+```
+env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u orcachild --hp /home/orcachild
+```
 
 ### Remaining Open Issues (1)
 
@@ -135,69 +125,81 @@ User is putting together original photos. When ready, drop them into `public/ima
 
 ---
 
+## VPS Connection Details
+
+| Detail | Value |
+|--------|-------|
+| Host | 72.62.200.30 |
+| SSH Port | 2222 |
+| SSH User | orcachild |
+| SSH Key | `~/.ssh/orcachild_vps` |
+| SSH Command | `ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30` |
+| Web Console | Hostinger hPanel → VPS → Terminal |
+| App Path | `/home/orcachild/ocinw-website/` |
+| PM2 Process | `ocinw` (ID 1) |
+| Domain | `orcachildinthewild.com` |
+| SSL Expiry | 2026-05-26 (auto-renews) |
+
+### Deployment Workflow (for future updates)
+```bash
+# SSH into server
+ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30
+
+# Pull latest, install deps, rebuild, restart
+cd ~/ocinw-website && git pull && pnpm install && pnpm build && pm2 restart ocinw
+```
+
+---
+
+## Hostinger Firewall (hPanel)
+
+| Port | Protocol | Purpose |
+|------|----------|---------|
+| 80   | TCP      | HTTP (redirects to HTTPS) |
+| 443  | TCP      | HTTPS |
+| 2222 | TCP      | SSH |
+
+---
+
+## DNS (Wix)
+
+| Type | Host | Value |
+|------|------|-------|
+| A | orcachildinthewild.com | 72.62.200.30 |
+| CNAME | www.orcachildinthewild.com | orcachildinthewild.com |
+
+---
+
 ## Repository
 
 - **GitHub:** `https://github.com/OrcaChild/ocinw-website`
 - **Branch:** `main`
 - **Git config:** user.name="Orca Child", user.email="orcachildinthewild@gmail.com"
-- **GitHub CLI:** installed (`gh` v2.87.2)
 
 ---
 
 ## Blockers & Open Questions
 
-1. **Domain name not yet registered** — `orcachildinthewild.org` should be secured before deployment
-2. **Supabase project not created** — need free-tier project for DB features
-3. **Zeffy account not created** — requires registered nonprofit status for full donation setup
-4. **No logo yet** — using Waves icon (lucide) as placeholder
-5. **Original photos in progress** — user assembling real photos to replace stock placeholders
+1. **Supabase project not created** — need free-tier project for DB features
+2. **Zeffy account not created** — requires registered nonprofit status for full donation setup
+3. **No logo yet** — using Waves icon (lucide) as placeholder
+4. **Original photos in progress** — user assembling real photos to replace stock placeholders
+5. **PM2 startup on boot not configured** — needs root command (see Option D above)
 
 *None of these block Phase 10.*
 
 ---
 
-## Infrastructure Free-Tier Limits
+## Decisions Made This Session
 
-| Service    | Free Tier Limit          | Action If Exceeded                                   |
-| ---------- | ------------------------ | ---------------------------------------------------- |
-| Supabase   | 500MB database, 50K MAU  | Upgrade to Pro ($25/mo) or optimize queries          |
-| Vercel     | 100GB bandwidth/month    | Enable edge caching, optimize images                 |
-| Resend     | 100 emails/day           | Batch newsletter sends across days                   |
-| Open-Meteo | 10,000 requests/day      | Increase cache duration, add stale-while-revalidate  |
-
----
-
-## Decisions Made
-
-### Implementation Decisions (Sessions #2-12)
-
-| Decision            | Choice               | Why                                     | Session |
-| ------------------- | -------------------- | --------------------------------------- | ------- |
-| i18n in Phase 4     | Moved from Phase 10  | Build with translation keys from day one| #2      |
-| Background checks   | Sterling Volunteers  | Nonprofit rates, youth-org specialist   | #2      |
-| Newsletter delivery | Resend Broadcast     | Already in stack, free tier sufficient  | #2      |
-| GitHub org          | OrcaChild            | Matches brand name                      | #3      |
-| Form server actions | Stubbed (no Supabase)| Validation works; DB insert later       | #4      |
-| Security headers    | Dev/prod CSP split   | Dev needs unsafe-eval for HMR           | #4      |
-| Weather units       | Fahrenheit/mph/inches| SoCal audience uses imperial units      | #5      |
-| WeatherPreview      | Server component     | Keep homepage lightweight               | #5      |
-| Hook state pattern  | useReducer           | Avoids eslint set-state-in-effect       | #5      |
-| Rate limiting       | In-memory Map        | No external deps, sufficient for free tier | #8   |
-| Global error styles | Inline CSS           | Tailwind unavailable when root layout fails | #8   |
-| Sonner styles       | CSS selector          | Cleaner than inline `style` prop        | #8      |
-| Vitest config       | .mts extension       | ESM-only Vitest 4 + Vite 7 compat      | #9      |
-| DOM test env        | happy-dom            | jsdom 28 ESM chain incompatibility      | #9      |
-| Test env directive  | Per-file comments    | environmentMatchGlobs fails on Windows  | #9      |
-| Module isolation    | vi.resetModules()    | API clients/actions have module-level state | #9   |
-| Visual identity     | Carlsbad Coastal     | Warm, inviting SoCal feel — not corporate| #10    |
-| Image approach      | Full-bleed + overlays| Modern 2026 — no boxy square layouts    | #10     |
-| Stock photos        | Unsplash placeholders| $0 cost, user will swap in originals    | #10     |
-| Dark mode warmth    | Warm charcoal        | California evening, not submarine       | #10     |
-| Wave dividers       | SVG organic shapes   | No hard edges between sections          | #10     |
-| MDX content engine  | Velite 0.3.1         | Build-time processing, typed schemas, Zod-based | #12 |
-| MDX rendering       | new Function() + JSX runtime | Velite compiles MDX to function strings | #12 |
-| Content queries     | Typed helper functions | Centralized in src/lib/content.ts      | #12     |
-| Events nav link     | Removed until Phase 10 | Avoid 404 on non-existent page        | #12     |
+| Decision | Choice | Why | Session |
+| -------- | ------ | --- | ------- |
+| Velite import fix | Function constructor | Prevents CJS compilation from converting ESM import() | #13 |
+| Hosting | Hostinger VPS (not Vercel) | User already has VPS, more control, $0 additional cost | #13 |
+| SSH port | 2222 | Port 443 needed for HTTPS, 22 was the old default | #13 |
+| Domain DNS | Wix A record → VPS IP | Simplest approach, keeps domain at Wix for now | #13 |
+| Process manager | PM2 | Industry standard, auto-restart, easy deployment | #13 |
+| Reverse proxy | Nginx | Handles SSL, security headers, static caching | #13 |
 
 ---
 
@@ -208,83 +210,20 @@ User is putting together original photos. When ready, drop them into `public/ima
 - Working directory: `c:\OrcaChild`
 - Node.js: v20.18.0
 - pnpm: 10.10.0
-- GitHub CLI: v2.87.2 (installed via winget)
-- **Note:** Turbopack crashes on this machine (`0xc0000142` DLL init failure). Use `pnpm dev --webpack` for dev server.
+- GitHub CLI: v2.87.2
+- **Note:** Turbopack crashes on this machine. Use `pnpm dev --webpack` for dev server.
+- **VPS SSH:** `ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30`
 
 ---
 
-### Key Versions
+### Key Versions (Local Dev)
 - Next.js 16.1.6 | React 19.2.3 | TypeScript 5.9.3
 - Tailwind CSS v4.2.0 | shadcn/ui (latest) | Velite 0.3.1
 - Zod v4.3.6 | next-intl v4.8.3
 - Vitest 4.0.18 | Playwright 1.58.2 | happy-dom 20.7.0
 - pnpm 10.10.0 | Node.js v20.18.0
 
----
-
-## Content Inventory (Phase 9)
-
-| Type | Count | Location |
-|------|-------|----------|
-| Articles | 7 | `src/content/articles/` |
-| Species Profiles | 10 | `src/content/species/` |
-| Ecosystem Guides | 4 | `src/content/ecosystems/` |
-| Conservation Projects | 2 | `src/content/projects/` |
-| **Total MDX files** | **23** | — |
-
----
-
-## Page Count Summary
-
-| Category | Routes | Static Pages (EN+ES) |
-|----------|--------|---------------------|
-| Core (home, about, contact, privacy, terms) | 6 | 12 |
-| Weather & Tides | 1 | 2 |
-| Donate | 2 | 4 |
-| Volunteer | 2 | 4 |
-| Learn Hub | 8 + slug pages | ~40 |
-| Conservation Hub | 4 + slug pages | ~12 |
-| **Total** | — | **89** |
-
----
-
-## Image Library (public/images/)
-
-| File | Category | Size | Source | Replace With |
-|------|----------|------|--------|--------------|
-| `hero/coastal-golden-hour.jpg` | Hero background | 290KB | Unsplash | Original Carlsbad coastal photo |
-| `activities/tide-pool.jpg` | Mission: Protect | 112KB | Unsplash | Real SoCal tide pool photo |
-| `activities/kids-exploring.jpg` | Mission: Educate | 101KB | Unsplash | Jordyn + team exploring |
-| `activities/beach-cleanup.jpg` | Events thumbnail | 82KB | Unsplash | Real OCINW cleanup event |
-| `activities/volunteers-cleanup.jpg` | Volunteer CTA bg | 185KB | Unsplash | Real OCINW volunteer photo |
-| `community/beach-community.jpg` | Mission: Connect | 87KB | Unsplash | OCINW community gathering |
-| `marine/ocean-wave.jpg` | Articles thumbnail | 185KB | Unsplash | SoCal ocean photo |
-| `marine/sea-turtle.jpg` | Species thumbnail | 62KB | Unsplash | Local marine life photo |
-| `landscapes/ocean-sunset.jpg` | Donate CTA bg | 287KB | Unsplash | Carlsbad sunset |
-| `textures/sand-ripples.jpg` | Weather section bg | 129KB | Unsplash | Original beach texture |
-
----
-
-## Test Suite Inventory
-
-| Category | File | Tests |
-|----------|------|-------|
-| Schemas | `tests/unit/schemas.test.ts` | 48 |
-| Formatters | `tests/unit/weather-format.test.ts` | 53 |
-| Geo | `tests/unit/geo.test.ts` | 9 |
-| Rate Limit | `tests/unit/rate-limit.test.ts` | 8 |
-| Utils | `tests/unit/utils.test.ts` | 5 |
-| Weather API | `tests/unit/weather-api.test.ts` | 12 |
-| Tides API | `tests/unit/tides-api.test.ts` | 15 |
-| Geolocation | `tests/unit/geolocation.test.ts` | 26 |
-| useWeather | `tests/unit/hooks/useWeather.test.ts` | 7 |
-| useTides | `tests/unit/hooks/useTides.test.ts` | 8 |
-| useGeolocation | `tests/unit/hooks/useGeolocation.test.ts` | 11 |
-| Contact Action | `tests/unit/actions/contact.test.ts` | 7 |
-| Newsletter Action | `tests/unit/actions/newsletter.test.ts` | 8 |
-| **Total** | **13 files** | **217 unit tests** |
-| E2E: Contact | `tests/e2e/contact.spec.ts` | 6 |
-| E2E: Newsletter | `tests/e2e/newsletter.spec.ts` | 4 |
-| E2E: Weather | `tests/e2e/weather.spec.ts` | 6 |
-| E2E: Navigation | `tests/e2e/navigation.spec.ts` | 8 |
-| Accessibility | `tests/accessibility/pages.spec.ts` | 16 |
+### Key Versions (VPS)
+- Node.js v22.22.0 | pnpm 10.30.2 | PM2 6.0.14
+- Nginx 1.24.0 | Certbot 2.9.0
+- Ubuntu 24.04 LTS | Kernel 6.8.0-101-generic

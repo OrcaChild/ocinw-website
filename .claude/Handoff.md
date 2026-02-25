@@ -2,96 +2,101 @@
 
 > **Session Continuity Document**
 > Last updated: 2026-02-25
-> Session: #14 (Production Bug Fixes — MDX CSP + Newsletter CSRF)
+> Session: #15 (Security Audit + Hardening + CSRF www Fix)
 
 ---
 
 ## At A Glance
 
-**Current Phase:** Phase 9 COMPLETE, VPS DEPLOYED + LIVE | **Blockers:** 0 critical (1 remaining: O3 Supabase) | **Next Action:** Phase 10 (Events System) or remaining security hardening
+**Current Phase:** Phase 9 COMPLETE, VPS DEPLOYED + LIVE | **Blockers:** 0 critical code (V6 Supabase deferred) | **Next Action:** Nginx www redirect + Phase 10 (Events)
 
 ---
 
 ## Quick Status
 
-| Phase                          | Status          | Dependencies                         | Notes                                                    |
-| ------------------------------ | --------------- | ------------------------------------ | -------------------------------------------------------- |
-| Phase 1 — Legal Foundation     | NOT STARTED     | None                                 | Independent of website dev; can run in parallel           |
-| Phase 2 — Brand Identity       | **COMPLETE**    | None                                 | Carlsbad Coastal redesign — warm palette + images         |
-| Phase 3 — Tech Stack           | DECIDED         | None                                 | All technology choices locked in OCINW.MD                 |
-| Phase 4 — Project Scaffolding  | **COMPLETE**    | None                                 | 11 steps, 11 commits, all gates pass                     |
-| Phase 5 — Core Website         | **COMPLETE**    | Phase 4                              | All pages, nav, forms, error handling, security headers   |
-| Phase 6 — Weather & Tides      | **COMPLETE**    | Phase 5                              | Full dashboard, live APIs, geolocation, tide chart        |
-| Phase 7 — Donation System      | **COMPLETE**    | Phase 1 (Zeffy needs nonprofit)      | Full donate page + thank-you + Zeffy embed placeholder    |
-| Phase 8 — Volunteer System     | **COMPLETE**    | Phase 5                              | Full signup form + age-gating + COPPA fields + thank-you  |
-| Phase 9 — Education Content    | **COMPLETE**    | Phase 4 (MDX infra)                  | Velite + 23 MDX files + Education Hub + Conservation Hub  |
-| Phase 10 — Events System       | NOT STARTED     | Phase 5                              | Events listing, detail, registration, calendar            |
-| Phase 11 — Testing             | **COMPLETE**    | Phase 5+                             | 217 unit tests, 4 E2E suites, axe-core a11y tests        |
-| Phase 12 — Pre-Launch          | NOT STARTED     | Phase 5-11                           | All features must be built                                |
-| Phase 13 — Launch              | IN PROGRESS     | Phase 12                             | VPS deployed, HTTPS live                                  |
-| Phase 14 — Post-Launch         | NOT STARTED     | Phase 13                             | —                                                         |
+| Phase                          | Status          | Notes                                                    |
+| ------------------------------ | --------------- | -------------------------------------------------------- |
+| Phase 1 — Legal Foundation     | NOT STARTED     | Independent of website dev                                |
+| Phase 2 — Brand Identity       | **COMPLETE**    | Carlsbad Coastal redesign                                 |
+| Phase 3 — Tech Stack           | DECIDED         | All choices locked                                        |
+| Phase 4 — Project Scaffolding  | **COMPLETE**    | 11 steps, 11 commits                                     |
+| Phase 5 — Core Website         | **COMPLETE**    | All pages, nav, forms, security                           |
+| Phase 6 — Weather & Tides      | **COMPLETE**    | Dashboard, live APIs, geolocation, tide chart             |
+| Phase 7 — Donation System      | **COMPLETE**    | Donate page + Zeffy placeholder                           |
+| Phase 8 — Volunteer System     | **COMPLETE**    | Full signup + age-gating + COPPA                          |
+| Phase 9 — Education Content    | **COMPLETE**    | Velite + 23 MDX files + hubs                              |
+| Phase 10 — Events System       | NOT STARTED     | Events listing, detail, registration                      |
+| Phase 11 — Testing             | **COMPLETE**    | 218 tests, E2E, axe-core                                 |
+| Phase 12 — Pre-Launch          | NOT STARTED     | All features must be built                                |
+| Phase 13 — Launch              | IN PROGRESS     | VPS deployed, HTTPS live                                  |
+| Phase 14 — Post-Launch         | NOT STARTED     | —                                                         |
 
 ---
 
 ## Currently In-Progress
 
-Nothing active — all bugs fixed, site fully live, ready for next phase.
+### Nginx www Canonical Redirect (NOT YET DONE)
+User wants `https://www.orcachildinthewild.com` as the canonical domain. Need to add Nginx redirect from non-www to www. Run this in **Hostinger root console**:
+
+```nginx
+# Add a separate server block for non-www → www redirect on port 443
+# This needs to be added to /etc/nginx/sites-available/ocinw
+# The existing port 443 server block should only serve www
+```
+
+The exact Nginx config change still needs to be crafted and applied. The CSRF code fix (www-tolerant `isValidOrigin()`) is already deployed as a safety net.
 
 ---
 
-## What Was Completed This Session (Session #14)
+## What Was Completed This Session (Session #15)
 
-### Bug Fix — MDX Pages "Something Went Wrong" (CSP Issue)
-- **Symptom:** All MDX content pages (articles, species, ecosystems, projects) showed error boundary on live site
-- **Root cause:** `MDXContent.tsx` was a `"use client"` component using `new Function(code)` which requires `unsafe-eval` in CSP. Production CSP (`script-src 'self' 'unsafe-inline'`) correctly blocks `unsafe-eval`.
-- **Fix:** Converted `MDXContent.tsx` from client component to **server component**. Removed `"use client"` directive and `useMemo` hook. `new Function()` now runs in Node.js (server-side) where CSP doesn't apply. The rendered HTML is sent to the browser without needing client-side code evaluation.
-- File changed: `src/components/shared/MDXContent.tsx`
+### Security Posture Report
+- Created comprehensive pentester-level security audit at `.claude/SecurityPosture.md`
+- 10 sections: exec summary, stack, architecture, VPS, app, vulnerabilities, risk register, compliance, maintenance, incident response
+- Rewrote for readability (narrow tables, broken categories, ~410 lines)
 
-### Bug Fix — Newsletter Subscribe "Something went wrong"
-- **Symptom:** Newsletter subscribe in footer always showed "Something went wrong. Please try again."
-- **Root cause:** CSRF origin check in `src/app/actions/newsletter.ts` compares browser's `Origin` header against `NEXT_PUBLIC_SITE_URL`. The env var was `http://orcachildinthewild.com` but the browser sends `https://orcachildinthewild.com` — protocol mismatch fails the check.
-- **Fix:** Updated `.env.local` on VPS from `http://` to `https://`
-- File changed: VPS `/home/orcachild/ocinw-website/.env.local`
+### Security Fixes — Code (commit `2fb97c3`)
+| Fix | Vulnerability | What Changed |
+|-----|--------------|--------------|
+| V3  | IP spoofing  | All 3 server actions use `x-real-ip` instead of spoofable `x-forwarded-for` |
+| V7  | CSRF leniency| Origin header now required (reject if missing) |
+| V8  | No field limits| Max length on all text fields, phone regex, howHeard enum |
 
-### Deployment
-- Committed both fixes to GitHub (`19b5a84`)
-- Pulled, rebuilt (89 static pages), and restarted PM2 on VPS
-- Verified: all page types return 200, MDX articles render full content, no error boundaries
+### Security Fixes — VPS (run by user in Hostinger root console)
+| Fix | Vulnerability | What Changed |
+|-----|--------------|--------------|
+| V1  | Fail2ban wrong port | `jail.local` updated to port 2222 |
+| V2  | SSH auth ordering | Renamed to `00-security.conf` (loads first) |
+| V4  | Missing HSTS | Added `Strict-Transport-Security` to Nginx |
+| V5  | PM2 not boot-persistent | Created `pm2-orcachild.service` |
 
----
+### CSRF www Fix (commit `7e3516d`)
+- **Root cause:** Browser on `www.orcachildinthewild.com` sends `Origin: https://www.orcachildinthewild.com` but `SITE_URL` was `https://orcachildinthewild.com`
+- **Fix:** Created shared `src/lib/utils/csrf.ts` with `isValidOrigin()` that strips `www.` from both sides before comparing
+- All 3 server actions refactored to use the shared helper
+- VPS `NEXT_PUBLIC_SITE_URL` updated to `https://www.orcachildinthewild.com`
 
-## What Was Completed Last Session (Session #13)
-
-### VPS Deployment + Velite Fix + Security Hardening
-See Completed.md for full details.
+### Test Updates
+- Updated CSRF tests: "allows absent origin" → "rejects absent origin"
+- Split IP extraction test into x-real-ip + x-forwarded-for fallback
+- 218 tests passing (up from 217)
 
 ---
 
 ## What Should Be Done Next
 
-### Option A: Phase 10 — Events System
+### Priority 1: Nginx www Redirect
+User wants `www.orcachildinthewild.com` as canonical. Need to configure Nginx to redirect `orcachildinthewild.com` → `www.orcachildinthewild.com` on port 443. This requires editing `/etc/nginx/sites-available/ocinw` in the Hostinger root console.
+
+### Priority 2: Phase 10 — Events System
 Events listing, detail pages, event registration, calendar view.
 
-### Option B: Run Remaining Security Hardening
-3 root commands in the web console (run as root):
-```
-echo "PasswordAuthentication no" > /etc/ssh/sshd_config.d/00-security.conf && systemctl restart ssh
-usermod -s /usr/sbin/nologin ubuntu
-ufw delete allow 22/tcp
-```
-Note: Use `00-security.conf` (not `99-`) because SSH uses first-match-wins and `50-cloud-init.conf` would override it.
+### Remaining Open Vulnerabilities
 
-### Option C: PM2 Startup on Boot
-Run this as root in web console so the app survives server reboots:
-```
-env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u orcachild --hp /home/orcachild
-```
-
-### Remaining Open Issues (1)
-
-| ID | Severity | Issue                                | Status                        |
-| -- | -------- | ------------------------------------ | ----------------------------- |
-| O3 | HIGH     | Forms don't persist data             | Deferred to Supabase setup    |
+| ID | Severity | Issue | Fix |
+|----|----------|-------|-----|
+| V6 | CRITICAL | Forms don't persist data | Supabase (Phase 10+) |
+| V9 | MEDIUM   | Geolocation in localStorage | Switch to sessionStorage |
 
 ---
 
@@ -107,65 +112,37 @@ env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u orc
 | Web Console | Hostinger hPanel → VPS → Terminal |
 | App Path | `/home/orcachild/ocinw-website/` |
 | PM2 Process | `ocinw` (ID 1) |
-| Domain | `orcachildinthewild.com` |
+| Domain | `www.orcachildinthewild.com` (canonical) |
 | SSL Expiry | 2026-05-26 (auto-renews) |
+| SITE_URL | `https://www.orcachildinthewild.com` |
 
-### Deployment Workflow (for future updates)
+### Deployment Workflow
 ```bash
-# SSH into server
-ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30
-
-# Pull latest, install deps, rebuild, restart
-cd ~/ocinw-website && git pull && pnpm install && pnpm build && pm2 restart ocinw
+# One-liner deploy from local machine:
+ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30 \
+  "cd ~/ocinw-website && git pull && pnpm install --frozen-lockfile && pnpm build && pm2 restart ocinw"
 ```
-
----
-
-## Hostinger Firewall (hPanel)
-
-| Port | Protocol | Purpose |
-|------|----------|---------|
-| 80   | TCP      | HTTP (redirects to HTTPS) |
-| 443  | TCP      | HTTPS |
-| 2222 | TCP      | SSH |
-
----
-
-## DNS (Wix)
-
-| Type | Host | Value |
-|------|------|-------|
-| A | orcachildinthewild.com | 72.62.200.30 |
-| CNAME | www.orcachildinthewild.com | orcachildinthewild.com |
-
----
-
-## Repository
-
-- **GitHub:** `https://github.com/OrcaChild/ocinw-website`
-- **Branch:** `main`
-- **Git config:** user.name="Orca Child", user.email="orcachildinthewild@gmail.com"
 
 ---
 
 ## Blockers & Open Questions
 
-1. **Supabase project not created** — need free-tier project for DB features
-2. **Zeffy account not created** — requires registered nonprofit status for full donation setup
-3. **No logo yet** — using Waves icon (lucide) as placeholder
-4. **Original photos in progress** — user assembling real photos to replace stock placeholders
-5. **PM2 startup on boot not configured** — needs root command (see Option D above)
-
-*None of these block Phase 10.*
+1. **Supabase project not created** — need for DB features (V6)
+2. **Zeffy account not created** — requires registered nonprofit
+3. **No logo yet** — using Waves icon placeholder
+4. **Original photos in progress** — user assembling real photos
+5. **Nginx www redirect not configured** — needs root console
 
 ---
 
 ## Decisions Made This Session
 
-| Decision | Choice | Why | Session |
-| -------- | ------ | --- | ------- |
-| MDXContent rendering | Server component | Avoids `unsafe-eval` in CSP; `new Function()` runs server-side where CSP doesn't apply | #14 |
-| SITE_URL protocol | `https://` | Must match browser Origin header for CSRF validation | #14 |
+| Decision | Choice | Why |
+| -------- | ------ | --- |
+| Canonical domain | `www.orcachildinthewild.com` | User preference |
+| CSRF validation | Shared `isValidOrigin()` helper | DRY, www-tolerant, used by all 3 actions |
+| IP extraction | `x-real-ip` first | Set by Nginx from `$remote_addr`, not spoofable |
+| Origin header | Required (reject if missing) | Stricter CSRF — Next.js also has built-in tokens as backup |
 
 ---
 
@@ -174,13 +151,7 @@ cd ~/ocinw-website && git pull && pnpm install && pnpm build && pm2 restart ocin
 - Development machine: Windows 11 Pro
 - Shell: bash (Git Bash)
 - Working directory: `c:\OrcaChild`
-- Node.js: v20.18.0
-- pnpm: 10.10.0
-- GitHub CLI: v2.87.2
 - **Note:** Turbopack crashes on this machine. Use `pnpm dev --webpack` for dev server.
-- **VPS SSH:** `ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30`
-
----
 
 ### Key Versions (Local Dev)
 - Next.js 16.1.6 | React 19.2.3 | TypeScript 5.9.3

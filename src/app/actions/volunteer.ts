@@ -18,19 +18,20 @@ export async function submitVolunteerForm(
 ): Promise<VolunteerResult> {
   const headersList = await headers();
 
-  // CSRF: Verify Origin header matches expected site
+  // CSRF: Require and verify Origin header matches expected site
   const origin = headersList.get("origin");
   const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
   const expectedOrigin = new URL(siteUrl).origin;
 
-  if (origin && origin !== expectedOrigin) {
+  if (!origin || origin !== expectedOrigin) {
     return { status: "error", message: "Invalid request origin." };
   }
 
   // Rate limiting: 10 submissions per minute per IP
+  // Use x-real-ip (set by Nginx from $remote_addr, not spoofable) over x-forwarded-for
   const ip =
-    headersList.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     headersList.get("x-real-ip") ??
+    headersList.get("x-forwarded-for")?.split(",").pop()?.trim() ??
     "unknown";
 
   const rateCheck = checkRateLimit(ip, VOLUNTEER_RATE_LIMIT, VOLUNTEER_RATE_WINDOW_MS);

@@ -2,10 +2,10 @@ import { z } from "zod";
 
 /** Contact form submission */
 export const contactFormSchema = z.object({
-  name: z.string().min(2, "Name must be at least 2 characters"),
+  name: z.string().min(2, "Name must be at least 2 characters").max(100, "Name is too long"),
   email: z.email("Please enter a valid email address"),
-  subject: z.string().min(5, "Subject must be at least 5 characters"),
-  message: z.string().min(10, "Message must be at least 10 characters"),
+  subject: z.string().min(5, "Subject must be at least 5 characters").max(200, "Subject is too long"),
+  message: z.string().min(10, "Message must be at least 10 characters").max(2000, "Message is too long"),
 });
 
 export type ContactFormData = z.infer<typeof contactFormSchema>;
@@ -62,22 +62,22 @@ export const HOW_HEARD_OPTIONS = [
 
 /** Volunteer registration form — full Phase 8 spec */
 const volunteerBaseSchema = z.object({
-  firstName: z.string().min(2, "First name must be at least 2 characters"),
-  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  firstName: z.string().min(2, "First name must be at least 2 characters").max(100, "Name is too long"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters").max(100, "Name is too long"),
   email: z.email("Please enter a valid email address"),
-  phone: z.string().optional(),
+  phone: z.union([z.string().regex(/^\d{10}$/, "Please enter a valid 10-digit phone number"), z.literal("")]).optional(),
   ageRange: z.enum(AGE_RANGES, {
     error: "Please select your age range",
   }),
   zipCode: z.string().regex(/^\d{5}$/, "Please enter a valid 5-digit ZIP code"),
   interests: z.array(z.string()).min(1, "Select at least one interest"),
   availability: z.array(z.string()).min(1, "Select at least one availability"),
-  parentGuardianName: z.string().optional(),
+  parentGuardianName: z.string().max(100, "Name is too long").optional(),
   parentGuardianEmail: z.union([z.email("Please enter a valid parent/guardian email"), z.literal("")]).optional(),
-  parentGuardianPhone: z.string().optional(),
-  howHeard: z.string().optional(),
-  skills: z.string().optional(),
-  message: z.string().optional(),
+  parentGuardianPhone: z.union([z.string().regex(/^\d{10}$/, "Please enter a valid 10-digit phone number"), z.literal("")]).optional(),
+  howHeard: z.enum(HOW_HEARD_OPTIONS, { error: "Please select how you heard about us" }).optional(),
+  skills: z.string().max(500, "Skills description is too long").optional(),
+  message: z.string().max(1000, "Message is too long").optional(),
   agreeToCodeOfConduct: z.literal(true, {
     error: "You must agree to the code of conduct",
   }),
@@ -110,22 +110,22 @@ export type VolunteerFormData = z.infer<typeof volunteerBaseSchema>;
 /** Newsletter signup form */
 export const newsletterFormSchema = z.object({
   email: z.email("Please enter a valid email address"),
-  firstName: z.string().optional(),
+  firstName: z.string().max(100, "Name is too long").optional(),
 });
 
 export type NewsletterFormData = z.infer<typeof newsletterFormSchema>;
 
 /** Event registration form */
 export const eventRegistrationSchema = z.object({
-  eventId: z.string(),
-  firstName: z.string().min(2),
-  lastName: z.string().min(2),
+  eventId: z.string().max(100),
+  firstName: z.string().min(2).max(100),
+  lastName: z.string().min(2).max(100),
   email: z.email(),
-  phone: z.string().optional(),
+  phone: z.union([z.string().regex(/^\d{10}$/, "Please enter a valid 10-digit phone number"), z.literal("")]).optional(),
   age: z.number().int().min(8).max(120),
   parentEmail: z.email().optional(),
-  emergencyContact: z.string().min(2),
-  emergencyPhone: z.string().min(10),
+  emergencyContact: z.string().min(2).max(100),
+  emergencyPhone: z.string().regex(/^\d{10}$/, "Please enter a valid 10-digit phone number"),
   waiverAccepted: z.boolean(),
 });
 

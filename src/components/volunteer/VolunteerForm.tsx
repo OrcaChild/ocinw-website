@@ -94,7 +94,7 @@ export function VolunteerForm() {
       parentGuardianName: "",
       parentGuardianEmail: "",
       parentGuardianPhone: "",
-      howHeard: "",
+      howHeard: undefined,
       skills: "",
       message: "",
       agreeToCodeOfConduct: undefined,

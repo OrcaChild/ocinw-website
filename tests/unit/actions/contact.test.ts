@@ -89,7 +89,7 @@ describe("submitContactForm", () => {
     });
   });
 
-  it("allows request when origin header is absent", async () => {
+  it("rejects request when origin header is absent", async () => {
     const headersModule = await import("next/headers");
     vi.mocked(headersModule.headers).mockResolvedValue(
       createMockHeaders({ "x-forwarded-for": "192.168.1.1" }),
@@ -103,7 +103,7 @@ describe("submitContactForm", () => {
     });
 
     const result = await submitContactForm(fd);
-    expect(result).toEqual({ status: "success" });
+    expect(result).toEqual({ status: "error", message: "Invalid request origin." });
   });
 
   it("returns rate_limited when checkRateLimit returns allowed: false", async () => {
@@ -151,7 +151,35 @@ describe("submitContactForm", () => {
     expect(result.status).toBe("error");
   });
 
-  it("extracts IP from x-forwarded-for header", async () => {
+  it("prefers x-real-ip over x-forwarded-for for rate limiting", async () => {
+    const headersModule = await import("next/headers");
+    vi.mocked(headersModule.headers).mockResolvedValue(
+      createMockHeaders({
+        origin: "http://localhost:3000",
+        "x-real-ip": "203.0.113.1",
+        "x-forwarded-for": "10.20.30.40, 192.168.1.1",
+      }),
+    );
+
+    const rateLimitModule = await import("@/lib/utils/rate-limit");
+
+    const fd = createFormData({
+      name: "Jane Doe",
+      email: "jane@example.com",
+      subject: "Hello there",
+      message: "Valid message text here",
+    });
+
+    await submitContactForm(fd);
+
+    expect(rateLimitModule.checkRateLimit).toHaveBeenCalledWith(
+      "203.0.113.1",
+      expect.any(Number),
+      expect.any(Number),
+    );
+  });
+
+  it("falls back to last x-forwarded-for IP when x-real-ip is absent", async () => {
     const headersModule = await import("next/headers");
     vi.mocked(headersModule.headers).mockResolvedValue(
       createMockHeaders({
@@ -172,7 +200,7 @@ describe("submitContactForm", () => {
     await submitContactForm(fd);
 
     expect(rateLimitModule.checkRateLimit).toHaveBeenCalledWith(
-      "10.20.30.40",
+      "192.168.1.1",
       expect.any(Number),
       expect.any(Number),
     );

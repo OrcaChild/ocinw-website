@@ -125,7 +125,7 @@ describe("subscribeNewsletter", () => {
     expect(result).toEqual({ status: "success" });
   });
 
-  it("allows request when origin header is absent", async () => {
+  it("rejects request when origin header is absent", async () => {
     const headersModule = await import("next/headers");
     vi.mocked(headersModule.headers).mockResolvedValue(
       createMockHeaders({ "x-forwarded-for": "192.168.1.1" }),
@@ -133,6 +133,6 @@ describe("subscribeNewsletter", () => {
 
     const fd = createFormData({ email: "noorigin@example.com" });
     const result = await subscribeNewsletter(fd);
-    expect(result).toEqual({ status: "success" });
+    expect(result).toEqual({ status: "error", message: "Invalid request origin." });
   });
 });

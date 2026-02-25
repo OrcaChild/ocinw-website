@@ -96,6 +96,10 @@ export function DesktopNav() {
                 href="/learn/ecosystems"
                 title={t("educationEcosystems")}
               />
+              <DropdownLink
+                href="/learn/resources"
+                title={t("educationResources")}
+              />
             </ul>
           </NavigationMenuContent>
         </NavigationMenuItem>
@@ -108,10 +112,6 @@ export function DesktopNav() {
               <DropdownLink
                 href="/conservation/projects"
                 title={t("conservationProjects")}
-              />
-              <DropdownLink
-                href="/conservation/events"
-                title={t("conservationEvents")}
               />
               <DropdownLink
                 href="/conservation/impact"

@@ -258,10 +258,12 @@ export const validVolunteerForm = {
   firstName: "Jordan",
   lastName: "Smith",
   email: "jordan@example.com",
-  age: 15,
+  ageRange: "18-25" as const,
+  zipCode: "92008",
   interests: ["beach-cleanup"],
-  availability: ["weekends"],
-  agreeToTerms: true as const,
+  availability: ["weekend-morning"],
+  agreeToCodeOfConduct: true as const,
+  agreeToPrivacy: true as const,
 };
 
 export const validNewsletterForm = {

@@ -128,6 +128,9 @@ export function MobileNav() {
                   <MobileLink href="/learn/ecosystems" onClick={closeMenu}>
                     {t("educationEcosystems")}
                   </MobileLink>
+                  <MobileLink href="/learn/resources" onClick={closeMenu}>
+                    {t("educationResources")}
+                  </MobileLink>
                 </AccordionContent>
               </AccordionItem>
 
@@ -139,9 +142,6 @@ export function MobileNav() {
                 <AccordionContent className="pb-1 pl-3">
                   <MobileLink href="/conservation/projects" onClick={closeMenu}>
                     {t("conservationProjects")}
-                  </MobileLink>
-                  <MobileLink href="/conservation/events" onClick={closeMenu}>
-                    {t("conservationEvents")}
                   </MobileLink>
                   <MobileLink href="/conservation/impact" onClick={closeMenu}>
                     {t("conservationImpact")}

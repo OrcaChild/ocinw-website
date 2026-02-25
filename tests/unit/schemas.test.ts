@@ -122,29 +122,29 @@ describe("volunteerFormSchema", () => {
     expect(withPhone.success).toBe(true);
   });
 
-  it("rejects age below 8", () => {
-    const result = volunteerFormSchema.safeParse({ ...validVolunteerForm, age: 7 });
+  it("rejects invalid ageRange", () => {
+    const result = volunteerFormSchema.safeParse({ ...validVolunteerForm, ageRange: "invalid" });
     expect(result.success).toBe(false);
   });
 
-  it("accepts age of exactly 8", () => {
-    const result = volunteerFormSchema.safeParse({ ...validVolunteerForm, age: 8 });
+  it("accepts all valid ageRange values", () => {
+    for (const range of ["under-13", "13-17", "18-25", "26-40", "41-60", "60+"]) {
+      const data = range === "under-13" || range === "13-17"
+        ? { ...validVolunteerForm, ageRange: range, parentGuardianName: "Pat Smith", parentGuardianEmail: "pat@example.com", parentGuardianPhone: "3105551234" }
+        : { ...validVolunteerForm, ageRange: range };
+      const result = volunteerFormSchema.safeParse(data);
+      expect(result.success).toBe(true);
+    }
+  });
+
+  it("rejects invalid zipCode format", () => {
+    const result = volunteerFormSchema.safeParse({ ...validVolunteerForm, zipCode: "abc" });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts valid 5-digit zipCode", () => {
+    const result = volunteerFormSchema.safeParse({ ...validVolunteerForm, zipCode: "90210" });
     expect(result.success).toBe(true);
-  });
-
-  it("rejects age above 120", () => {
-    const result = volunteerFormSchema.safeParse({ ...validVolunteerForm, age: 121 });
-    expect(result.success).toBe(false);
-  });
-
-  it("accepts age of exactly 120", () => {
-    const result = volunteerFormSchema.safeParse({ ...validVolunteerForm, age: 120 });
-    expect(result.success).toBe(true);
-  });
-
-  it("rejects non-integer age", () => {
-    const result = volunteerFormSchema.safeParse({ ...validVolunteerForm, age: 10.5 });
-    expect(result.success).toBe(false);
   });
 
   it("rejects empty interests array", () => {
@@ -165,39 +165,57 @@ describe("volunteerFormSchema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("makes parentEmail optional", () => {
-    const result = volunteerFormSchema.safeParse(validVolunteerForm);
-    expect(result.success).toBe(true);
-  });
-
-  it("validates parentEmail format when provided", () => {
+  it("requires parent info for minors under 18", () => {
     const result = volunteerFormSchema.safeParse({
       ...validVolunteerForm,
-      parentEmail: "bad-email",
+      ageRange: "13-17",
     });
     expect(result.success).toBe(false);
   });
 
-  it("accepts valid parentEmail when provided", () => {
+  it("accepts minor with complete parent info", () => {
     const result = volunteerFormSchema.safeParse({
       ...validVolunteerForm,
-      parentEmail: "parent@example.com",
+      ageRange: "under-13",
+      parentGuardianName: "Pat Smith",
+      parentGuardianEmail: "pat@example.com",
+      parentGuardianPhone: "3105551234",
     });
     expect(result.success).toBe(true);
   });
 
-  it("rejects agreeToTerms as false", () => {
+  it("validates parentGuardianEmail format when provided", () => {
     const result = volunteerFormSchema.safeParse({
       ...validVolunteerForm,
-      agreeToTerms: false,
+      ageRange: "13-17",
+      parentGuardianName: "Pat Smith",
+      parentGuardianEmail: "bad-email",
+      parentGuardianPhone: "3105551234",
     });
     expect(result.success).toBe(false);
   });
 
-  it("requires agreeToTerms to be literal true", () => {
+  it("rejects agreeToCodeOfConduct as false", () => {
     const result = volunteerFormSchema.safeParse({
       ...validVolunteerForm,
-      agreeToTerms: true,
+      agreeToCodeOfConduct: false,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects agreeToPrivacy as false", () => {
+    const result = volunteerFormSchema.safeParse({
+      ...validVolunteerForm,
+      agreeToPrivacy: false,
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("requires both agreeToCodeOfConduct and agreeToPrivacy to be true", () => {
+    const result = volunteerFormSchema.safeParse({
+      ...validVolunteerForm,
+      agreeToCodeOfConduct: true,
+      agreeToPrivacy: true,
     });
     expect(result.success).toBe(true);
   });

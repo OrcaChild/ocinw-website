@@ -3,6 +3,21 @@ import createNextIntlPlugin from "next-intl/plugin";
 
 const withNextIntl = createNextIntlPlugin();
 
+// Velite integration — runs content build alongside Next.js build
+// Uses webpack plugin approach for seamless dev/build experience
+class VeliteWebpackPlugin {
+  static started = false;
+  apply(compiler: { hooks: { beforeCompile: { tapPromise: (name: string, fn: () => Promise<void>) => void } } }) {
+    compiler.hooks.beforeCompile.tapPromise("VeliteWebpackPlugin", async () => {
+      if (VeliteWebpackPlugin.started) return;
+      VeliteWebpackPlugin.started = true;
+      const dev = compiler.constructor.name === "Compiler";
+      const { build } = await import("velite");
+      await build({ watch: dev, clean: !dev });
+    });
+  }
+}
+
 const isDev = process.env.NODE_ENV === "development";
 
 // Development CSP allows unsafe-eval for Next.js HMR
@@ -22,6 +37,10 @@ const cspDirectives = [
 const contentSecurityPolicy = cspDirectives.join("; ");
 
 const nextConfig: NextConfig = {
+  webpack(config) {
+    config.plugins.push(new VeliteWebpackPlugin());
+    return config;
+  },
   async headers() {
     return [
       {

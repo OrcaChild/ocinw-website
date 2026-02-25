@@ -56,3 +56,6 @@ next-env.d.ts
 
 # Bundle analyzer
 .next/analyze/
+
+# Velite (generated content)
+.velite/

@@ -21,6 +21,8 @@
 | #8      | 2026-02-22  | Grade Remediation (Security/i18n/A11y)  | 1       |
 | #9      | 2026-02-22  | Test Suite Implementation (O1, O6)      | 1       |
 | #10     | 2026-02-24  | Carlsbad Coastal Visual Redesign         | 1       |
+| #11     | 2026-02-24  | Phase 7 Donations + Phase 8 Volunteers   | 2       |
+| #12     | 2026-02-24  | Phase 9 — Education & Conservation Content| 1       |
 
 ---
 
@@ -497,6 +499,87 @@
   - User requested modern 2026 aesthetic — "no square 1998 pictures on the page"
   - All stock photos are placeholders — user is assembling original photos to replace them
   - SVG wave dividers use `preserveAspectRatio="none"` for fluid responsive scaling
+
+---
+
+## [PHASE 7+8] 2026-02-24 — Session #11: Donation System + Volunteer System
+
+### Phase 7 — Donation System
+
+- **What:** Complete donation page with Zeffy integration, impact tiers, donor recognition, and thank-you flow.
+- **Scope:**
+  - [x] `/donate` page with hero, 6 impact tiers ($10-$500), Zeffy iframe embed, donor recognition tiers, corporate matching, other ways to support, tax info
+  - [x] `/donate/thank-you` confirmation page with next actions
+  - [x] `DonationTiers.tsx` — 6 impact tiers with icons and hover animations
+  - [x] `DonationWidget.tsx` — Zeffy iframe embed with loading skeleton
+  - [x] `DonorRecognition.tsx` — 4 ocean-themed tiers (Tide Pool, Kelp Forest, Open Ocean, Orca Circle)
+  - [x] 57 translation keys in `donate` namespace (EN + ES)
+- **Artifacts:** `src/app/[locale]/donate/page.tsx`, `src/app/[locale]/donate/thank-you/page.tsx`, `src/components/donate/DonationTiers.tsx`, `src/components/donate/DonationWidget.tsx`, `src/components/donate/DonorRecognition.tsx`
+- **Quality Gates:** All pass — lint, type-check, build (23 pages), test (217)
+
+### Phase 8 — Volunteer System
+
+- **What:** Full volunteer signup with age-gating, COPPA parental consent fields, and thank-you flow.
+- **Scope:**
+  - [x] `/volunteer` page with hero, why-volunteer cards, comprehensive form, FAQ accordion
+  - [x] `/volunteer/thank-you` confirmation page with 3-step next actions
+  - [x] `VolunteerForm.tsx` — multi-section form: personal info, age-gating, 13 interests, 6 availability options, how-heard, agreements
+  - [x] Age-gating: parent/guardian fields appear for under-18 with amber warning banner
+  - [x] Server action with CSRF validation + rate limiting (stubbed DB)
+  - [x] Updated `volunteerFormSchema` with all Phase 8 fields + parent-info refinement
+  - [x] 97 translation keys in `volunteer` namespace (EN + ES)
+  - [x] Updated test fixtures and added 11 new schema tests
+- **Artifacts:** `src/app/[locale]/volunteer/page.tsx`, `src/app/[locale]/volunteer/thank-you/page.tsx`, `src/components/volunteer/VolunteerForm.tsx`, `src/lib/schemas/forms.ts`, `src/app/actions/volunteer.ts`
+- **Quality Gates:** All pass — lint, type-check, build (27 pages), test (217)
+
+---
+
+## [PHASE 9] 2026-02-24 — Session #12: Education & Conservation Content
+
+- **What:** Complete MDX content infrastructure via Velite, Education Hub (8 page types), Conservation Hub (4 page types), and 23 MDX content files covering articles, species, ecosystems, and projects.
+- **Scope:**
+  - [x] **Velite 0.3.1** installed and configured with 4 content collections (articles, species, ecosystems, projects), each with detailed Zod-based frontmatter schemas
+  - [x] VeliteWebpackPlugin integration in `next.config.ts` for seamless dev/build
+  - [x] `#content` TypeScript path alias in `tsconfig.json` → `.velite/` generated output
+  - [x] Build script updated: `"velite && next build"` in `package.json`
+  - [x] **7 articles:** welcome, SoCal ocean needs you, beach cleanup guide, 5 things to help, tides for beginners, marine protected areas, citizen science for kids
+  - [x] **10 species profiles:** orca, gray whale, sea lion, garibaldi, giant kelp, purple sea urchin, brown pelican, green sea turtle, leopard shark, grunion — each with conservation status, habitat, fun facts, threats, how to help, best viewing locations
+  - [x] **4 ecosystem guides:** kelp forests, tide pools, coastal wetlands & estuaries, sandy beaches — each with local examples, key species, threats, conservation efforts
+  - [x] **2 conservation projects:** SoCal Beach Cleanup Program (active), Carlsbad Lagoon Water Quality Watch (active) — with impact metrics, partners, frequency
+  - [x] `MDXContent.tsx` shared client component for rendering compiled MDX
+  - [x] `src/lib/content.ts` with 15+ typed query helpers
+  - [x] `ConservationStatusBadge.tsx` — IUCN color-coded badges (LC/NT/VU/EN/CR)
+  - [x] `ArticleCard.tsx`, `SpeciesCard.tsx`, `EcosystemCard.tsx`, `ProjectCard.tsx` — card components
+  - [x] **Education Hub pages:** `/learn` (landing), `/learn/articles` (listing), `/learn/articles/[slug]` (detail), `/learn/species` (listing), `/learn/species/[slug]` (detail with sidebar), `/learn/ecosystems` (listing), `/learn/ecosystems/[slug]` (detail with sidebar), `/learn/resources` (curated links)
+  - [x] **Conservation Hub pages:** `/conservation` (landing with hero + project grid), `/conservation/projects` (listing), `/conservation/projects/[slug]` (detail with impact metrics + MDX body + partners), `/conservation/impact` (dashboard with 6 hardcoded metrics)
+  - [x] ~80 translation keys in `learn` namespace (EN + ES)
+  - [x] ~55 translation keys in `conservation` namespace (EN + ES)
+  - [x] Navigation updated: added Resources link, removed Events (Phase 10)
+- **Artifacts:**
+  - Config: `velite.config.ts`, `next.config.ts` (modified), `tsconfig.json` (modified), `package.json` (modified), `.gitignore` (modified)
+  - Content: `src/content/articles/*.mdx` (7), `src/content/species/*.mdx` (10), `src/content/ecosystems/*.mdx` (4), `src/content/projects/*.mdx` (2)
+  - Components: `src/components/shared/MDXContent.tsx`, `src/components/education/ArticleCard.tsx`, `src/components/education/SpeciesCard.tsx`, `src/components/education/EcosystemCard.tsx`, `src/components/education/ConservationStatusBadge.tsx`, `src/components/conservation/ProjectCard.tsx`
+  - Pages: `src/app/[locale]/learn/page.tsx`, `src/app/[locale]/learn/articles/page.tsx`, `src/app/[locale]/learn/articles/[slug]/page.tsx`, `src/app/[locale]/learn/species/page.tsx`, `src/app/[locale]/learn/species/[slug]/page.tsx`, `src/app/[locale]/learn/ecosystems/page.tsx`, `src/app/[locale]/learn/ecosystems/[slug]/page.tsx`, `src/app/[locale]/learn/resources/page.tsx`, `src/app/[locale]/conservation/page.tsx`, `src/app/[locale]/conservation/projects/page.tsx`, `src/app/[locale]/conservation/projects/[slug]/page.tsx`, `src/app/[locale]/conservation/impact/page.tsx`
+  - Lib: `src/lib/content.ts`, `src/lib/types/content.ts` (rewritten)
+  - Nav: `src/components/layout/DesktopNav.tsx` (modified), `src/components/layout/MobileNav.tsx` (modified)
+  - i18n: `messages/en.json` (modified), `messages/es.json` (modified)
+- **Acceptance Criteria:**
+  - [x] `pnpm lint` — zero errors, zero warnings
+  - [x] `pnpm type-check` — zero TypeScript errors
+  - [x] `pnpm build` — 89 static pages generated successfully
+  - [x] `pnpm test` — 217 tests pass (13 files)
+  - [x] All 23 MDX files have correct frontmatter and render via Velite
+  - [x] All slug pages use `generateStaticParams()` for static generation
+  - [x] All card components display correct data with proper labels
+  - [x] Navigation includes new Learn and Conservation routes
+- **Unblocks:** Phase 10 (Events System), Phase 12 (Pre-Launch). Education and Conservation hubs are fully functional with real content.
+- **Noteworthy:**
+  - Velite processes all 23 MDX files in ~870ms — fast build times
+  - Content queries filter by language and published status, enabling future Spanish content
+  - Species profiles include IUCN conservation status with color-coded badges
+  - Impact dashboard metrics are hardcoded — ready to pull from Supabase when DB is set up
+  - Resources page links to real external sites (NOAA, CCC, Scripps, Birch Aquarium, etc.)
+  - Each ecosystem/species detail page has a rich sidebar with structured data panels
 
 ---
 

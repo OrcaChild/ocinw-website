@@ -2,13 +2,13 @@
 
 > **Session Continuity Document**
 > Last updated: 2026-02-24
-> Session: #10 (Carlsbad Coastal Visual Redesign — COMPLETE)
+> Session: #12 (Phase 9 — Education & Conservation Content)
 
 ---
 
 ## At A Glance
 
-**Current Phase:** Phase 2 complete, pre-Phase 7 | **Blockers:** 0 critical (1 remaining: O3 Supabase) | **Next Action:** Phase 7 (Donations) or Phase 8 (Volunteers)
+**Current Phase:** Phase 9 COMPLETE | **Blockers:** 0 critical (1 remaining: O3 Supabase) | **Next Action:** Phase 10 (Events System) or commit Phase 9
 
 ---
 
@@ -20,13 +20,13 @@
 | Phase 2 — Brand Identity       | **COMPLETE**    | None                                 | Carlsbad Coastal redesign — warm palette + images         |
 | Phase 3 — Tech Stack           | DECIDED         | None                                 | All technology choices locked in OCINW.MD                 |
 | Phase 4 — Project Scaffolding  | **COMPLETE**    | None                                 | 11 steps, 11 commits, all gates pass                     |
-| Phase 5 — Core Website         | **COMPLETE**    | Phase 4 ✅                           | All pages, nav, forms, error handling, security headers   |
-| Phase 6 — Weather & Tides      | **COMPLETE**    | Phase 5 ✅                           | Full dashboard, live APIs, geolocation, tide chart        |
-| Phase 7 — Donation System      | **NEXT**        | Phase 1 (Zeffy needs nonprofit)      | Zeffy embed can be stubbed without 501(c)(3)             |
-| Phase 8 — Volunteer System     | **NEXT**        | Phase 5 ✅                           | Requires Supabase project for DB features                |
-| Phase 9 — Education Content    | NOT STARTED     | Phase 4 ✅ (MDX infra)              | Content writing can start as soon as MDX schema defined   |
-| Phase 10 — Accessibility/i18n  | NOT STARTED     | Phase 4 ✅                           | Translation *content* here; i18n *infrastructure* done    |
-| Phase 11 — Testing             | **COMPLETE**    | Phase 5+                             | 217 unit tests, 4 E2E suites, axe-core a11y tests written|
+| Phase 5 — Core Website         | **COMPLETE**    | Phase 4                              | All pages, nav, forms, error handling, security headers   |
+| Phase 6 — Weather & Tides      | **COMPLETE**    | Phase 5                              | Full dashboard, live APIs, geolocation, tide chart        |
+| Phase 7 — Donation System      | **COMPLETE**    | Phase 1 (Zeffy needs nonprofit)      | Full donate page + thank-you + Zeffy embed placeholder    |
+| Phase 8 — Volunteer System     | **COMPLETE**    | Phase 5                              | Full signup form + age-gating + COPPA fields + thank-you  |
+| Phase 9 — Education Content    | **COMPLETE**    | Phase 4 (MDX infra)                  | Velite + 23 MDX files + Education Hub + Conservation Hub  |
+| Phase 10 — Events System       | NOT STARTED     | Phase 5                              | Events listing, detail, registration, calendar            |
+| Phase 11 — Testing             | **COMPLETE**    | Phase 5+                             | 217 unit tests, 4 E2E suites, axe-core a11y tests        |
 | Phase 12 — Pre-Launch          | NOT STARTED     | Phase 5-11                           | All features must be built                                |
 | Phase 13 — Launch              | NOT STARTED     | Phase 12                             | Pre-launch checklist must pass                            |
 | Phase 14 — Post-Launch         | NOT STARTED     | Phase 13                             | —                                                         |
@@ -35,77 +35,103 @@
 
 ## Currently In-Progress
 
-Nothing currently in-progress. Session #10 visual redesign complete.
+Nothing — Phase 9 is complete, ready for commit and next phase.
 
 ---
 
-## What Was Completed This Session (Session #10 — Carlsbad Coastal Redesign)
+## What Was Completed This Session (Session #12)
 
-### Full Visual Redesign — "Carlsbad Coastal" Theme
+### Phase 9 — Education & Conservation Content (COMPLETE)
 
-**Color Palette Overhaul (globals.css):**
-- Ocean blues: hue 220 → 215 (warm sky blue, morning Pacific light)
-- Teal: hue 180 → 168 (seafoam/sage, Batiquitos Lagoon sea glass)
-- Sand: hue 80 → 50-65, more saturated (Tamarack Beach golden hour)
-- Coral: hue 20-30 → 28-40 (sunset peach, not alarm-red)
-- Background: cold blue-white → warm cream/ivory
-- Dark mode: cold navy → warm charcoal (California evening, not submarine)
-- Body line-height: increased to 1.7 for relaxed readability
+**Infrastructure — Velite MDX Content Pipeline:**
+- Installed Velite 0.3.1 as build-time MDX processor
+- Created `velite.config.ts` with 4 collections: articles (7 fields), species (12 fields), ecosystems (10 fields), projects (14 fields)
+- Each collection uses Zod-based frontmatter schemas matching Phase 9 spec
+- VeliteWebpackPlugin integration in `next.config.ts` for seamless dev/build
+- `#content` TypeScript path alias in `tsconfig.json` → `.velite/` generated output
+- `.gitignore` updated to exclude `.velite/`
+- Build script: `"velite && next build"` in `package.json`
 
-**10 Stock Images Downloaded (Unsplash, free license):**
-- `hero/coastal-golden-hour.jpg` (290KB) — golden SoCal coastline
-- `activities/tide-pool.jpg` (112KB) — rocky California coast
-- `activities/kids-exploring.jpg` (101KB) — youth in nature
-- `activities/beach-cleanup.jpg` (82KB) — volunteers on beach
-- `activities/volunteers-cleanup.jpg` (185KB) — cleanup action shot
-- `community/beach-community.jpg` (87KB) — people at the beach
-- `marine/ocean-wave.jpg` (185KB) — sunlit ocean waves
-- `marine/sea-turtle.jpg` (62KB) — sea turtle swimming
-- `landscapes/ocean-sunset.jpg` (287KB) — Pacific sunset
-- `textures/sand-ripples.jpg` (129KB) — beach texture
+**MDX Content Files (23 total):**
+- 7 articles: welcome-to-ocinw, why-southern-california-ocean-needs-you, what-happens-at-a-beach-cleanup, five-things-help-oceans, understanding-tides-beginners-guide, marine-protected-areas-la-to-san-diego, citizen-science-for-kids
+- 10 species: orca, gray whale, sea lion, garibaldi, giant kelp, purple sea urchin, brown pelican, green sea turtle, leopard shark, grunion
+- 4 ecosystems: kelp forests, tide pools, coastal wetlands & estuaries, sandy beaches
+- 2 projects: SoCal Beach Cleanup Program, Carlsbad Lagoon Water Quality Watch
 
-**Component Redesigns (modern 2026, no boxy layouts):**
-- HeroSection: full-bleed coastal photo + warm gradient overlay + organic SVG wave divider + glass-morphism CTA + pill-shaped buttons
-- MissionCards: full image backgrounds + gradient overlays + glass icon badges + hover zoom
-- FeaturedContent: thumbnail images + category tag badges + hover zoom + "Read more" arrows
-- GetInvolvedCTA: full-bleed card backgrounds + gradient overlays + white pill CTAs
-- ImpactCounter: warm sand background + glass-morphism stat cards
-- WeatherPreview: sand texture background + ocean-to-teal gradient + white CTA
-- PartnersSection: warm sand background + rounded-2xl placeholders
-- Footer: warm sand background + organic SVG wave divider at top
+**Shared Components:**
+- `MDXContent.tsx` — client component evaluating Velite's compiled MDX function strings
+- `src/lib/content.ts` — 15+ typed query helpers (getArticles, getSpecies, getEcosystems, getProjects, etc.)
+- `src/lib/types/content.ts` — re-exports Velite-generated types
 
-**Translation Keys Added (EN + ES):**
-- 13 new keys: heroImageAlt, 3 mission image alts, 3 featured image alts, 3 featured tags, featuredReadMore, 2 involved image alts
+**Education Hub Components (4 card components):**
+- `ArticleCard.tsx` — article listing card with image, category, reading time
+- `SpeciesCard.tsx` — species card with IUCN conservation status badge
+- `ConservationStatusBadge.tsx` — color-coded LC/NT/VU/EN/CR badges
+- `EcosystemCard.tsx` — ecosystem card with type badge, location, key species tags
 
-### Quality Gates — All Pass
+**Education Hub Pages (8 routes × 2 locales = 16 pages):**
+- `/learn` — landing page with hero, 4 category cards
+- `/learn/articles` — article listing grid
+- `/learn/articles/[slug]` — article detail with MDX body, tags, related articles
+- `/learn/species` — species listing grid
+- `/learn/species/[slug]` — species detail with sidebar (habitat, viewing locations, fun facts, threats, how to help)
+- `/learn/ecosystems` — ecosystem listing grid
+- `/learn/ecosystems/[slug]` — ecosystem detail with sidebar (locations, key species, threats, conservation efforts)
+- `/learn/resources` — curated external resource links (NOAA, CCC, Academic, Youth, Local)
+
+**Conservation Hub Components (1 card component):**
+- `ProjectCard.tsx` — project card with status color, type, location, impact metrics
+
+**Conservation Hub Pages (4 routes × 2 locales = 8 pages):**
+- `/conservation` — landing page with hero, quick nav cards, active projects grid
+- `/conservation/projects` — project listing
+- `/conservation/projects/[slug]` — project detail with impact metrics, MDX body, partners, volunteer CTA
+- `/conservation/impact` — impact dashboard with 6 metrics (hardcoded, ready for Supabase)
+
+**Translation Keys Added:**
+- `learn` namespace: ~80 keys (EN + ES) — page titles, filters, card labels, resource categories
+- `conservation` namespace: ~55 keys (EN + ES) — page titles, status labels, impact metrics, project details
+- `nav` namespace: added `educationResources` key (EN + ES)
+
+**Navigation Updates:**
+- Added `/learn/resources` link to DesktopNav and MobileNav
+- Removed `/conservation/events` link (page doesn't exist yet — Phase 10)
+
+**Quality Gates — All Pass:**
 - `pnpm lint` — zero errors, zero warnings
 - `pnpm type-check` — zero TypeScript errors
-- `pnpm build` — 19 static pages, production build succeeds
+- `pnpm build` — 89 static pages generated (up from 27)
 - `pnpm test` — 217 tests pass (13 files)
+
+---
+
+## What Was Completed Last Session (Session #11)
+
+### Phase 7 — Donation System + Phase 8 — Volunteer System
+
+See Completed.md for full details.
 
 ---
 
 ## What Should Be Done Next
 
-### Option A: Phase 7 (Donations) — Recommended
-Zeffy embed + donation page with impact tiers and donor recognition.
+### Option A: Commit Phase 9 + Push to GitHub
+All Phase 9 code is ready for commit. Stage all new/modified files and push.
 
-### Option B: Phase 8 (Volunteers)
-Volunteer signup form with age-gating, COPPA parental consent. Requires Supabase project.
+### Option B: Phase 10 — Events System
+Events listing, detail pages, event registration, calendar view. Requires `/conservation/events` page (nav link already removed until built).
 
-### Option C: Swap Stock Photos for Originals
-User is currently putting together original photos. When ready, drop them into `public/images/` matching current filenames to replace stock photos.
+### Option C: Add Tests for Phase 9 Content
+Write unit tests for content query helpers (`getArticles`, `getSpecies`, etc.) and component rendering tests for the new card components.
 
-### Option D: Extend Visual Redesign to Inner Pages
-The about, contact, and weather pages still use the default layout styling. Could add hero images, warm section treatments, and organic dividers to these pages too.
+### Option D: Swap Stock Photos for Originals
+User is putting together original photos. When ready, drop them into `public/images/` matching current filenames.
 
 ### Remaining Open Issues (1)
 
 | ID | Severity | Issue                                | Status                        |
 | -- | -------- | ------------------------------------ | ----------------------------- |
-| O3 | HIGH     | Forms don't persist data             | Deferred to Phase 8 (Supabase)|
-
-**O1 (CRITICAL — test coverage) and O6 (MEDIUM — axe-core tests) are now CLOSED.**
+| O3 | HIGH     | Forms don't persist data             | Deferred to Supabase setup    |
 
 ---
 
@@ -113,21 +139,20 @@ The about, contact, and weather pages still use the default layout styling. Coul
 
 - **GitHub:** `https://github.com/OrcaChild/ocinw-website`
 - **Branch:** `main`
-- **Commits:** Phase 4 (11) + Phase 5 (1) + Phase 6 (1) + Session #8 fixes (1) + Session #9 tests (1) + Session #10 visual redesign (pending commit)
 - **Git config:** user.name="Orca Child", user.email="orcachildinthewild@gmail.com"
-- **GitHub CLI:** installed (`gh` v2.87.2) — auth via `gh auth login` in terminal when needed
+- **GitHub CLI:** installed (`gh` v2.87.2)
 
 ---
 
 ## Blockers & Open Questions
 
 1. **Domain name not yet registered** — `orcachildinthewild.org` should be secured before deployment
-2. **Supabase project not created** — need free-tier project for DB features (Phase 8+)
+2. **Supabase project not created** — need free-tier project for DB features
 3. **Zeffy account not created** — requires registered nonprofit status for full donation setup
 4. **No logo yet** — using Waves icon (lucide) as placeholder
 5. **Original photos in progress** — user assembling real photos to replace stock placeholders
 
-*None of these block Phase 7-9.*
+*None of these block Phase 10.*
 
 ---
 
@@ -144,7 +169,7 @@ The about, contact, and weather pages still use the default layout styling. Coul
 
 ## Decisions Made
 
-### Implementation Decisions (Sessions #2-10)
+### Implementation Decisions (Sessions #2-12)
 
 | Decision            | Choice               | Why                                     | Session |
 | ------------------- | -------------------- | --------------------------------------- | ------- |
@@ -169,6 +194,10 @@ The about, contact, and weather pages still use the default layout styling. Coul
 | Stock photos        | Unsplash placeholders| $0 cost, user will swap in originals    | #10     |
 | Dark mode warmth    | Warm charcoal        | California evening, not submarine       | #10     |
 | Wave dividers       | SVG organic shapes   | No hard edges between sections          | #10     |
+| MDX content engine  | Velite 0.3.1         | Build-time processing, typed schemas, Zod-based | #12 |
+| MDX rendering       | new Function() + JSX runtime | Velite compiles MDX to function strings | #12 |
+| Content queries     | Typed helper functions | Centralized in src/lib/content.ts      | #12     |
+| Events nav link     | Removed until Phase 10 | Avoid 404 on non-existent page        | #12     |
 
 ---
 
@@ -186,10 +215,36 @@ The about, contact, and weather pages still use the default layout styling. Coul
 
 ### Key Versions
 - Next.js 16.1.6 | React 19.2.3 | TypeScript 5.9.3
-- Tailwind CSS v4.2.0 | shadcn/ui (latest)
+- Tailwind CSS v4.2.0 | shadcn/ui (latest) | Velite 0.3.1
 - Zod v4.3.6 | next-intl v4.8.3
 - Vitest 4.0.18 | Playwright 1.58.2 | happy-dom 20.7.0
 - pnpm 10.10.0 | Node.js v20.18.0
+
+---
+
+## Content Inventory (Phase 9)
+
+| Type | Count | Location |
+|------|-------|----------|
+| Articles | 7 | `src/content/articles/` |
+| Species Profiles | 10 | `src/content/species/` |
+| Ecosystem Guides | 4 | `src/content/ecosystems/` |
+| Conservation Projects | 2 | `src/content/projects/` |
+| **Total MDX files** | **23** | — |
+
+---
+
+## Page Count Summary
+
+| Category | Routes | Static Pages (EN+ES) |
+|----------|--------|---------------------|
+| Core (home, about, contact, privacy, terms) | 6 | 12 |
+| Weather & Tides | 1 | 2 |
+| Donate | 2 | 4 |
+| Volunteer | 2 | 4 |
+| Learn Hub | 8 + slug pages | ~40 |
+| Conservation Hub | 4 + slug pages | ~12 |
+| **Total** | — | **89** |
 
 ---
 
@@ -210,11 +265,10 @@ The about, contact, and weather pages still use the default layout styling. Coul
 
 ---
 
-## Test Suite Inventory (Session #9)
+## Test Suite Inventory
 
 | Category | File | Tests |
 |----------|------|-------|
-| Fixtures | `tests/fixtures/index.ts` | — |
 | Schemas | `tests/unit/schemas.test.ts` | 48 |
 | Formatters | `tests/unit/weather-format.test.ts` | 53 |
 | Geo | `tests/unit/geo.test.ts` | 9 |
@@ -228,9 +282,9 @@ The about, contact, and weather pages still use the default layout styling. Coul
 | useGeolocation | `tests/unit/hooks/useGeolocation.test.ts` | 11 |
 | Contact Action | `tests/unit/actions/contact.test.ts` | 7 |
 | Newsletter Action | `tests/unit/actions/newsletter.test.ts` | 8 |
+| **Total** | **13 files** | **217 unit tests** |
 | E2E: Contact | `tests/e2e/contact.spec.ts` | 6 |
 | E2E: Newsletter | `tests/e2e/newsletter.spec.ts` | 4 |
 | E2E: Weather | `tests/e2e/weather.spec.ts` | 6 |
 | E2E: Navigation | `tests/e2e/navigation.spec.ts` | 8 |
 | Accessibility | `tests/accessibility/pages.spec.ts` | 16 |
-| **Total** | **20 files** | **217 unit + 24 E2E + 16 a11y** |

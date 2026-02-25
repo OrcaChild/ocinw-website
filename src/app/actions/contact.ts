@@ -3,6 +3,7 @@
 import { headers } from "next/headers";
 import { contactFormSchema } from "@/lib/types/forms";
 import { checkRateLimit } from "@/lib/utils/rate-limit";
+import { isValidOrigin } from "@/lib/utils/csrf";
 
 type ContactResult =
   | { status: "success" }
@@ -18,12 +19,9 @@ export async function submitContactForm(
 ): Promise<ContactResult> {
   const headersList = await headers();
 
-  // CSRF: Require and verify Origin header matches expected site
+  // CSRF: Require Origin header and validate against SITE_URL (www-tolerant)
   const origin = headersList.get("origin");
-  const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000";
-  const expectedOrigin = new URL(siteUrl).origin;
-
-  if (!origin || origin !== expectedOrigin) {
+  if (!isValidOrigin(origin)) {
     return { status: "error", message: "Invalid request origin." };
   }
 

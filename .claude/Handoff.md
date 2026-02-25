@@ -2,13 +2,13 @@
 
 > **Session Continuity Document**
 > Last updated: 2026-02-25
-> Session: #13 (VPS Deployment + Velite Fix)
+> Session: #14 (Production Bug Fixes — MDX CSP + Newsletter CSRF)
 
 ---
 
 ## At A Glance
 
-**Current Phase:** Phase 9 COMPLETE, VPS DEPLOYED | **Blockers:** 0 critical (1 remaining: O3 Supabase) | **Next Action:** Phase 10 (Events System), commit Phase 9, or run remaining security hardening commands
+**Current Phase:** Phase 9 COMPLETE, VPS DEPLOYED + LIVE | **Blockers:** 0 critical (1 remaining: O3 Supabase) | **Next Action:** Phase 10 (Events System) or remaining security hardening
 
 ---
 
@@ -35,83 +35,53 @@
 
 ## Currently In-Progress
 
-Nothing active — deployment complete, ready for next phase.
+Nothing active — all bugs fixed, site fully live, ready for next phase.
 
 ---
 
-## What Was Completed This Session (Session #13)
+## What Was Completed This Session (Session #14)
 
-### Bug Fix — Velite ESM Import
-- Fixed `Internal Server Error` on dev server startup
-- **Root cause:** Velite 0.3.1 is ESM-only, but Next.js compiles `next.config.ts` to CJS, converting `import()` to `require()`
-- **Fix:** Used `Function` constructor pattern in `next.config.ts` to prevent static analysis from converting the dynamic import
-- File changed: `next.config.ts` (line 15-17)
+### Bug Fix — MDX Pages "Something Went Wrong" (CSP Issue)
+- **Symptom:** All MDX content pages (articles, species, ecosystems, projects) showed error boundary on live site
+- **Root cause:** `MDXContent.tsx` was a `"use client"` component using `new Function(code)` which requires `unsafe-eval` in CSP. Production CSP (`script-src 'self' 'unsafe-inline'`) correctly blocks `unsafe-eval`.
+- **Fix:** Converted `MDXContent.tsx` from client component to **server component**. Removed `"use client"` directive and `useMemo` hook. `new Function()` now runs in Node.js (server-side) where CSP doesn't apply. The rendered HTML is sent to the browser without needing client-side code evaluation.
+- File changed: `src/components/shared/MDXContent.tsx`
 
-### VPS Deployment — Full Stack Setup
-- **Server:** Hostinger KVM 1, Ubuntu 24.04 LTS, 3.8GB RAM, 48GB disk
-- **IP:** 72.62.200.30
-- **Domain:** `orcachildinthewild.com` (DNS A record pointed from Wix)
-- **HTTPS:** Let's Encrypt SSL via Certbot (expires 2026-05-26, auto-renews)
+### Bug Fix — Newsletter Subscribe "Something went wrong"
+- **Symptom:** Newsletter subscribe in footer always showed "Something went wrong. Please try again."
+- **Root cause:** CSRF origin check in `src/app/actions/newsletter.ts` compares browser's `Origin` header against `NEXT_PUBLIC_SITE_URL`. The env var was `http://orcachildinthewild.com` but the browser sends `https://orcachildinthewild.com` — protocol mismatch fails the check.
+- **Fix:** Updated `.env.local` on VPS from `http://` to `https://`
+- File changed: VPS `/home/orcachild/ocinw-website/.env.local`
 
-**Infrastructure installed:**
-- Node.js v22.22.0
-- pnpm 10.30.2
-- PM2 6.0.14 (process manager)
-- Nginx 1.24.0 (reverse proxy)
-- Certbot 2.9.0 (SSL)
-
-**Deployment details:**
-- Repo cloned to `/home/orcachild/ocinw-website/`
-- App built (89 static pages)
-- PM2 manages Next.js process (`ocinw`)
-- Nginx reverse proxies port 80/443 → localhost:3000
-- HTTP auto-redirects to HTTPS
-
-### VPS Security Hardening
-- SSH root login disabled (`PermitRootLogin no`)
-- SSH on non-standard port 2222 (systemd socket override)
-- SSH restricted to `orcachild` user only (`AllowUsers orcachild`)
-- SSH MaxAuthTries 3
-- UFW firewall: deny-by-default, only 80/443/2222 open
-- Fail2Ban active monitoring SSH
-- Unattended security upgrades enabled
-- Nginx security headers (X-Frame-Options, X-Content-Type-Options, Referrer-Policy, Permissions-Policy)
-- Server version hidden (`server_tokens off`)
-- Hidden files blocked in Nginx
-- Port 3000 blocked externally by UFW
-
-### Security — Remaining Hardening (run as root in web console)
-```
-echo "PasswordAuthentication no" > /etc/ssh/sshd_config.d/99-security.conf && systemctl restart ssh
-usermod -s /usr/sbin/nologin ubuntu
-ufw delete allow 22/tcp
-```
-
-### Local Codebase Fixes
-- Added `ssh.md` to `.gitignore` (SSH private key was in repo directory)
-- SSH key moved to `~/.ssh/orcachild_vps` with proper permissions
+### Deployment
+- Committed both fixes to GitHub (`19b5a84`)
+- Pulled, rebuilt (89 static pages), and restarted PM2 on VPS
+- Verified: all page types return 200, MDX articles render full content, no error boundaries
 
 ---
 
-## What Was Completed Last Session (Session #12)
+## What Was Completed Last Session (Session #13)
 
-### Phase 9 — Education & Conservation Content (COMPLETE)
+### VPS Deployment + Velite Fix + Security Hardening
 See Completed.md for full details.
 
 ---
 
 ## What Should Be Done Next
 
-### Option A: Commit Phase 9 + Velite Fix + Push to GitHub
-Phase 9 code and the `next.config.ts` Velite fix are ready for commit.
-
-### Option B: Phase 10 — Events System
+### Option A: Phase 10 — Events System
 Events listing, detail pages, event registration, calendar view.
 
-### Option C: Run Remaining Security Hardening
-3 root commands in the web console (see above).
+### Option B: Run Remaining Security Hardening
+3 root commands in the web console (run as root):
+```
+echo "PasswordAuthentication no" > /etc/ssh/sshd_config.d/00-security.conf && systemctl restart ssh
+usermod -s /usr/sbin/nologin ubuntu
+ufw delete allow 22/tcp
+```
+Note: Use `00-security.conf` (not `99-`) because SSH uses first-match-wins and `50-cloud-init.conf` would override it.
 
-### Option D: PM2 Startup on Boot
+### Option C: PM2 Startup on Boot
 Run this as root in web console so the app survives server reboots:
 ```
 env PATH=$PATH:/usr/bin /usr/lib/node_modules/pm2/bin/pm2 startup systemd -u orcachild --hp /home/orcachild
@@ -194,12 +164,8 @@ cd ~/ocinw-website && git pull && pnpm install && pnpm build && pm2 restart ocin
 
 | Decision | Choice | Why | Session |
 | -------- | ------ | --- | ------- |
-| Velite import fix | Function constructor | Prevents CJS compilation from converting ESM import() | #13 |
-| Hosting | Hostinger VPS (not Vercel) | User already has VPS, more control, $0 additional cost | #13 |
-| SSH port | 2222 | Port 443 needed for HTTPS, 22 was the old default | #13 |
-| Domain DNS | Wix A record → VPS IP | Simplest approach, keeps domain at Wix for now | #13 |
-| Process manager | PM2 | Industry standard, auto-restart, easy deployment | #13 |
-| Reverse proxy | Nginx | Handles SSL, security headers, static caching | #13 |
+| MDXContent rendering | Server component | Avoids `unsafe-eval` in CSP; `new Function()` runs server-side where CSP doesn't apply | #14 |
+| SITE_URL protocol | `https://` | Must match browser Origin header for CSRF validation | #14 |
 
 ---
 

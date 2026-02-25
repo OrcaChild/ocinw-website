@@ -24,6 +24,7 @@
 | #11     | 2026-02-24  | Phase 7 Donations + Phase 8 Volunteers   | 2       |
 | #12     | 2026-02-24  | Phase 9 — Education & Conservation Content| 1       |
 | #13     | 2026-02-25  | VPS Deployment + Velite Fix + Security    | 2       |
+| #14     | 2026-02-25  | Production Bug Fixes (MDX CSP + Newsletter)| 1       |
 
 ---
 
@@ -581,6 +582,38 @@
   - Impact dashboard metrics are hardcoded — ready to pull from Supabase when DB is set up
   - Resources page links to real external sites (NOAA, CCC, Scripps, Birch Aquarium, etc.)
   - Each ecosystem/species detail page has a rich sidebar with structured data panels
+
+---
+
+## [BUGFIX] 2026-02-25 — Session #14: Production Bug Fixes (MDX CSP + Newsletter CSRF)
+
+### 1. MDX Content Pages + Newsletter Subscribe — Two Production Bugs Fixed
+- **What:** Fixed two bugs preventing MDX content pages from rendering and newsletter subscribe from working on the live production site at `https://orcachildinthewild.com`.
+- **Scope:**
+  - **Bug 1 — MDX pages showing "Something Went Wrong":**
+    - Root cause: `MDXContent.tsx` was a `"use client"` component using `new Function(code)` to evaluate Velite's compiled MDX. This requires `unsafe-eval` in the browser's Content Security Policy, but production CSP correctly only allows `script-src 'self' 'unsafe-inline'`.
+    - Fix: Converted `MDXContent.tsx` from client component to server component. Removed `"use client"` directive and `useMemo` hook. Changed `require("react/jsx-runtime")` to `import * as runtime from "react/jsx-runtime"`. `new Function()` now executes in Node.js where CSP doesn't apply. Rendered HTML is streamed to the browser — no client-side code evaluation needed.
+    - Bonus: Server-rendered MDX is better for SEO and performance (no client-side JavaScript needed for content).
+  - **Bug 2 — Newsletter subscribe always failing:**
+    - Root cause: CSRF origin validation in `src/app/actions/newsletter.ts` compares browser's `Origin` header against `NEXT_PUBLIC_SITE_URL` env var. The VPS `.env.local` had `http://orcachildinthewild.com` but the browser sends `https://orcachildinthewild.com` (site is HTTPS). Protocol mismatch → CSRF check fails → "Invalid request origin" error → generic "Something went wrong" shown to user.
+    - Fix: Updated `.env.local` on VPS from `http://` to `https://`.
+  - **Deployment:** Committed to GitHub (`19b5a84`), pulled on VPS, rebuilt (89 static pages), restarted PM2.
+  - **Verification:** Confirmed all page types (homepage, articles, species, ecosystems, projects, donate, weather) return HTTP 200 with correct content. MDX article body text renders fully. No error boundaries.
+- **Artifacts:**
+  - Modified: `src/components/shared/MDXContent.tsx` (client → server component)
+  - Modified: VPS `.env.local` (SITE_URL http → https)
+  - Modified: `.claude/Handoff.md`, `.claude/Completed.md`
+- **Acceptance Criteria:**
+  - [x] MDX content pages render without error boundary
+  - [x] Newsletter subscribe works on HTTPS site
+  - [x] Production CSP remains strict (no `unsafe-eval`)
+  - [x] `pnpm build` — 89 static pages generated successfully
+  - [x] All pages verified via curl on VPS
+- **Unblocks:** Live site is fully functional. All 89 pages render correctly. Forms work on HTTPS.
+- **Noteworthy:**
+  - CSP is a browser-only security mechanism — server components bypass it entirely since `new Function()` runs in Node.js
+  - This is a better architectural pattern anyway: MDX is static content that doesn't need client-side JS
+  - The CSRF bug would affect any server action (contact, volunteer) if they were submitted before this fix — all forms share the same origin validation pattern
 
 ---
 

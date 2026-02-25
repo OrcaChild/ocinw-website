@@ -20,6 +20,7 @@
 | #7      | 2026-02-22  | Pre-Phase 7 — Comprehensive Audit       | 1       |
 | #8      | 2026-02-22  | Grade Remediation (Security/i18n/A11y)  | 1       |
 | #9      | 2026-02-22  | Test Suite Implementation (O1, O6)      | 1       |
+| #10     | 2026-02-24  | Carlsbad Coastal Visual Redesign         | 1       |
 
 ---
 
@@ -451,6 +452,51 @@
   - `environmentMatchGlobs` patterns using forward slashes don't match Windows paths; per-file `// @vitest-environment` directives are more portable
   - Module-level state in API clients, rate limiter, and newsletter action requires `vi.resetModules()` + dynamic import per test block for isolation
   - E2E tests mock all external APIs (Open-Meteo, NOAA, Nominatim) via Playwright's `page.route()` — never hit real APIs
+
+---
+
+## [PHASE 2] 2026-02-24 — Session #10: Carlsbad Coastal Visual Redesign
+
+### 1. Full Visual Redesign — "Carlsbad Coastal" Theme
+- **What:** Transformed the site from a cold, corporate ocean-blue design into a warm, inviting Carlsbad, California coastal experience with real photography, modern 2026 layouts, and organic shapes
+- **Scope:**
+  - **Color palette overhaul (globals.css):** Shifted entire oklch palette warmer — ocean blues to warm sky blue (hue 215), teal to seafoam/sage (hue 168), sand to golden (hue 50-65), coral to sunset peach (hue 28-40), background from cold blue-white to warm cream/ivory. Dark mode from cold navy to warm charcoal. Body line-height increased to 1.7.
+  - **10 stock images sourced and downloaded:** All from Unsplash (free license). Hero coastal scene, tide pools, kids exploring, beach community, ocean waves, sea turtle, beach cleanup (x2), ocean sunset, sand texture. Organized in `public/images/` by category.
+  - **HeroSection redesign:** Replaced gradient + decorative blur circles with full-bleed coastal photo, warm gradient overlay, white text with drop shadows, glass-morphism donate button, organic SVG wave divider at bottom. Pill-shaped rounded-full CTAs. Min-height 85vh.
+  - **MissionCards redesign:** Full image backgrounds with gradient overlays (teal/ocean/coral). Text positioned at bottom over images. Glass-morphism icon badges. Hover zoom effect. Rounded-2xl containers.
+  - **FeaturedContent redesign:** Thumbnail images at top of cards with category tag badges. Hover zoom on images. "Read more" with animated arrow. Clean card layout with rounded-2xl.
+  - **GetInvolvedCTA redesign:** Two full-bleed background image cards (volunteers cleanup + ocean sunset). Gradient overlays with white pill-shaped CTAs. Glass-morphism icon badges. Tall cards (h-80/h-96).
+  - **ImpactCounter redesign:** Warm sand-50 background. Glass-morphism stat cards (bg-white/60 backdrop-blur). Icon circles with primary/10 tint.
+  - **WeatherPreview redesign:** Sand ripple texture background with ocean-to-teal gradient overlay. White centered text with pill CTA.
+  - **PartnersSection warmth:** Sand-50 background, rounded-2xl placeholder boxes, pill-shaped CTA.
+  - **Footer warmth:** Warm sand background + organic SVG wave divider at top edge.
+  - **13 translation keys added (EN + ES):** heroImageAlt, 3 mission image alts, 3 featured image alts, 3 featured tags, featuredReadMore, 2 involved image alts.
+- **Artifacts:**
+  - Modified: `src/app/globals.css` (full palette + typography overhaul)
+  - Modified: `src/components/home/HeroSection.tsx`, `MissionCards.tsx`, `FeaturedContent.tsx`, `GetInvolvedCTA.tsx`, `ImpactCounter.tsx`, `WeatherPreview.tsx`, `PartnersSection.tsx`
+  - Modified: `src/components/layout/Footer.tsx` (wave divider + warm bg)
+  - Modified: `messages/en.json`, `messages/es.json` (13 new keys each)
+  - New directory: `public/images/` with 6 subdirs (hero, marine, activities, landscapes, community, textures)
+  - New: 10 stock images from Unsplash
+- **Acceptance Criteria:**
+  - [x] `pnpm lint` — zero errors, zero warnings
+  - [x] `pnpm type-check` — zero TypeScript errors
+  - [x] `pnpm build` — 19 static pages, production build succeeds
+  - [x] `pnpm test` — 217 tests pass (13 files)
+  - [x] All images use Next.js `<Image>` with `alt`, `sizes`, `fill`
+  - [x] Hero image uses `priority` prop for above-fold loading
+  - [x] All new images have EN/ES alt text translations
+  - [x] Organic SVG wave dividers (no hard edges between sections)
+  - [x] Modern 2026 layouts: full-bleed, rounded-2xl, glass-morphism, hover zoom
+  - [x] No boxy/square 1998-style image containers
+  - [x] Dark mode uses warm charcoal tones
+- **Unblocks:** Phase 2 (Brand Identity) marked complete. Visual foundation ready for all future pages. Stock photos can be swapped for originals when user's photos are ready.
+- **Noteworthy:**
+  - Turbopack crashes on this Windows machine (`0xc0000142` DLL init). Use `pnpm dev --webpack` as workaround.
+  - User specifically requested "Carlsbad, CA" feel — warm, inviting, not overwhelming
+  - User requested modern 2026 aesthetic — "no square 1998 pictures on the page"
+  - All stock photos are placeholders — user is assembling original photos to replace them
+  - SVG wave dividers use `preserveAspectRatio="none"` for fluid responsive scaling
 
 ---
 

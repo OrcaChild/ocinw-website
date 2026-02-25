@@ -1,14 +1,14 @@
 # Handoff — Orca Child in the Wild
 
 > **Session Continuity Document**
-> Last updated: 2026-02-22
-> Session: #9 (Test Suite Implementation — COMPLETE)
+> Last updated: 2026-02-24
+> Session: #10 (Carlsbad Coastal Visual Redesign — COMPLETE)
 
 ---
 
 ## At A Glance
 
-**Current Phase:** Pre-Phase 7 — Test suite written | **Blockers:** 0 critical (1 remaining: O3 Supabase) | **Next Action:** Phase 7 (Donations) or Phase 8 (Volunteers)
+**Current Phase:** Phase 2 complete, pre-Phase 7 | **Blockers:** 0 critical (1 remaining: O3 Supabase) | **Next Action:** Phase 7 (Donations) or Phase 8 (Volunteers)
 
 ---
 
@@ -17,7 +17,7 @@
 | Phase                          | Status          | Dependencies                         | Notes                                                    |
 | ------------------------------ | --------------- | ------------------------------------ | -------------------------------------------------------- |
 | Phase 1 — Legal Foundation     | NOT STARTED     | None                                 | Independent of website dev; can run in parallel           |
-| Phase 2 — Brand Identity       | NOT STARTED     | None                                 | Design system defined in plan; no assets created          |
+| Phase 2 — Brand Identity       | **COMPLETE**    | None                                 | Carlsbad Coastal redesign — warm palette + images         |
 | Phase 3 — Tech Stack           | DECIDED         | None                                 | All technology choices locked in OCINW.MD                 |
 | Phase 4 — Project Scaffolding  | **COMPLETE**    | None                                 | 11 steps, 11 commits, all gates pass                     |
 | Phase 5 — Core Website         | **COMPLETE**    | Phase 4 ✅                           | All pages, nav, forms, error handling, security headers   |
@@ -35,50 +35,53 @@
 
 ## Currently In-Progress
 
-Nothing currently in-progress. All Session #9 test files written and verified.
+Nothing currently in-progress. Session #10 visual redesign complete.
 
 ---
 
-## What Was Completed This Session (Session #9 — Test Suite)
+## What Was Completed This Session (Session #10 — Carlsbad Coastal Redesign)
 
-### Test Suite Written — O1 CRITICAL and O6 MEDIUM closed
+### Full Visual Redesign — "Carlsbad Coastal" Theme
 
-**Unit Tests (217 tests, 13 files):**
-- Zod schemas: 48 tests (4 schemas, 100% boundary coverage)
-- Weather formatters: 53 tests (11 functions)
-- Geo utilities: 9 tests (haversine + findNearestStation)
-- Rate limiter: 8 tests (window reset, IP isolation, cleanup)
-- Utils (cn): 5 tests
-- Weather API client: 12 tests (caching, parallel fetch, error handling)
-- Tides API client: 15 tests (NOAA parsing, interpolation, caching)
-- Geolocation: 26 tests (GPS, ZIP, reverse geocode, localStorage)
-- useWeather hook: 7 tests (loading states, race conditions)
-- useTides hook: 8 tests (station switching, error handling)
-- useGeolocation hook: 11 tests (persist, clear, derived state)
-- Contact action: 7 tests (CSRF, rate limit, Zod validation)
-- Newsletter action: 8 tests (duplicate detection, case normalization)
+**Color Palette Overhaul (globals.css):**
+- Ocean blues: hue 220 → 215 (warm sky blue, morning Pacific light)
+- Teal: hue 180 → 168 (seafoam/sage, Batiquitos Lagoon sea glass)
+- Sand: hue 80 → 50-65, more saturated (Tamarack Beach golden hour)
+- Coral: hue 20-30 → 28-40 (sunset peach, not alarm-red)
+- Background: cold blue-white → warm cream/ivory
+- Dark mode: cold navy → warm charcoal (California evening, not submarine)
+- Body line-height: increased to 1.7 for relaxed readability
 
-**E2E Tests (4 Playwright files):**
-- Contact page: form rendering, validation, success toast, FAQ accordion
-- Newsletter: subscribe, duplicate, invalid email
-- Weather: API mocking, beach buttons, ZIP input
-- Navigation: logo, desktop nav, mobile drawer, skip-to-content, language toggle
+**10 Stock Images Downloaded (Unsplash, free license):**
+- `hero/coastal-golden-hour.jpg` (290KB) — golden SoCal coastline
+- `activities/tide-pool.jpg` (112KB) — rocky California coast
+- `activities/kids-exploring.jpg` (101KB) — youth in nature
+- `activities/beach-cleanup.jpg` (82KB) — volunteers on beach
+- `activities/volunteers-cleanup.jpg` (185KB) — cleanup action shot
+- `community/beach-community.jpg` (87KB) — people at the beach
+- `marine/ocean-wave.jpg` (185KB) — sunlit ocean waves
+- `marine/sea-turtle.jpg` (62KB) — sea turtle swimming
+- `landscapes/ocean-sunset.jpg` (287KB) — Pacific sunset
+- `textures/sand-ripples.jpg` (129KB) — beach texture
 
-**Accessibility Tests (1 Playwright file):**
-- 8 pages × 2 viewports (desktop 1280×720, mobile 375×812) = 16 test cases
-- axe-core WCAG 2.1 AA/A tag verification
+**Component Redesigns (modern 2026, no boxy layouts):**
+- HeroSection: full-bleed coastal photo + warm gradient overlay + organic SVG wave divider + glass-morphism CTA + pill-shaped buttons
+- MissionCards: full image backgrounds + gradient overlays + glass icon badges + hover zoom
+- FeaturedContent: thumbnail images + category tag badges + hover zoom + "Read more" arrows
+- GetInvolvedCTA: full-bleed card backgrounds + gradient overlays + white pill CTAs
+- ImpactCounter: warm sand background + glass-morphism stat cards
+- WeatherPreview: sand texture background + ocean-to-teal gradient + white CTA
+- PartnersSection: warm sand background + rounded-2xl placeholders
+- Footer: warm sand background + organic SVG wave divider at top
 
-### Infrastructure Changes
-- `vitest.config.ts` renamed to `vitest.config.mts` (ESM compatibility with Vitest 4 + Vite 7)
-- `tests/setup.ts` updated (conditional jest-dom import for node vs DOM environments)
-- `tests/vitest.d.ts` created (global type declarations for `describe`, `it`, `vi`, `expect`)
-- `happy-dom` installed as dev dependency (jsdom 28 has ESM chain issues)
+**Translation Keys Added (EN + ES):**
+- 13 new keys: heroImageAlt, 3 mission image alts, 3 featured image alts, 3 featured tags, featuredReadMore, 2 involved image alts
 
 ### Quality Gates — All Pass
-- `pnpm test` — 217 tests pass (13 files)
 - `pnpm lint` — zero errors, zero warnings
 - `pnpm type-check` — zero TypeScript errors
 - `pnpm build` — 19 static pages, production build succeeds
+- `pnpm test` — 217 tests pass (13 files)
 
 ---
 
@@ -90,8 +93,11 @@ Zeffy embed + donation page with impact tiers and donor recognition.
 ### Option B: Phase 8 (Volunteers)
 Volunteer signup form with age-gating, COPPA parental consent. Requires Supabase project.
 
-### Option C: Run E2E Tests Against Dev Server
-E2E and accessibility tests have been written but not executed against a live dev server (`pnpm test:e2e`, `pnpm test:a11y`). Running them would validate the full UI flow.
+### Option C: Swap Stock Photos for Originals
+User is currently putting together original photos. When ready, drop them into `public/images/` matching current filenames to replace stock photos.
+
+### Option D: Extend Visual Redesign to Inner Pages
+The about, contact, and weather pages still use the default layout styling. Could add hero images, warm section treatments, and organic dividers to these pages too.
 
 ### Remaining Open Issues (1)
 
@@ -107,7 +113,7 @@ E2E and accessibility tests have been written but not executed against a live de
 
 - **GitHub:** `https://github.com/OrcaChild/ocinw-website`
 - **Branch:** `main`
-- **Commits:** Phase 4 (11) + Phase 5 (1) + Phase 6 (1) + Session #8 fixes (1) + Session #9 tests (pending commit) = 14+ total
+- **Commits:** Phase 4 (11) + Phase 5 (1) + Phase 6 (1) + Session #8 fixes (1) + Session #9 tests (1) + Session #10 visual redesign (pending commit)
 - **Git config:** user.name="Orca Child", user.email="orcachildinthewild@gmail.com"
 - **GitHub CLI:** installed (`gh` v2.87.2) — auth via `gh auth login` in terminal when needed
 
@@ -118,7 +124,8 @@ E2E and accessibility tests have been written but not executed against a live de
 1. **Domain name not yet registered** — `orcachildinthewild.org` should be secured before deployment
 2. **Supabase project not created** — need free-tier project for DB features (Phase 8+)
 3. **Zeffy account not created** — requires registered nonprofit status for full donation setup
-4. **No logo or visual assets yet** — using Waves icon (lucide) as placeholder
+4. **No logo yet** — using Waves icon (lucide) as placeholder
+5. **Original photos in progress** — user assembling real photos to replace stock placeholders
 
 *None of these block Phase 7-9.*
 
@@ -137,7 +144,7 @@ E2E and accessibility tests have been written but not executed against a live de
 
 ## Decisions Made
 
-### Implementation Decisions (Sessions #2-9)
+### Implementation Decisions (Sessions #2-10)
 
 | Decision            | Choice               | Why                                     | Session |
 | ------------------- | -------------------- | --------------------------------------- | ------- |
@@ -157,6 +164,11 @@ E2E and accessibility tests have been written but not executed against a live de
 | DOM test env        | happy-dom            | jsdom 28 ESM chain incompatibility      | #9      |
 | Test env directive  | Per-file comments    | environmentMatchGlobs fails on Windows  | #9      |
 | Module isolation    | vi.resetModules()    | API clients/actions have module-level state | #9   |
+| Visual identity     | Carlsbad Coastal     | Warm, inviting SoCal feel — not corporate| #10    |
+| Image approach      | Full-bleed + overlays| Modern 2026 — no boxy square layouts    | #10     |
+| Stock photos        | Unsplash placeholders| $0 cost, user will swap in originals    | #10     |
+| Dark mode warmth    | Warm charcoal        | California evening, not submarine       | #10     |
+| Wave dividers       | SVG organic shapes   | No hard edges between sections          | #10     |
 
 ---
 
@@ -168,6 +180,7 @@ E2E and accessibility tests have been written but not executed against a live de
 - Node.js: v20.18.0
 - pnpm: 10.10.0
 - GitHub CLI: v2.87.2 (installed via winget)
+- **Note:** Turbopack crashes on this machine (`0xc0000142` DLL init failure). Use `pnpm dev --webpack` for dev server.
 
 ---
 
@@ -177,6 +190,23 @@ E2E and accessibility tests have been written but not executed against a live de
 - Zod v4.3.6 | next-intl v4.8.3
 - Vitest 4.0.18 | Playwright 1.58.2 | happy-dom 20.7.0
 - pnpm 10.10.0 | Node.js v20.18.0
+
+---
+
+## Image Library (public/images/)
+
+| File | Category | Size | Source | Replace With |
+|------|----------|------|--------|--------------|
+| `hero/coastal-golden-hour.jpg` | Hero background | 290KB | Unsplash | Original Carlsbad coastal photo |
+| `activities/tide-pool.jpg` | Mission: Protect | 112KB | Unsplash | Real SoCal tide pool photo |
+| `activities/kids-exploring.jpg` | Mission: Educate | 101KB | Unsplash | Jordyn + team exploring |
+| `activities/beach-cleanup.jpg` | Events thumbnail | 82KB | Unsplash | Real OCINW cleanup event |
+| `activities/volunteers-cleanup.jpg` | Volunteer CTA bg | 185KB | Unsplash | Real OCINW volunteer photo |
+| `community/beach-community.jpg` | Mission: Connect | 87KB | Unsplash | OCINW community gathering |
+| `marine/ocean-wave.jpg` | Articles thumbnail | 185KB | Unsplash | SoCal ocean photo |
+| `marine/sea-turtle.jpg` | Species thumbnail | 62KB | Unsplash | Local marine life photo |
+| `landscapes/ocean-sunset.jpg` | Donate CTA bg | 287KB | Unsplash | Carlsbad sunset |
+| `textures/sand-ripples.jpg` | Weather section bg | 129KB | Unsplash | Original beach texture |
 
 ---
 

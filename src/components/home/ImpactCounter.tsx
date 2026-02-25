@@ -68,8 +68,10 @@ function StatCard({
   const count = useCountUp(value, isVisible);
 
   return (
-    <div className="flex flex-col items-center gap-2 p-6 text-center">
-      <Icon className="size-8 text-primary" aria-hidden="true" />
+    <div className="flex flex-col items-center gap-3 rounded-2xl bg-white/60 p-6 text-center shadow-sm backdrop-blur-sm dark:bg-white/5">
+      <div className="flex size-12 items-center justify-center rounded-full bg-primary/10">
+        <Icon className="size-6 text-primary" aria-hidden="true" />
+      </div>
       <span className="font-heading text-3xl font-bold text-foreground sm:text-4xl">
         {count.toLocaleString()}
         {suffix}
@@ -105,13 +107,13 @@ export function ImpactCounter() {
   return (
     <section
       ref={sectionRef}
-      className="bg-muted/30 px-4 py-16 sm:px-6 lg:px-8"
+      className="relative overflow-hidden bg-sand-50 px-4 py-20 dark:bg-muted/30 sm:px-6 lg:px-8"
     >
       <div className="mx-auto max-w-7xl">
-        <h2 className="text-center font-heading text-3xl font-bold tracking-tight">
+        <h2 className="text-center font-heading text-3xl font-bold tracking-tight sm:text-4xl">
           {t("impactHeading")}
         </h2>
-        <div className="mt-10 grid grid-cols-2 gap-4 lg:grid-cols-4">
+        <div className="mt-12 grid grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-6">
           {impactStats.map((stat) => (
             <StatCard
               key={stat.key}

@@ -38,7 +38,17 @@ export function Footer() {
   const currentYear = new Date().getFullYear();
 
   return (
-    <footer className="border-t bg-muted/30">
+    <footer className="relative border-t bg-sand-50/50 dark:bg-muted/30">
+      {/* Organic wave divider at top */}
+      <div className="absolute -top-px left-0 w-full overflow-hidden" aria-hidden="true">
+        <svg
+          viewBox="0 0 1440 40"
+          className="block w-full fill-background"
+          preserveAspectRatio="none"
+        >
+          <path d="M0,20 C360,40 720,0 1080,20 C1260,30 1380,25 1440,20 L1440,0 L0,0 Z" />
+        </svg>
+      </div>
       <div className="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
         <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {/* Brand + Tagline */}

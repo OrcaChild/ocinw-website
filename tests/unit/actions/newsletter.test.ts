@@ -20,18 +20,26 @@ function createFormData(data: Record<string, string>): FormData {
   return fd;
 }
 
+// Mock Supabase insert — returns success by default
+const mockInsert = vi.fn().mockResolvedValue({ error: null });
+const mockFrom = vi.fn().mockReturnValue({ insert: mockInsert });
+
 describe("subscribeNewsletter", () => {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   let subscribeNewsletter: typeof import("@/app/actions/newsletter").subscribeNewsletter;
 
   beforeEach(async () => {
     vi.resetModules();
+    mockInsert.mockResolvedValue({ error: null });
 
     vi.doMock("next/headers", () => ({
       headers: vi.fn(),
     }));
     vi.doMock("@/lib/utils/rate-limit", () => ({
       checkRateLimit: vi.fn(),
+    }));
+    vi.doMock("@/lib/api/supabase-server", () => ({
+      createClient: vi.fn().mockResolvedValue({ from: mockFrom }),
     }));
 
     const mod = await import("@/app/actions/newsletter");
@@ -97,23 +105,24 @@ describe("subscribeNewsletter", () => {
     });
   });
 
-  it("returns duplicate for already-subscribed email", async () => {
-    const fd1 = createFormData({ email: "subscriber@example.com" });
-    const result1 = await subscribeNewsletter(fd1);
-    expect(result1.status).toBe("success");
+  it("returns duplicate when Supabase returns unique constraint violation", async () => {
+    mockInsert.mockResolvedValueOnce({
+      error: { code: "23505", message: "duplicate key value violates unique constraint" },
+    });
 
-    const fd2 = createFormData({ email: "subscriber@example.com" });
-    const result2 = await subscribeNewsletter(fd2);
-    expect(result2).toEqual({ status: "duplicate" });
+    const fd = createFormData({ email: "subscriber@example.com" });
+    const result = await subscribeNewsletter(fd);
+    expect(result).toEqual({ status: "duplicate" });
   });
 
-  it("normalizes email to lowercase for duplicate check", async () => {
-    const fd1 = createFormData({ email: "Test@Example.COM" });
-    await subscribeNewsletter(fd1);
+  it("returns error when Supabase returns unexpected error", async () => {
+    mockInsert.mockResolvedValueOnce({
+      error: { code: "42P01", message: "relation does not exist" },
+    });
 
-    const fd2 = createFormData({ email: "test@example.com" });
-    const result = await subscribeNewsletter(fd2);
-    expect(result).toEqual({ status: "duplicate" });
+    const fd = createFormData({ email: "test@example.com" });
+    const result = await subscribeNewsletter(fd);
+    expect(result).toEqual({ status: "error", message: "Something went wrong. Please try again." });
   });
 
   it("handles optional firstName field", async () => {

@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { newsletterFormSchema } from "@/lib/types/forms";
 import { checkRateLimit } from "@/lib/utils/rate-limit";
 import { isValidOrigin } from "@/lib/utils/csrf";
+import { createClient } from "@/lib/api/supabase-server";
 
 type NewsletterResult =
   | { status: "success" }
@@ -14,10 +15,6 @@ type NewsletterResult =
 // 5 attempts per hour per IP
 const NEWSLETTER_RATE_LIMIT = 5;
 const NEWSLETTER_RATE_WINDOW_MS = 60 * 60 * 1000; // 1 hour
-
-// In-memory set to track subscribed emails (until Supabase is connected)
-// In production, this will be replaced by a UNIQUE constraint on the email column.
-const subscribedEmails = new Set<string>();
 
 export async function subscribeNewsletter(
   formData: FormData,
@@ -56,18 +53,25 @@ export async function subscribeNewsletter(
     return { status: "error", message: "Please enter a valid email address." };
   }
 
-  // Check for duplicate subscription
   const normalizedEmail = parsed.data.email.toLowerCase();
-  if (subscribedEmails.has(normalizedEmail)) {
-    return { status: "duplicate" };
+
+  // Insert into Supabase — UNIQUE constraint on email handles duplicates
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("newsletter_subscribers")
+    .insert({
+      email: normalizedEmail,
+      first_name: parsed.data.firstName ?? null,
+    });
+
+  if (error) {
+    // Supabase returns code "23505" for unique constraint violation
+    if (error.code === "23505") {
+      return { status: "duplicate" };
+    }
+    console.error("Newsletter insert error:", error.code, error.message);
+    return { status: "error", message: "Something went wrong. Please try again." };
   }
-
-  // TODO: Insert into Supabase newsletter_subscribers table
-  // TODO: Check for duplicates via UNIQUE constraint on email column
-  // TODO: Send confirmation email via Resend
-
-  // Track this email as subscribed (in-memory until Supabase)
-  subscribedEmails.add(normalizedEmail);
 
   return { status: "success" };
 }

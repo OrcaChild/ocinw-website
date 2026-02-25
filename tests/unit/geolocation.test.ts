@@ -261,7 +261,7 @@ describe("isValidSoCalZip", () => {
 });
 
 // ---------------------------------------------------------------------------
-// localStorage persistence
+// sessionStorage persistence (V9 fix — no longer persists across sessions)
 // ---------------------------------------------------------------------------
 
 describe("saveLocation / loadSavedLocation / clearSavedLocation", () => {
@@ -269,7 +269,7 @@ describe("saveLocation / loadSavedLocation / clearSavedLocation", () => {
 
   beforeEach(() => {
     storage = {};
-    vi.stubGlobal("localStorage", {
+    vi.stubGlobal("sessionStorage", {
       getItem: (key: string) => storage[key] ?? null,
       setItem: (key: string, value: string) => {
         storage[key] = value;
@@ -284,7 +284,7 @@ describe("saveLocation / loadSavedLocation / clearSavedLocation", () => {
     vi.unstubAllGlobals();
   });
 
-  it("saves and loads location from localStorage", () => {
+  it("saves and loads location from sessionStorage", () => {
     saveLocation(mockLocationState);
     const loaded = loadSavedLocation();
     expect(loaded).toEqual(mockLocationState);
@@ -300,8 +300,8 @@ describe("saveLocation / loadSavedLocation / clearSavedLocation", () => {
     expect(loadSavedLocation()).toBeNull();
   });
 
-  it("handles localStorage errors gracefully on save", () => {
-    vi.stubGlobal("localStorage", {
+  it("handles sessionStorage errors gracefully on save", () => {
+    vi.stubGlobal("sessionStorage", {
       setItem: () => {
         throw new Error("QuotaExceededError");
       },
@@ -313,8 +313,8 @@ describe("saveLocation / loadSavedLocation / clearSavedLocation", () => {
     expect(() => saveLocation(mockLocationState)).not.toThrow();
   });
 
-  it("handles localStorage errors gracefully on load", () => {
-    vi.stubGlobal("localStorage", {
+  it("handles sessionStorage errors gracefully on load", () => {
+    vi.stubGlobal("sessionStorage", {
       getItem: () => {
         throw new Error("SecurityError");
       },

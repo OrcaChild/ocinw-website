@@ -135,26 +135,27 @@ export function isValidSoCalZip(zip: string): boolean {
 }
 
 // ---------------------------------------------------------------------------
-// Location Persistence (localStorage)
+// Location Persistence (sessionStorage — cleared when browser tab closes)
 // ---------------------------------------------------------------------------
 
 /**
- * Save location to localStorage for return visits.
+ * Save location to sessionStorage for the current browsing session.
+ * Data is automatically cleared when the tab/window closes (V9 fix).
  */
 export function saveLocation(location: LocationState): void {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(location));
+    sessionStorage.setItem(STORAGE_KEY, JSON.stringify(location));
   } catch {
-    // localStorage may be unavailable (incognito, full storage, etc.)
+    // sessionStorage may be unavailable (incognito, full storage, etc.)
   }
 }
 
 /**
- * Load previously saved location from localStorage.
+ * Load previously saved location from sessionStorage.
  */
 export function loadSavedLocation(): LocationState | null {
   try {
-    const stored = localStorage.getItem(STORAGE_KEY);
+    const stored = sessionStorage.getItem(STORAGE_KEY);
     if (!stored) return null;
     return JSON.parse(stored) as LocationState;
   } catch {
@@ -163,11 +164,11 @@ export function loadSavedLocation(): LocationState | null {
 }
 
 /**
- * Clear saved location.
+ * Clear saved location from sessionStorage.
  */
 export function clearSavedLocation(): void {
   try {
-    localStorage.removeItem(STORAGE_KEY);
+    sessionStorage.removeItem(STORAGE_KEY);
   } catch {
     // Ignore storage errors
   }

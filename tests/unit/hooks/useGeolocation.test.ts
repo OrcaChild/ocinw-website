@@ -49,7 +49,7 @@ describe("useGeolocation", () => {
     expect(result.current.hasLocation).toBe(false);
   });
 
-  it("loads saved location from localStorage on mount", async () => {
+  it("loads saved location from sessionStorage on mount", async () => {
     mockLoadSavedLocation.mockReturnValue({
       latitude: 34.02,
       longitude: -118.49,
@@ -148,7 +148,7 @@ describe("useGeolocation", () => {
     expect(result.current.hasLocation).toBe(true);
   });
 
-  it("clearLocation resets state and clears localStorage", () => {
+  it("clearLocation resets state and clears sessionStorage", () => {
     const { result } = renderHook(() => useGeolocation());
 
     // First set a location
@@ -183,7 +183,7 @@ describe("useGeolocation", () => {
     expect(result.current.hasLocation).toBe(false);
   });
 
-  it("persists location to localStorage when settled", async () => {
+  it("persists location to sessionStorage when settled", async () => {
     mockLookupZipCode.mockReturnValueOnce({
       latitude: 34.02,
       longitude: -118.49,

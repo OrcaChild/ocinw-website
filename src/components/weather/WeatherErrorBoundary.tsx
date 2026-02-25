@@ -16,7 +16,7 @@ type State = {
 
 /**
  * Error boundary that catches rendering errors in weather components.
- * Provides a "Reset Location" button to clear poisoned localStorage
+ * Provides a "Reset Location" button to clear poisoned sessionStorage
  * and restore the user to the location selector.
  */
 export class WeatherErrorBoundary extends Component<Props, State> {

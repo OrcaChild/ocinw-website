@@ -20,12 +20,17 @@ function createFormData(data: Record<string, string>): FormData {
   return fd;
 }
 
+// Mock Supabase insert — returns success by default
+const mockInsert = vi.fn().mockResolvedValue({ error: null });
+const mockFrom = vi.fn().mockReturnValue({ insert: mockInsert });
+
 describe("submitContactForm", () => {
   // eslint-disable-next-line @typescript-eslint/consistent-type-imports
   let submitContactForm: typeof import("@/app/actions/contact").submitContactForm;
 
   beforeEach(async () => {
     vi.resetModules();
+    mockInsert.mockResolvedValue({ error: null });
 
     // Re-apply mocks after resetModules
     vi.doMock("next/headers", () => ({
@@ -33,6 +38,9 @@ describe("submitContactForm", () => {
     }));
     vi.doMock("@/lib/utils/rate-limit", () => ({
       checkRateLimit: vi.fn(),
+    }));
+    vi.doMock("@/lib/api/supabase-server", () => ({
+      createClient: vi.fn().mockResolvedValue({ from: mockFrom }),
     }));
 
     const mod = await import("@/app/actions/contact");

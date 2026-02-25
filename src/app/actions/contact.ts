@@ -4,6 +4,7 @@ import { headers } from "next/headers";
 import { contactFormSchema } from "@/lib/types/forms";
 import { checkRateLimit } from "@/lib/utils/rate-limit";
 import { isValidOrigin } from "@/lib/utils/csrf";
+import { createClient } from "@/lib/api/supabase-server";
 
 type ContactResult =
   | { status: "success" }
@@ -57,8 +58,21 @@ export async function submitContactForm(
     };
   }
 
-  // TODO: Insert into Supabase contact_submissions table
-  // TODO: Send notification email to admin via Resend
+  // Insert into Supabase
+  const supabase = await createClient();
+  const { error } = await supabase
+    .from("contact_submissions")
+    .insert({
+      name: parsed.data.name,
+      email: parsed.data.email,
+      subject: parsed.data.subject,
+      message: parsed.data.message,
+    });
+
+  if (error) {
+    console.error("Contact insert error:", error.code, error.message);
+    return { status: "error", message: "Something went wrong. Please try again." };
+  }
 
   return { status: "success" };
 }

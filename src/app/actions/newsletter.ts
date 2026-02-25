@@ -29,6 +29,8 @@ export async function subscribeNewsletter(
   const expectedOrigin = new URL(siteUrl).origin;
 
   if (!origin || origin !== expectedOrigin) {
+    // Temporary debug — remove after diagnosis (no PII logged)
+    console.log("[CSRF DEBUG] origin:", origin, "expected:", expectedOrigin);
     return { status: "error", message: "Invalid request origin." };
   }
 

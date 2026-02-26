@@ -269,6 +269,11 @@ export function VolunteerForm() {
               <p className="text-amber-800 dark:text-amber-200">{t("parentNotice")}</p>
             </div>
 
+            <div className="flex items-start gap-3 rounded-lg bg-red-100/60 p-4 text-sm dark:bg-red-900/20" role="alert">
+              <AlertTriangle className="mt-0.5 size-5 shrink-0 text-red-600 dark:text-red-400" aria-hidden="true" />
+              <p className="font-medium text-red-800 dark:text-red-200">{t("parentPresentNotice")}</p>
+            </div>
+
             <FormField
               control={form.control}
               name="parentGuardianName"

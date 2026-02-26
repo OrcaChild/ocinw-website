@@ -122,7 +122,7 @@ const eventRegistrationBaseSchema = z.object({
   lastName: z.string().min(2, "Last name must be at least 2 characters").max(100, "Name is too long"),
   email: z.email("Please enter a valid email address"),
   phone: z.union([z.string().regex(/^\d{10}$/, "Please enter a valid 10-digit phone number"), z.literal("")]).optional(),
-  age: z.number().int().min(8, "Minimum age is 8").max(120, "Please enter a valid age"),
+  age: z.number().int().min(13, "Minimum age is 13. Children under 13 must be registered by a parent or guardian.").max(120, "Please enter a valid age"),
   parentEmail: z.union([z.email("Please enter a valid parent/guardian email"), z.literal("")]).optional(),
   emergencyContact: z.string().min(2, "Emergency contact name is required").max(100, "Name is too long"),
   emergencyPhone: z.string().regex(/^\d{10}$/, "Please enter a valid 10-digit phone number"),

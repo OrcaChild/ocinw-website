@@ -112,7 +112,7 @@ export async function submitEventRegistration(
     emergency_phone: data.emergencyPhone,
     num_participants: 1,
     status: registrationStatus,
-    parent_consent: data.age < 18,
+    parent_consent: false, // Always false at insert — set true only after parent verifies
     waiver_signed: true,
     waiver_signed_at: new Date().toISOString(),
   };
@@ -120,6 +120,10 @@ export async function submitEventRegistration(
   const { error } = await supabase.from("event_registrations").insert(row);
 
   if (error) {
+    // 23505 = unique_violation — duplicate registration for same event + email
+    if (error.code === "23505") {
+      return { status: "error", message: "You are already registered for this event." };
+    }
     console.error("Event registration error:", error.code, error.message);
     return { status: "error", message: "Something went wrong. Please try again." };
   }

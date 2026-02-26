@@ -311,10 +311,10 @@ describe("eventRegistrationSchema", () => {
     expect(withPhone.success).toBe(true);
   });
 
-  it("rejects age below 8", () => {
+  it("rejects age below 13", () => {
     const result = eventRegistrationSchema.safeParse({
       ...validEventRegistration,
-      age: 7,
+      age: 12,
     });
     expect(result.success).toBe(false);
   });

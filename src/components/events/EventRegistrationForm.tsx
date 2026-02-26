@@ -56,6 +56,7 @@ export function EventRegistrationForm({
   // eslint-disable-next-line react-hooks/incompatible-library -- form.watch() needed for conditional age-gating; React Compiler safely skips this component
   const age = form.watch("age");
   const isMinor = typeof age === "number" && age < 18;
+  const isUnder16 = typeof age === "number" && age >= 13 && age < 16;
 
   async function onSubmit(data: EventRegistrationData) {
     setIsSubmitting(true);
@@ -190,7 +191,7 @@ export function EventRegistrationForm({
                     <FormControl>
                       <Input
                         type="number"
-                        min={8}
+                        min={13}
                         max={120}
                         placeholder={t("agePlaceholder")}
                         {...field}
@@ -215,6 +216,13 @@ export function EventRegistrationForm({
                 <AlertTriangle className="mt-0.5 size-5 shrink-0 text-amber-600 dark:text-amber-400" aria-hidden="true" />
                 <p className="text-amber-800 dark:text-amber-200">{t("parentNotice")}</p>
               </div>
+
+              {isUnder16 && (
+                <div className="flex items-start gap-3 rounded-lg bg-red-100/60 p-4 text-sm dark:bg-red-900/20" role="alert">
+                  <AlertTriangle className="mt-0.5 size-5 shrink-0 text-red-600 dark:text-red-400" aria-hidden="true" />
+                  <p className="font-medium text-red-800 dark:text-red-200">{t("parentPresentNotice")}</p>
+                </div>
+              )}
 
               <FormField
                 control={form.control}

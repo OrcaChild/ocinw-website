@@ -3,33 +3,26 @@
 <br>
 
 <pre>
-        .  *    +   .  .    *    .   .    *     +  .    .  *
-              . *    .    .  .    *   .    .   .  *   .    .
-
-             ___  ____   ____    _
-            / _ \|  _ \ / ___|  / \          .  *
-           | | | | |_) | |     / _ \       ~~~~~~~
-           | |_| |  _ &lt;| |___ / ___ \    ~~~~~~~~~~~
-            \___/|_| \_\\____/_/   \_\  ~~~~~~~~~~~~~~~
-
-            C H I L D   I N   T H E   W I L D
-
-          ---- Protecting Our Waters from Shore to Sea ----
-
-            ~ ~~ ~~~ ~~  ~ ~~~ ~~ ~ ~~~  ~ ~~ ~~~ ~~ ~
-          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+       .  *    +   .       *    .        *     +  .    .  *
+             . *    .    .     *   .    .   .  *   .    .
+          .        *   .    +      .  *        .    +
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   ~~~    ~~~    ~~~    ~~~    ~~~    ~~~    ~~~    ~~~    ~~~    ~~~
+     ~ ~ ~    ~ ~ ~    ~ ~ ~    ~ ~ ~    ~ ~ ~    ~ ~ ~    ~ ~ ~
 </pre>
 
+# ORCA CHILD IN THE WILD
+
+**Protecting Our Waters from Shore to Sea**
+
+<em>"Every kid who picks up a piece of trash on the beach<br>
+without being asked is already an ocean steward.<br>
+They just need someone to tell them that matters."</em>
+
 <br>
 
-<h3><em>"Every kid who picks up a piece of trash on the beach<br>without being asked is already an ocean steward.<br>They just need someone to tell them that matters."</em></h3>
-
-<br>
-
-<p>
 <strong>A youth-run nonprofit dedicated to ocean, marine, river, lake, and pond conservation</strong><br>
 <em>across Southern California — from Los Angeles to San Diego</em>
-</p>
 
 <br>
 

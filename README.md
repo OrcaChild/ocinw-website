@@ -6,13 +6,20 @@
        .  *    +   .       *    .        *     +  .
              . *    .    .     *   .    .   .  *
           .        *   .    +      .  *        .
+</pre>
 
-               █████    █████     █████    █████      🐋
-       ██   ██   ██  ██   ██        ██   ██
-       ██   ██   █████    ██        ███████
-       ██   ██   ██ ██    ██        ██   ██
-        █████    ██  ██    █████    ██   ██
+<table cellpadding="0" cellspacing="0" border="0" align="center"><tr>
+<td><pre>
+  █████    █████     █████    █████
+ ██   ██   ██  ██   ██        ██   ██
+ ██   ██   █████    ██        ███████
+ ██   ██   ██ ██    ██        ██   ██
+  █████    ██  ██    █████    ██   ██
+</pre></td>
+<td valign="bottom"><img src="assets/img/ocitworca.png" width="90" alt="Orca mascot jumping out of the water"></td>
+</tr></table>
 
+<pre>
           C H I L D   I N   T H E   W I L D
 
        ---- Protecting Our Waters from Shore to Sea ----

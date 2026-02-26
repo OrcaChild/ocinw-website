@@ -2,13 +2,13 @@
 
 > **Session Continuity Document**
 > Last updated: 2026-02-25
-> Session: #18 (Security Fixes + Consent System + CI + README + License)
+> Session: #19 (README Redesign + VPS Deploy)
 
 ---
 
 ## At A Glance
 
-**Current Phase:** Phase 10 COMPLETE (code) — consent system built, security fixes applied, CI fixed | **Security:** 14/14 resolved | **Tests:** 238 passing | **Next Action:** Run SQL migrations → SEO foundations → deploy
+**Current Phase:** Phase 10 COMPLETE (code) — README redesigned, site deployed | **Security:** 14/14 resolved | **Tests:** 238 passing | **Next Action:** Run SQL migrations → SEO foundations
 
 ---
 
@@ -56,45 +56,29 @@ User wants to rank alongside orgs like Heal the Bay and OC Coastkeeper.
 
 Insert 2-3 sample events into the `events` table so pages have content.
 
-### 4. Push to GitHub & Deploy to VPS
-
-```bash
-git push
-ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30 \
-  "cd ~/ocinw-website && git pull && pnpm install --frozen-lockfile && pnpm build && pm2 restart ocinw"
-```
-
 ---
 
-## What Was Completed This Session (#18)
+## What Was Completed This Session (#19)
 
-### Security Fixes (E-A through E-E — all resolved)
-- **E-A (HIGH):** COPPA min age raised 8→13 in event registration schema
-- **E-B (MEDIUM):** CCPA `deleted_at` column added to event_registrations
-- **E-C (MEDIUM):** Duplicate registration prevention (UNIQUE constraint + 23505 handling)
-- **E-D (LOW):** `parent_consent` set to `false` before verification
-- **E-E (POLICY):** Under-16 parent-present notices on both forms
+### README Redesign — Visual Flair + Ocean Love
+- Redesigned README with block letter ██ ORCA header under a starry sky
+- Rewrote all content sections with emotional ocean conservation messaging
+- Added HTML table layouts, collapsible `<details>` sections, skillicons.dev tech stack icons
+- Stats banner: 238 tests / 23 pages / 10+ species / 7 stations / 14 vulns / 2 languages
+- "Why We Exist" section explains the orca child meaning — Jordyn is the orca child, and so is every kid
+- Features described with heart ("Written so a kid can teach their parents")
+- ASCII coastline map (Santa Monica → Imperial Beach)
+- Three-column layout for tide stations, ecosystems, species
+- COPPA consent system diagram in collapsible section
+- Performance targets as visual cards
+- Closing section ties back to orca child identity
+- Iterated through multiple header styles (ANSI Shadow → FIGlet → clean blocks) — settled on ██-only block letters
+- Created 10 header options file for user selection, user chose Option 1
+- Commits: `1b72cee`, `806508c`, `275669b`, `d3d5f29`, `7d1a10f`, `83f3de6`
 
-### CI Workflow Fix
-- Added `pnpm velite` step before type-check (generates `#content` module)
-- Added stub env vars so build completes in CI
-- Stopped 15+ consecutive failure emails
-
-### Marine-Themed GitHub README
-- Ocean wave ASCII art, mission, features, tech stack, security
-
-### Parental Consent Verification System (COPPA)
-- **DB:** `parent_consent_requests` + `consent_codes` tables with RLS
-- **Schemas:** `parentConsentRequestSchema`, `consentCodeSchema`, updated volunteer refinement
-- **Actions:** `submitParentConsentRequest` + `validateConsentCode` + volunteer action rewrite
-- **Form UX:** 4-mode state machine (initial → parent_contact → code_entry → full_form)
-- **Flow:** Minor submits ONLY parent info → org calls parent → admin generates 9-char code → code unlocks full form
-- **i18n:** ~22 new consent keys in EN/ES
-- **Tests:** 20 new tests (238 total)
-
-### Fully Restricted License
-- `LICENSE` file — All Rights Reserved
-- README updated from MIT to All Rights Reserved
+### VPS Deployment
+- Deployed all Session #18 + #19 changes to production VPS
+- Build succeeded: 91 static pages, PM2 restarted
 
 ---
 
@@ -122,7 +106,7 @@ ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30 \
 | SSH Command | `ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30` |
 | Web Console | Hostinger hPanel → VPS → Terminal |
 | App Path | `/home/orcachild/ocinw-website/` |
-| PM2 Process | `ocinw` (ID 1) |
+| PM2 Process | `ocinw` (ID 0) |
 | Domain | `www.orcachildinthewild.com` (canonical) |
 | SSL Expiry | 2026-05-26 (auto-renews) |
 | SITE_URL | `https://www.orcachildinthewild.com` |
@@ -143,6 +127,7 @@ ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30 \
 3. **No logo yet** — using Waves icon placeholder
 4. **Original photos in progress** — user assembling real photos
 5. **Admin code generation** — currently manual via Supabase SQL Editor (no admin UI yet)
+6. **Website content is filler** — user will work with Jordyn to create real content
 
 ---
 
@@ -150,12 +135,10 @@ ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30 \
 
 | Decision | Choice | Why |
 | -------- | ------ | --- |
-| Consent approach | Manual phone + 9-char alphanumeric code | Family-run org, personal verification preferred over automated email |
-| Form UX | 4-mode state machine | Zero child PII until parental consent verified |
-| Code format | 9-char A-Z0-9 uppercase | ~101 trillion possibilities, easy to read aloud |
-| Code lifetime | Single-use, 30-day expiry | Prevents code sharing/reuse |
-| License | All Rights Reserved | User wants fully restricted licensing |
-| CI fix | Velite before type-check | #content module must exist before tsc |
+| README header style | ██ block letters (Option 1) | Clean rendering on GitHub, no Unicode fringing |
+| README tone | Ocean love + emotional conservation messaging | User wants it to speak from the heart, not just list features |
+| "Orca Child" meaning | Jordyn + every kid who loves the ocean | Core identity: an orca child is any kid who feels the ocean belongs to them |
+| Content status | Filler — to be co-created with Jordyn | User acknowledged content is placeholder, real stories coming |
 
 ---
 

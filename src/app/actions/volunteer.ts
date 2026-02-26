@@ -10,6 +10,7 @@ type VolunteerResult =
   | { status: "success" }
   | { status: "error"; message: string }
   | { status: "duplicate" }
+  | { status: "invalid_code" }
   | { status: "rate_limited"; message: string };
 
 // 10 requests per minute per IP (form submissions)
@@ -64,6 +65,7 @@ export async function submitVolunteerForm(
     agreeToCodeOfConduct: formData.get("agreeToCodeOfConduct") === "true",
     agreeToPrivacy: formData.get("agreeToPrivacy") === "true",
     receiveUpdates: formData.get("receiveUpdates") === "true",
+    consentCode: formData.get("consentCode") || undefined,
   };
 
   const parsed = volunteerFormSchema.safeParse(rawData);
@@ -78,6 +80,29 @@ export async function submitVolunteerForm(
 
   const data = parsed.data;
   const isMinor = data.ageRange === "under-13" || data.ageRange === "13-17";
+  const supabase = await createClient();
+
+  // For minors: validate and prepare to consume the consent code
+  let consentCodeValue: string | null = null;
+  if (isMinor) {
+    consentCodeValue = (data.consentCode ?? "").toUpperCase().trim();
+
+    const { data: codeRow, error: codeError } = await supabase
+      .from("consent_codes")
+      .select("id, used_at, expires_at")
+      .eq("code", consentCodeValue)
+      .single();
+
+    if (codeError || !codeRow) {
+      return { status: "invalid_code" };
+    }
+    if (codeRow.used_at !== null) {
+      return { status: "invalid_code" };
+    }
+    if (new Date(codeRow.expires_at) < new Date()) {
+      return { status: "invalid_code" };
+    }
+  }
 
   // Build the row to insert — map camelCase form fields to snake_case DB columns
   const row: Record<string, unknown> = {
@@ -95,20 +120,21 @@ export async function submitVolunteerForm(
     agreed_to_terms: data.agreeToCodeOfConduct && data.agreeToPrivacy,
   };
 
-  // Parent/guardian fields for minors
+  // Parent/guardian fields for minors — consent verified via phone call + code
   if (isMinor) {
     row.parent_guardian_name = data.parentGuardianName ?? null;
     row.parent_guardian_email = data.parentGuardianEmail ?? null;
     row.parent_guardian_phone = data.parentGuardianPhone ?? null;
-    row.parent_consent_status = "pending";
-    row.parent_consent_token = crypto.randomUUID();
+    row.parent_consent_status = "verified";
+    row.parent_consent_date = new Date().toISOString();
   }
 
   // Insert into Supabase — UNIQUE constraint on email handles duplicates
-  const supabase = await createClient();
-  const { error } = await supabase
+  const { data: insertedVolunteer, error } = await supabase
     .from("volunteers")
-    .insert(row);
+    .insert(row)
+    .select("id")
+    .single();
 
   if (error) {
     if (error.code === "23505") {
@@ -118,9 +144,19 @@ export async function submitVolunteerForm(
     return { status: "error", message: "Something went wrong. Please try again." };
   }
 
+  // Consume the consent code (single-use — mark as used, link to volunteer)
+  if (isMinor && insertedVolunteer && consentCodeValue) {
+    await supabase
+      .from("consent_codes")
+      .update({
+        used_at: new Date().toISOString(),
+        used_by_volunteer_id: insertedVolunteer.id,
+      })
+      .eq("code", consentCodeValue);
+  }
+
   // TODO: Send confirmation email to volunteer via Resend
   // TODO: Send notification email to OCINW admin team
-  // TODO: If minor, send parental consent email with token link
 
   return { status: "success" };
 }

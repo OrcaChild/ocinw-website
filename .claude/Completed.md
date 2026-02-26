@@ -27,6 +27,8 @@
 | #14     | 2026-02-25  | Production Bug Fixes (MDX CSP + Newsletter)| 1       |
 | #15     | 2026-02-25  | Security Audit + CSRF Fixes               | 1       |
 | #16     | 2026-02-25  | V6 Supabase + V9 sessionStorage           | 1       |
+| #17     | 2026-02-25  | Phase 10 Events System                    | 1       |
+| #18     | 2026-02-25  | Security Fixes + Consent System + CI + README + License | 1 |
 
 ---
 
@@ -693,6 +695,81 @@
   - [ ] VPS `.env.local` still needs Supabase credentials (pending)
   - [ ] Nginx www redirect not yet configured (pending)
 - **Unblocks:** Security posture 9/9 in code. Database is live. Forms will persist data once VPS env vars are updated.
+
+---
+
+---
+
+## Session #17 — Phase 10 Events System (2026-02-25)
+
+- **Phase 10 Events System — Code Complete:**
+  - Full events system with listing page, detail page, registration form
+  - SQL migration, TypeScript types, data fetching, iCal API
+  - ~60 i18n keys in both EN/ES
+  - Committed as `6bba59c`
+- **VPS Priorities:**
+  - Updated VPS `.env.local` with real Supabase keys
+  - Nginx www redirect configured
+
+---
+
+## Session #18 — Security Fixes + Consent System + CI + README + License (2026-02-25)
+
+- **Security Fixes E-A through E-E (5 vulnerabilities resolved):**
+  - **E-A (HIGH):** COPPA min age raised 8→13 in `forms.ts` event registration schema
+  - **E-B (MEDIUM):** CCPA `deleted_at` column added to event_registrations migration
+  - **E-C (MEDIUM):** Duplicate registration prevention — UNIQUE constraint + 23505 error handling
+  - **E-D (LOW):** `parent_consent` set to `false` before verification (was incorrectly `true`)
+  - **E-E (POLICY):** Under-16 parent-present notices on both event and volunteer forms
+  - All 218 tests passing after fixes, deployed to VPS
+- **CI Workflow Fix:**
+  - Root cause: `#content` module not generated before `tsc --noEmit` in CI
+  - Added `pnpm velite` step before type-check in `.github/workflows/ci.yml`
+  - Added stub environment variables so build completes in CI
+  - Stopped 15+ consecutive CI failure emails
+- **Marine-Themed GitHub README:**
+  - Ocean wave ASCII art, mission statement, tech stack, security posture
+  - Professional marine conservation themed design
+- **Parental Consent Verification System (COPPA compliance):**
+  - **Database:** `supabase/migrations/003_parental_consent.sql` — `parent_consent_requests` + `consent_codes` tables with RLS, indexes, admin code generation SQL
+  - **Schemas:** `parentConsentRequestSchema` + `consentCodeSchema` in `forms.ts`, updated `volunteerFormSchema` refinement to require consent code for minors
+  - **Server actions:** `parent-consent.ts` — `submitParentConsentRequest` (CSRF + rate limit 5/hr) + `validateConsentCode` (rate limit 10/min)
+  - **Volunteer action:** Rewritten to validate + consume consent codes for minors, set `parent_consent_status: "verified"`, link code to volunteer ID
+  - **Form UX:** Complete VolunteerForm.tsx rewrite with 4-mode state machine: initial → parent_contact → code_entry → full_form
+    - Minor selects age → ALL personal fields hidden → only parent contact fields shown (zero child PII)
+    - Parent info submitted → phone call within 24 hours → admin generates 9-char alphanumeric code
+    - Code validated → full form unlocks with parent fields pre-populated
+    - "Already have a code?" shortcut for returning users
+  - **i18n:** ~22 new consent translation keys in both `en.json` and `es.json`
+  - **Tests:** 20 new tests — parentConsentRequestSchema (9 tests), consentCodeSchema (9 tests), minor consent code validation (3 tests)
+  - **Quality gates:** 238 tests pass, 0 lint errors, 0 type errors, build succeeds
+- **Fully Restricted License:**
+  - Created `LICENSE` file — All Rights Reserved, copyright Orca Child in the Wild
+  - Updated README badge and license section from MIT → All Rights Reserved
+- **Artifacts:**
+  - Created: `supabase/migrations/003_parental_consent.sql`
+  - Created: `src/app/actions/parent-consent.ts`
+  - Created: `LICENSE`
+  - Modified: `src/lib/types/forms.ts` (consent schemas + refinement)
+  - Modified: `src/app/actions/volunteer.ts` (consent code validation + consumption)
+  - Modified: `src/app/actions/event-registration.ts` (security fixes)
+  - Modified: `src/components/volunteer/VolunteerForm.tsx` (complete rewrite — 4-mode state machine)
+  - Modified: `src/components/events/EventRegistrationForm.tsx` (min age + under-16 notice)
+  - Modified: `messages/en.json` (~22 consent keys + FAQ update)
+  - Modified: `messages/es.json` (~22 consent keys + FAQ update)
+  - Modified: `tests/unit/schemas.test.ts` (20 new consent tests)
+  - Modified: `tests/fixtures/index.ts` (consent fixtures)
+  - Modified: `.github/workflows/ci.yml` (Velite step + stub env vars)
+  - Modified: `README.md` (license badge + section update)
+- **Acceptance Criteria:**
+  - [x] 5/5 security fixes applied and deployed
+  - [x] CI workflow passes (no more failure emails)
+  - [x] Consent system — 2-phase form UX, zero child PII until parental consent verified
+  - [x] 238 tests passing (20 new consent tests)
+  - [x] Fully restricted license in place
+  - [x] Marine-themed README on GitHub
+  - [ ] SQL migration `003_parental_consent.sql` not yet run in Supabase (pending)
+  - [ ] SEO foundations (sitemap, robots.txt, JSON-LD) deferred to next session
 
 ---
 

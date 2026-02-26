@@ -60,6 +60,24 @@ export const HOW_HEARD_OPTIONS = [
   "other",
 ] as const;
 
+/** Minor age ranges that require parental consent */
+export const MINOR_AGE_RANGES = ["under-13", "13-17"] as const;
+
+/** Parent consent request — Phase 1 of minor volunteer flow (zero child PII) */
+export const parentConsentRequestSchema = z.object({
+  parentName: z.string().min(2, "Parent/guardian name must be at least 2 characters").max(100, "Name is too long"),
+  parentEmail: z.email("Please enter a valid email address"),
+  parentPhone: z.string().regex(/^\d{10}$/, "Please enter a valid 10-digit phone number"),
+  ageRange: z.enum(MINOR_AGE_RANGES, { error: "Please select the child's age range" }),
+});
+
+export type ParentConsentRequestData = z.infer<typeof parentConsentRequestSchema>;
+
+/** Consent code validation — 9-character alphanumeric uppercase */
+export const consentCodeSchema = z.string()
+  .length(9, "Consent code must be exactly 9 characters")
+  .regex(/^[A-Z0-9]{9}$/, "Consent code must contain only uppercase letters and numbers");
+
 /** Volunteer registration form — full Phase 8 spec */
 const volunteerBaseSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters").max(100, "Name is too long"),
@@ -85,6 +103,7 @@ const volunteerBaseSchema = z.object({
     error: "You must agree to the privacy policy",
   }),
   receiveUpdates: z.boolean().optional(),
+  consentCode: z.string().optional(),
 });
 
 export const volunteerFormSchema = volunteerBaseSchema.refine(
@@ -94,13 +113,15 @@ export const volunteerFormSchema = volunteerBaseSchema.refine(
         !!data.parentGuardianName &&
         !!data.parentGuardianEmail &&
         data.parentGuardianEmail !== "" &&
-        !!data.parentGuardianPhone
+        !!data.parentGuardianPhone &&
+        !!data.consentCode &&
+        /^[A-Z0-9]{9}$/.test(data.consentCode)
       );
     }
     return true;
   },
   {
-    message: "Parent/guardian information is required for volunteers under 18",
+    message: "Parent/guardian information and consent code are required for volunteers under 18",
     path: ["parentGuardianName"],
   },
 );

@@ -8,12 +8,17 @@ import {
   volunteerFormSchema,
   newsletterFormSchema,
   eventRegistrationSchema,
+  parentConsentRequestSchema,
+  consentCodeSchema,
 } from "@/lib/types/forms";
 import {
   validContactForm,
   validVolunteerForm,
   validNewsletterForm,
   validEventRegistration,
+  validParentConsentRequest,
+  validConsentCode,
+  validMinorVolunteerForm,
 } from "../fixtures";
 
 // ---------------------------------------------------------------------------
@@ -130,7 +135,7 @@ describe("volunteerFormSchema", () => {
   it("accepts all valid ageRange values", () => {
     for (const range of ["under-13", "13-17", "18-25", "26-40", "41-60", "60+"]) {
       const data = range === "under-13" || range === "13-17"
-        ? { ...validVolunteerForm, ageRange: range, parentGuardianName: "Pat Smith", parentGuardianEmail: "pat@example.com", parentGuardianPhone: "3105551234" }
+        ? { ...validVolunteerForm, ageRange: range, parentGuardianName: "Pat Smith", parentGuardianEmail: "pat@example.com", parentGuardianPhone: "3105551234", consentCode: "A3B7C9D2E" }
         : { ...validVolunteerForm, ageRange: range };
       const result = volunteerFormSchema.safeParse(data);
       expect(result.success).toBe(true);
@@ -173,15 +178,32 @@ describe("volunteerFormSchema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("accepts minor with complete parent info", () => {
+  it("accepts minor with complete parent info and consent code", () => {
+    const result = volunteerFormSchema.safeParse(validMinorVolunteerForm);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects minor without consent code", () => {
+    const result = volunteerFormSchema.safeParse({
+      ...validVolunteerForm,
+      ageRange: "13-17",
+      parentGuardianName: "Pat Smith",
+      parentGuardianEmail: "pat@example.com",
+      parentGuardianPhone: "3105551234",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects minor with invalid consent code format", () => {
     const result = volunteerFormSchema.safeParse({
       ...validVolunteerForm,
       ageRange: "under-13",
       parentGuardianName: "Pat Smith",
       parentGuardianEmail: "pat@example.com",
       parentGuardianPhone: "3105551234",
+      consentCode: "short",
     });
-    expect(result.success).toBe(true);
+    expect(result.success).toBe(false);
   });
 
   it("validates parentGuardianEmail format when provided", () => {
@@ -191,6 +213,7 @@ describe("volunteerFormSchema", () => {
       parentGuardianName: "Pat Smith",
       parentGuardianEmail: "bad-email",
       parentGuardianPhone: "3105551234",
+      consentCode: "A3B7C9D2E",
     });
     expect(result.success).toBe(false);
   });
@@ -377,6 +400,132 @@ describe("eventRegistrationSchema", () => {
       ...validEventRegistration,
       waiverAccepted: "yes",
     });
+    expect(result.success).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// parentConsentRequestSchema
+// ---------------------------------------------------------------------------
+
+describe("parentConsentRequestSchema", () => {
+  it("accepts valid parent consent request", () => {
+    const result = parentConsentRequestSchema.safeParse(validParentConsentRequest);
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects parentName shorter than 2 characters", () => {
+    const result = parentConsentRequestSchema.safeParse({
+      ...validParentConsentRequest,
+      parentName: "P",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid parentEmail", () => {
+    const result = parentConsentRequestSchema.safeParse({
+      ...validParentConsentRequest,
+      parentEmail: "bad-email",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects invalid parentPhone (not 10 digits)", () => {
+    const result = parentConsentRequestSchema.safeParse({
+      ...validParentConsentRequest,
+      parentPhone: "555123",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects non-digit parentPhone", () => {
+    const result = parentConsentRequestSchema.safeParse({
+      ...validParentConsentRequest,
+      parentPhone: "310-555-12",
+    });
+    expect(result.success).toBe(false);
+  });
+
+  it("accepts 10-digit parentPhone", () => {
+    const result = parentConsentRequestSchema.safeParse({
+      ...validParentConsentRequest,
+      parentPhone: "3105551234",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts under-13 age range", () => {
+    const result = parentConsentRequestSchema.safeParse({
+      ...validParentConsentRequest,
+      ageRange: "under-13",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts 13-17 age range", () => {
+    const result = parentConsentRequestSchema.safeParse({
+      ...validParentConsentRequest,
+      ageRange: "13-17",
+    });
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects adult age range", () => {
+    const result = parentConsentRequestSchema.safeParse({
+      ...validParentConsentRequest,
+      ageRange: "18-25",
+    });
+    expect(result.success).toBe(false);
+  });
+});
+
+// ---------------------------------------------------------------------------
+// consentCodeSchema
+// ---------------------------------------------------------------------------
+
+describe("consentCodeSchema", () => {
+  it("accepts valid 9-character alphanumeric code", () => {
+    const result = consentCodeSchema.safeParse(validConsentCode);
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts all-uppercase letters", () => {
+    const result = consentCodeSchema.safeParse("ABCDEFGHI");
+    expect(result.success).toBe(true);
+  });
+
+  it("accepts all digits", () => {
+    const result = consentCodeSchema.safeParse("123456789");
+    expect(result.success).toBe(true);
+  });
+
+  it("rejects lowercase letters", () => {
+    const result = consentCodeSchema.safeParse("a3b7c9d2e");
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects code shorter than 9 characters", () => {
+    const result = consentCodeSchema.safeParse("A3B7C9D2");
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects code longer than 9 characters", () => {
+    const result = consentCodeSchema.safeParse("A3B7C9D2EF");
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects code with special characters", () => {
+    const result = consentCodeSchema.safeParse("A3B7C9D2!");
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects code with spaces", () => {
+    const result = consentCodeSchema.safeParse("A3B 7C9D2");
+    expect(result.success).toBe(false);
+  });
+
+  it("rejects empty string", () => {
+    const result = consentCodeSchema.safeParse("");
     expect(result.success).toBe(false);
   });
 });

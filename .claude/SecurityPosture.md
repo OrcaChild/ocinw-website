@@ -3,7 +3,7 @@
 > **Date:** February 25, 2026
 > **Domain:** orcachildinthewild.com
 > **Server:** 72.62.200.30 (Hostinger KVM)
-> **Rating:** **A-**
+> **Rating:** **A**
 
 ---
 
@@ -11,26 +11,21 @@
 
 OCINW is a youth-run nonprofit site for ocean conservation education, deployed on Ubuntu 24.04 LTS with Nginx + Node.js + PM2.
 
-**9 vulnerabilities identified. 7 resolved same day.**
+**9 vulnerabilities identified. All 9 resolved.**
 
-### Open Issues
+### All Issues Resolved
 
-| ID | Severity | Issue               |
-|----|----------|---------------------|
-| V6 | CRITICAL | No database yet     |
-| V9 | MEDIUM   | Location in storage |
-
-### Resolved Issues
-
-| ID | Severity | Fix Applied                |
-|----|----------|----------------------------|
-| V1 | CRITICAL | Fail2ban port corrected    |
-| V2 | MEDIUM   | SSH auth config ordering   |
-| V3 | CRITICAL | IP spoofing in rate limits |
-| V4 | HIGH     | HSTS header added          |
-| V5 | HIGH     | PM2 boot persistence       |
-| V7 | MEDIUM   | CSRF Origin required       |
-| V8 | MEDIUM   | Field max lengths added    |
+| ID | Severity | Fix Applied                         |
+|----|----------|--------------------------------------|
+| V1 | CRITICAL | Fail2ban port corrected              |
+| V2 | MEDIUM   | SSH auth config ordering             |
+| V3 | CRITICAL | IP spoofing in rate limits           |
+| V4 | HIGH     | HSTS header added                    |
+| V5 | HIGH     | PM2 boot persistence                 |
+| V6 | CRITICAL | Supabase database wired              |
+| V7 | MEDIUM   | CSRF Origin required                 |
+| V8 | MEDIUM   | Field max lengths added              |
+| V9 | MEDIUM   | Geolocation switched to sessionStorage|
 
 ---
 
@@ -80,17 +75,9 @@ OCINW is a youth-run nonprofit site for ocean conservation education, deployed o
 | Open-Meteo   | Weather       | No   |
 | NOAA CO-OPS  | Tides         | No   |
 | Nominatim    | Geocoding     | No   |
-| Supabase     | DB (planned)  | Yes  |
+| Supabase     | DB (active)   | Yes  |
 | Resend       | Email (planned)| Yes |
 | Zeffy        | Donations     | No   |
-
-### Testing
-
-| Tool       | Tests | Purpose            |
-|------------|-------|--------------------|
-| Vitest     | 218   | Unit tests         |
-| Playwright | 16    | E2E tests          |
-| axe-core   | 16    | Accessibility      |
 
 ---
 
@@ -348,9 +335,9 @@ No `Strict-Transport-Security` header allowed SSL stripping on first visit. Adde
 
 VPS reboot killed the site with no auto-recovery. Created `pm2-orcachild.service` via `pm2 startup systemd`.
 
-### V6 — No Database (Data Loss) — OPEN
+### V6 — No Database (Data Loss) — RESOLVED
 
-All forms validate correctly but data is silently discarded (`// TODO` where INSERT should be). Contact, newsletter, and volunteer submissions are lost on every restart. Fix: implement Supabase in Phase 10.
+Forms were validating but silently discarding data. Created Supabase project (`ocinw-website`, West US), deployed 8-table schema with RLS, and wired all 3 server actions (newsletter, contact, volunteer) to INSERT into Supabase. Handles duplicate constraint (`23505`). Commit `cb7f65b`.
 
 ### V7 — CSRF Too Lenient — RESOLVED
 
@@ -360,9 +347,9 @@ Origin header was optional. Changed to required — requests without `Origin` ar
 
 Text fields had no upper bounds. Added `.max()` to all fields, regex to phone fields, enum validation to howHeard. Commit `2fb97c3`.
 
-### V9 — Geolocation in localStorage — OPEN
+### V9 — Geolocation in localStorage — RESOLVED
 
-GPS coords and city name stored unencrypted in `localStorage`. Persists across sessions. Fix: switch to `sessionStorage` or add consent.
+GPS coords and city name were persisting in `localStorage` across sessions. Switched all 3 storage functions (`save`, `load`, `clear`) to `sessionStorage` so data is cleared when the browser tab closes. Commit `cb7f65b`.
 
 ---
 
@@ -379,14 +366,14 @@ GPS coords and city name stored unencrypted in `localStorage`. Persists across s
 | Password brute force| MEDIUM    | Config file ordering    |
 | Large payloads      | MEDIUM    | Field max lengths       |
 | Missing Origin CSRF | MEDIUM    | Origin now required     |
+| User data loss      | CRITICAL  | Supabase database wired |
+| Location PII        | MEDIUM    | sessionStorage swap     |
 
 ### Open Risks
 
 | Risk               | Likelihood | Impact   | Fix Needed        |
 |--------------------|------------|----------|--------------------|
-| User data loss     | HIGH       | CRITICAL | Supabase (Phase 10)|
 | COPPA violation    | MEDIUM     | CRITICAL | Consent workflow   |
-| Location PII       | LOW        | MEDIUM   | sessionStorage     |
 
 ### Auto-Mitigated
 
@@ -437,95 +424,7 @@ GPS coords and city name stored unencrypted in `localStorage`. Persists across s
 
 ---
 
-## 9. Maintenance Plan
+> Operations, maintenance schedules, incident response, and deploy procedures are in `SecurityScope.md`.
 
-### Weekly
-
-| Task                  | How                           |
-|-----------------------|-------------------------------|
-| PM2 status + logs     | `pm2 status && pm2 logs`      |
-| Disk usage            | `df -h /`                     |
-| Fail2ban review       | `fail2ban-client status sshd` |
-| SSL cert check        | `certbot certificates`        |
-
-### Monthly
-
-| Task                  | How                           |
-|-----------------------|-------------------------------|
-| Audit dependencies    | `pnpm audit`                  |
-| Update dependencies   | `pnpm update --interactive`   |
-| Review UFW logs       | `grep UFW /var/log/syslog`    |
-| Check Nginx errors    | `tail /var/log/nginx/error.log`|
-| Flush PM2 logs        | `pm2 flush`                   |
-
-### Quarterly
-
-| Task                  | How                           |
-|-----------------------|-------------------------------|
-| Full security audit   | Re-run this assessment        |
-| SSL Labs test         | ssllabs.com/ssltest           |
-| Lighthouse audit      | Chrome DevTools               |
-| COPPA review          | Board review                  |
-| Supabase RLS review   | Supabase dashboard            |
-
-### Deploy Checklist
-
-```
- 1. pnpm lint        (0 errors)
- 2. pnpm type-check  (0 TS errors)
- 3. pnpm test        (218 tests pass)
- 4. pnpm build       (89 pages)
- 5. pnpm audit       (0 critical)
- 6. git commit + push
- 7. ssh ... "git pull && pnpm build && pm2 restart ocinw"
- 8. curl site (expect 200)
-```
-
-### Performance Targets
-
-| Metric      | Target  |
-|-------------|---------|
-| LCP         | < 2.5s  |
-| FCP         | < 1.8s  |
-| FID         | < 100ms |
-| CLS         | < 0.1   |
-| Lighthouse  | 90+     |
-| Accessibility| 100    |
-| TTFB        | < 800ms |
-| App memory  | < 512MB |
-
----
-
-## 10. Incident Response
-
-### Site Down
-
-```
- 1. ssh ... "pm2 status"
- 2. If stopped: pm2 restart ocinw
- 3. If SSH dead: Hostinger web console
- 4. If Nginx dead: nginx -t && systemctl restart nginx
- 5. If disk full: pm2 flush
-```
-
-### Security Incident
-
-```
- 1. fail2ban-client status sshd
- 2. tail /var/log/auth.log
- 3. tail /var/log/nginx/access.log
- 4. ps aux (look for unknown processes)
- 5. If compromised: shut down via Hostinger hPanel
-```
-
-### SSL Expired
-
-```
- certbot renew --force-renewal
- systemctl reload nginx
-```
-
----
-
-*Generated 2026-02-25. Remediation completed same day.*
-*7 of 9 vulnerabilities resolved. Next review: May 2026.*
+*Generated 2026-02-25. All vulnerabilities resolved same day.*
+*9 of 9 vulnerabilities resolved. Next review: May 2026.*

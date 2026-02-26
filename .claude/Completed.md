@@ -25,6 +25,8 @@
 | #12     | 2026-02-24  | Phase 9 — Education & Conservation Content| 1       |
 | #13     | 2026-02-25  | VPS Deployment + Velite Fix + Security    | 2       |
 | #14     | 2026-02-25  | Production Bug Fixes (MDX CSP + Newsletter)| 1       |
+| #15     | 2026-02-25  | Security Audit + CSRF Fixes               | 1       |
+| #16     | 2026-02-25  | V6 Supabase + V9 sessionStorage           | 1       |
 
 ---
 
@@ -614,6 +616,83 @@
   - CSP is a browser-only security mechanism — server components bypass it entirely since `new Function()` runs in Node.js
   - This is a better architectural pattern anyway: MDX is static content that doesn't need client-side JS
   - The CSRF bug would affect any server action (contact, volunteer) if they were submitted before this fix — all forms share the same origin validation pattern
+
+---
+
+## [SECURITY] 2026-02-25 — Session #15: Security Audit + Hardening + CSRF www Fix
+
+### 1. Comprehensive Security Posture Report + 7/9 Vulnerability Remediation
+- **What:** Created pentester-level security audit, identified 9 vulnerabilities, and resolved 7 of them (V1-V5 on VPS, V3/V7/V8 in code, plus CSRF www-tolerance fix).
+- **Scope:**
+  - Created `.claude/SecurityPosture.md` — 10 sections, ~530 lines covering infrastructure, app security, vulnerabilities, compliance, maintenance
+  - **V1 (CRITICAL):** Fail2ban monitoring wrong port — fixed `jail.local` to port 2222
+  - **V2 (MEDIUM):** SSH auth config load ordering — renamed to `00-security.conf`
+  - **V3 (CRITICAL):** IP spoofing via `x-forwarded-for` — switched all 3 server actions to `x-real-ip`
+  - **V4 (HIGH):** Missing HSTS header — added to Nginx config
+  - **V5 (HIGH):** PM2 not boot-persistent — created `pm2-orcachild.service`
+  - **V7 (MEDIUM):** CSRF Origin header was optional — now required (reject if missing)
+  - **V8 (MEDIUM):** No field max lengths — added `.max()` to all Zod schemas
+  - **CSRF www fix:** Created shared `src/lib/utils/csrf.ts` with `isValidOrigin()` that strips `www.` before comparing
+- **Artifacts:**
+  - Created: `.claude/SecurityPosture.md`
+  - Created: `src/lib/utils/csrf.ts`
+  - Modified: `src/app/actions/newsletter.ts`, `contact.ts`, `volunteer.ts` (shared CSRF helper)
+  - Modified: `src/lib/types/forms.ts` (field max lengths)
+  - Modified: VPS — `jail.local`, SSH config, Nginx, PM2 systemd service
+- **Acceptance Criteria:**
+  - [x] 7 of 9 vulnerabilities resolved
+  - [x] 218 tests passing
+  - [x] Zero lint/type errors
+  - [x] Production build succeeds (89 pages)
+  - [x] VPS deployed and live
+- **Unblocks:** Site hardened for public use. Only V6 (database) and V9 (sessionStorage) remained.
+
+---
+
+## [SECURITY] 2026-02-25 — Session #16: V6 Supabase Database + V9 sessionStorage Fix
+
+### 1. Supabase Database Setup + All Server Actions Wired + sessionStorage Fix
+- **What:** Resolved the final 2 security vulnerabilities — V6 (no database persistence) by creating Supabase project, deploying schema, and wiring all 3 server actions; V9 (geolocation PII in localStorage) by switching to sessionStorage.
+- **Scope:**
+  - **V9 Fix — sessionStorage:**
+    - Changed `localStorage` → `sessionStorage` in `src/lib/api/geolocation.ts` (3 functions: save, load, clear)
+    - Updated comment in `WeatherErrorBoundary.tsx`
+    - Updated test mocks in `geolocation.test.ts` and `useGeolocation.test.ts`
+    - GPS coordinates now cleared when browser tab closes — no persistent PII
+  - **V6 Fix — Supabase Database:**
+    - Created Supabase project: `ocinw-website` (West US region)
+    - Created `supabase/schema.sql` — 8 tables, 16 indexes, RLS on all tables, 13 RLS policies, 3 auto-update triggers
+    - User ran schema in Supabase SQL Editor — success
+    - Wired `src/app/actions/newsletter.ts` — removed in-memory Set, added Supabase INSERT, handles `23505` duplicate constraint
+    - Wired `src/app/actions/contact.ts` — added Supabase INSERT for contact submissions
+    - Wired `src/app/actions/volunteer.ts` — added Supabase INSERT with camelCase→snake_case mapping, `crypto.randomUUID()` for parental consent tokens, added `"duplicate"` result status
+  - **Local `.env.local`** — created with real Supabase credentials
+  - **Tests updated** — Supabase mocked in newsletter and contact test files
+  - **Quality gates** — 218 tests pass, 0 lint errors, 0 type errors, build succeeds (89 pages)
+  - **Git** — committed as `cb7f65b`, pushed to GitHub
+  - **VPS partial deploy** — code pulled and built, but `.env.local` still has placeholder Supabase keys (web console paste issues)
+- **Artifacts:**
+  - Created: `supabase/schema.sql` (complete 8-table schema)
+  - Created: `.env.local` (Supabase credentials)
+  - Modified: `src/lib/api/geolocation.ts` (localStorage → sessionStorage)
+  - Modified: `src/components/weather/WeatherErrorBoundary.tsx` (comment update)
+  - Modified: `src/app/actions/newsletter.ts` (Supabase INSERT)
+  - Modified: `src/app/actions/contact.ts` (Supabase INSERT)
+  - Modified: `src/app/actions/volunteer.ts` (Supabase INSERT + consent tokens)
+  - Modified: `tests/unit/actions/newsletter.test.ts` (Supabase mock)
+  - Modified: `tests/unit/actions/contact.test.ts` (Supabase mock)
+  - Modified: `tests/unit/geolocation.test.ts` (sessionStorage mock)
+  - Modified: `tests/unit/hooks/useGeolocation.test.ts` (test descriptions)
+- **Acceptance Criteria:**
+  - [x] All 9/9 vulnerabilities resolved in code
+  - [x] Supabase schema deployed with RLS
+  - [x] All 3 server actions write to database
+  - [x] 218 tests passing with Supabase mocks
+  - [x] Zero lint/type errors, build succeeds
+  - [x] Code pushed to GitHub
+  - [ ] VPS `.env.local` still needs Supabase credentials (pending)
+  - [ ] Nginx www redirect not yet configured (pending)
+- **Unblocks:** Security posture 9/9 in code. Database is live. Forms will persist data once VPS env vars are updated.
 
 ---
 

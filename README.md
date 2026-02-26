@@ -3,21 +3,27 @@
 <br>
 
 <pre>
-       .  *    +   .       *    .        *     +  .    .  *
-             . *    .    .     *   .    .   .  *   .    .
-          .        *   .    +      .  *        .    +
-  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-   ~~~    ~~~    ~~~    ~~~    ~~~    ~~~    ~~~    ~~~    ~~~    ~~~
-     ~ ~ ~    ~ ~ ~    ~ ~ ~    ~ ~ ~    ~ ~ ~    ~ ~ ~    ~ ~ ~
+       .  *    +   .       *    .        *     +  .
+             . *    .    .     *   .    .   .  *
+          .        *   .    +      .  *        .
+
+        █████    █████     █████    █████      🐋
+       ██   ██   ██  ██   ██        ██   ██
+       ██   ██   █████    ██        ███████
+       ██   ██   ██ ██    ██        ██   ██
+        █████    ██  ██    █████    ██   ██
+
+          C H I L D   I N   T H E   W I L D
+
+       ---- Protecting Our Waters from Shore to Sea ----
+
+         ~ ~~ ~~~ ~~  ~ ~~~ ~~ ~ ~~~  ~ ~~ ~~~ ~~ ~
+       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 </pre>
 
-# ORCA CHILD IN THE WILD
+<br>
 
-**Protecting Our Waters from Shore to Sea**
-
-<em>"Every kid who picks up a piece of trash on the beach<br>
-without being asked is already an ocean steward.<br>
-They just need someone to tell them that matters."</em>
+<h3><em>"Every kid who picks up a piece of trash on the beach<br>without being asked is already an ocean steward.<br>They just need someone to tell them that matters."</em></h3>
 
 <br>
 

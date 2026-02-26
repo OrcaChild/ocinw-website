@@ -76,6 +76,7 @@
   --color-ocean-700: oklch(0.41 0.10 215);
   --color-ocean-800: oklch(0.34 0.08 215);
   --color-ocean-900: oklch(0.28 0.06 215);
+  --color-ocean-950: oklch(0.20 0.04 215);
 
   /* Teal/Seafoam: Sea glass and sage — Batiquitos Lagoon */
   --color-teal-50: oklch(0.97 0.015 168);
@@ -88,6 +89,7 @@
   --color-teal-700: oklch(0.40 0.07 168);
   --color-teal-800: oklch(0.34 0.06 168);
   --color-teal-900: oklch(0.28 0.05 168);
+  --color-teal-950: oklch(0.20 0.03 168);
 
   /* Sand: Golden sand — Tamarack Beach at golden hour */
   --color-sand-50: oklch(0.97 0.015 65);
@@ -97,6 +99,10 @@
   --color-sand-400: oklch(0.76 0.07 52);
   --color-sand-500: oklch(0.66 0.07 50);
   --color-sand-600: oklch(0.56 0.06 48);
+  --color-sand-700: oklch(0.47 0.05 46);
+  --color-sand-800: oklch(0.39 0.04 44);
+  --color-sand-900: oklch(0.32 0.03 42);
+  --color-sand-950: oklch(0.22 0.02 40);
 
   /* Kelp: Eucalyptus sage — coastal bluff vegetation */
   --color-kelp-50: oklch(0.97 0.015 148);
@@ -106,6 +112,10 @@
   --color-kelp-400: oklch(0.66 0.10 148);
   --color-kelp-500: oklch(0.55 0.09 148);
   --color-kelp-600: oklch(0.46 0.08 148);
+  --color-kelp-700: oklch(0.39 0.07 148);
+  --color-kelp-800: oklch(0.32 0.06 148);
+  --color-kelp-900: oklch(0.26 0.04 148);
+  --color-kelp-950: oklch(0.19 0.03 148);
 
   /* Coral: Sunset peach — Carlsbad sunset over the Pacific */
   --color-coral-50: oklch(0.97 0.02 40);
@@ -115,6 +125,10 @@
   --color-coral-400: oklch(0.70 0.16 30);
   --color-coral-500: oklch(0.62 0.17 28);
   --color-coral-600: oklch(0.54 0.15 25);
+  --color-coral-700: oklch(0.46 0.13 22);
+  --color-coral-800: oklch(0.39 0.11 20);
+  --color-coral-900: oklch(0.32 0.08 18);
+  --color-coral-950: oklch(0.22 0.06 16);
 
   /* Semantic brand aliases */
   --color-success: oklch(0.55 0.12 148);

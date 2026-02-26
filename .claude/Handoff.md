@@ -2,13 +2,13 @@
 
 > **Session Continuity Document**
 > Last updated: 2026-02-25
-> Session: #19 (README Redesign + VPS Deploy)
+> Session: #20 (Comprehensive 7-Dimension Site Audit)
 
 ---
 
 ## At A Glance
 
-**Current Phase:** Phase 10 COMPLETE (code) — README redesigned, site deployed | **Security:** 14/14 resolved | **Tests:** 238 passing | **Next Action:** Run SQL migrations → SEO foundations
+**Current Phase:** Phase 10 COMPLETE (code) — Site audited, 20 issues fixed | **Security:** 14/14 + 6 new fixed | **Tests:** 238 passing | **Next Action:** Fix remaining audit items → SQL migrations → SEO
 
 ---
 
@@ -26,7 +26,7 @@
 | Phase 8 — Volunteer System     | **COMPLETE**    | Full signup + consent code system + COPPA                 |
 | Phase 9 — Education Content    | **COMPLETE**    | Velite + 23 MDX files + hubs                              |
 | Phase 10 — Events System       | **CODE COMPLETE** | Needs SQL migrations before go-live                     |
-| Phase 11 — Testing             | **COMPLETE**    | 238 tests, E2E, axe-core                                 |
+| Phase 11 — Testing             | **COMPLETE**    | 238 tests, E2E, axe-core                                  |
 | Phase 12 — Pre-Launch          | NOT STARTED     | All features must be built                                |
 | Phase 13 — Launch              | IN PROGRESS     | VPS deployed, HTTPS live                                  |
 | Phase 14 — Post-Launch         | NOT STARTED     | —                                                         |
@@ -35,14 +35,30 @@
 
 ## NEXT SESSION — Priority Actions (in order)
 
-### 1. Run SQL Migrations in Supabase (user action)
+### 1. Fix Remaining Audit Issues (8 open)
+
+**HIGH:**
+- **A21:** Implement CSP nonces for production — replace `unsafe-inline` in script-src (`next.config.ts`, `proxy.ts`)
+
+**MEDIUM:**
+- **A22:** Internationalize global-error.tsx (5 hardcoded English strings)
+- **A23:** Internationalize WeatherErrorBoundary.tsx (3 hardcoded English strings)
+- **A24:** Internationalize LocationSelector.tsx (3 hardcoded English strings)
+- **A25:** Add `sizes` attribute to 10 Image components (5 card components + 5 slug pages)
+
+**LOW (optional):**
+- **A26:** Standardize dark section backgrounds (3 patterns: `white/[0.02]`, `muted/30`, `muted/20`)
+- **A27:** Standardize CTA button shapes — some use `rounded-md` vs `rounded-full` (not-found, error, about, team)
+- **A28:** DonorRecognition uses non-brand colors (sky, emerald, indigo, purple) — consider brand palettes
+
+### 2. Run SQL Migrations in Supabase (user action)
 
 Two migration files need to be run in Supabase SQL Editor:
 
 1. **`supabase/migrations/002_events_phase10.sql`** — Events tables, RPC function, UNIQUE constraint, deleted_at column
 2. **`supabase/migrations/003_parental_consent.sql`** — Consent request + consent code tables, RLS, indexes
 
-### 2. SEO Foundations (start ranking in search)
+### 3. SEO Foundations (start ranking in search)
 
 User wants to rank alongside orgs like Heal the Bay and OC Coastkeeper.
 
@@ -52,33 +68,71 @@ User wants to rank alongside orgs like Heal the Bay and OC Coastkeeper.
 - Open Graph + Twitter Card meta tags
 - Rich meta descriptions on key pages
 
-### 3. Seed Test Events
+### 4. Seed Test Events
 
 Insert 2-3 sample events into the `events` table so pages have content.
 
 ---
 
-## What Was Completed This Session (#19)
+## What Was Completed This Session (#20)
 
-### README Redesign — Visual Flair + Ocean Love
-- Redesigned README with block letter ██ ORCA header under a starry sky
-- Rewrote all content sections with emotional ocean conservation messaging
-- Added HTML table layouts, collapsible `<details>` sections, skillicons.dev tech stack icons
-- Stats banner: 238 tests / 23 pages / 10+ species / 7 stations / 14 vulns / 2 languages
-- "Why We Exist" section explains the orca child meaning — Jordyn is the orca child, and so is every kid
-- Features described with heart ("Written so a kid can teach their parents")
-- ASCII coastline map (Santa Monica → Imperial Beach)
-- Three-column layout for tide stations, ecosystems, species
-- COPPA consent system diagram in collapsible section
-- Performance targets as visual cards
-- Closing section ties back to orca child identity
-- Iterated through multiple header styles (ANSI Shadow → FIGlet → clean blocks) — settled on ██-only block letters
-- Created 10 header options file for user selection, user chose Option 1
-- Commits: `1b72cee`, `806508c`, `275669b`, `d3d5f29`, `7d1a10f`, `83f3de6`
+### Comprehensive 7-Dimension Audit
+- Audited **all code from Sessions #10-#19** (~7,000 new LOC, codebase now ~14,257 LOC)
+- **28 issues found** across Design, Security, Performance, i18n, Accessibility, Bias, Inclusivity
+- **20 fixed in-session**, 8 remain open, 3 deferred to content phase
+- All quality gates pass after fixes (lint, type-check, 238 tests, build)
 
-### VPS Deployment
-- Deployed all Session #18 + #19 changes to production VPS
-- Build succeeded: 91 static pages, PM2 restarted
+### Key Fixes Applied
+1. **Design:** Completed all brand color palettes (coral/sand/kelp -700 to -950, ocean/teal -950), fixed dynamic Tailwind class construction, remapped to brand colors
+2. **Security:** CSRF on validateConsentCode, safe type guards replacing `as number`, slug validation on iCal route, header sanitization, non-null assertion removal
+3. **Accessibility:** EventCard alt text, Zeffy iframe aria-label
+4. **i18n:** Locale-aware date formatting on all event pages, hardcoded English → translation keys
+5. **Inclusivity:** 6 ability-inclusive language fixes in MDX content
+6. **Bias:** Removed all "mentors" references → "communities" (no mentor program)
+
+### Documentation Updated
+- `ProjectHealth.md` — Complete rewrite with audit scores (Overall: 8.8/10 A-)
+- `Handoff.md` — This file
+- `Completed.md` — Session #20 entry with all details
+
+---
+
+## Audit Health Summary
+
+| Dimension         | Score   | Grade |
+| ----------------- | ------- | ----- |
+| Quality Gates     | 5/5     | A+    |
+| Code Quality      | 9/10    | A     |
+| Security          | 9/10    | A     |
+| Accessibility     | 9/10    | A     |
+| Performance       | 9/10    | A     |
+| i18n              | 8/10    | B+    |
+| Inclusivity       | 8/10    | B+    |
+| Bias              | 9/10    | A     |
+| Test Coverage     | 9/10    | A     |
+| Design Continuity | 8/10    | B+    |
+| Tech Debt         | 8/10    | B+    |
+| Dependencies      | 9/10    | A     |
+| Documentation     | 10/10   | A+    |
+| **Overall**       | **8.8** | **A-**|
+
+See `.claude/ProjectHealth.md` for full issue tracker, security posture, and accessibility compliance details.
+
+---
+
+## Deferred Content Work
+
+| ID   | Phase   | Issue                                          |
+| ---- | ------- | ---------------------------------------------- |
+| D8   | Content | 23 MDX files need Spanish translations         |
+| D9   | Content | 16 MDX files missing `readingLevel` frontmatter |
+| D10  | Content | No accessibility accommodations info anywhere  |
+
+---
+
+## Idea Backlog
+
+- **Animated wave video background** — User wants the hero beach image to be a looping video of gentle waves. React can handle `<video autoplay loop muted>`. Would need a short 5-10s MP4/WebM clip of the same beach. Deferred — not part of audit.
 
 ---
 
@@ -86,12 +140,14 @@ Insert 2-3 sample events into the `events` table so pages have content.
 
 | ID | Severity | Issue | Status |
 |----|----------|-------|--------|
-| V1–V9 | Various | Previous security vulnerabilities | ALL RESOLVED |
-| E-A | HIGH | COPPA: min age raised to 13 | **RESOLVED** |
-| E-B | MEDIUM | CCPA: deleted_at on event_registrations | **RESOLVED** |
-| E-C | MEDIUM | Duplicate registration prevention | **RESOLVED** |
-| E-D | LOW | parent_consent flag fixed | **RESOLVED** |
-| E-E | POLICY | Under-16 parent present notices | **RESOLVED** |
+| V1–V9 | Various | Original security vulnerabilities (Sessions #7-9) | ALL RESOLVED |
+| E-A–E-E | Various | Event/COPPA security (Session #18) | ALL RESOLVED |
+| A6 | MEDIUM | CSRF on validateConsentCode | **RESOLVED** (Session #20) |
+| A7 | MEDIUM | Unsafe `as number` type assertions | **RESOLVED** (Session #20) |
+| A8 | MEDIUM | No slug validation in iCal route | **RESOLVED** (Session #20) |
+| A9 | MEDIUM | Header injection in iCal route | **RESOLVED** (Session #20) |
+| A14 | LOW | Non-null assertion in VolunteerForm | **RESOLVED** (Session #20) |
+| A21 | HIGH | Production CSP needs nonces | **OPEN** |
 
 ---
 
@@ -135,10 +191,10 @@ ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30 \
 
 | Decision | Choice | Why |
 | -------- | ------ | --- |
-| README header style | ██ block letters (Option 1) | Clean rendering on GitHub, no Unicode fringing |
-| README tone | Ocean love + emotional conservation messaging | User wants it to speak from the heart, not just list features |
-| "Orca Child" meaning | Jordyn + every kid who loves the ocean | Core identity: an orca child is any kid who feels the ocean belongs to them |
-| Content status | Filler — to be co-created with Jordyn | User acknowledged content is placeholder, real stories coming |
+| "Mentors" → "Communities" | Remove all mentor/mentorship references | 501(c)(3) nonprofit doesn't have a mentor program — they go into communities to make a difference |
+| Ability-inclusive language | Replace "walking" with neutral alternatives | Ensure all activity descriptions welcome people regardless of mobility |
+| Brand color remapping | amber→sand, primary→ocean, rose→coral | Maintain Carlsbad Coastal identity consistently across all pages |
+| Animated wave video | Deferred to idea backlog | User loves the idea but audit comes first |
 
 ---
 

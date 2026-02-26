@@ -95,18 +95,18 @@ function VolunteerContent() {
           </h2>
           <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {([
-              { icon: Sparkles, titleKey: "whyImpactTitle", textKey: "whyImpactText", color: "teal" },
-              { icon: BookOpen, titleKey: "whySkillsTitle", textKey: "whySkillsText", color: "primary" },
-              { icon: Users, titleKey: "whyCommunityTitle", textKey: "whyCommunityText", color: "amber" },
-              { icon: Award, titleKey: "whyCertTitle", textKey: "whyCertText", color: "rose" },
-            ] as const).map(({ icon: Icon, titleKey, textKey, color }) => (
+              { icon: Sparkles, titleKey: "whyImpactTitle", textKey: "whyImpactText", bgClass: "bg-teal-500/10", iconClass: "text-teal-600 dark:text-teal-400" },
+              { icon: BookOpen, titleKey: "whySkillsTitle", textKey: "whySkillsText", bgClass: "bg-ocean-500/10", iconClass: "text-ocean-600 dark:text-ocean-400" },
+              { icon: Users, titleKey: "whyCommunityTitle", textKey: "whyCommunityText", bgClass: "bg-sand-500/10", iconClass: "text-sand-600 dark:text-sand-400" },
+              { icon: Award, titleKey: "whyCertTitle", textKey: "whyCertText", bgClass: "bg-coral-500/10", iconClass: "text-coral-600 dark:text-coral-400" },
+            ] as const).map(({ icon: Icon, titleKey, textKey, bgClass, iconClass }) => (
               <div
                 key={titleKey}
                 className="rounded-2xl border border-border/50 bg-white/60 p-6 text-center shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:bg-white/5"
               >
-                <div className={`mx-auto flex size-12 items-center justify-center rounded-full bg-${color}-500/10`}>
+                <div className={`mx-auto flex size-12 items-center justify-center rounded-full ${bgClass}`}>
                   <Icon
-                    className={`size-6 text-${color}-600 dark:text-${color}-400`}
+                    className={`size-6 ${iconClass}`}
                     aria-hidden="true"
                   />
                 </div>

@@ -45,6 +45,7 @@ export function DonationWidget({ embedUrl }: DonationWidgetProps) {
               <iframe
                 src={embedUrl}
                 title={t("formHeading")}
+                aria-label={t("formHeading")}
                 className="h-[700px] w-full border-0"
                 onLoad={() => setIsLoading(false)}
                 allow="payment"

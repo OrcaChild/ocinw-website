@@ -127,7 +127,7 @@ function AboutContent() {
             <div className="flex flex-col items-center gap-3 text-center text-muted-foreground">
               <MapPin className="size-10" />
               <p className="text-sm">{t("focusAreaMapAlt")}</p>
-              <p className="text-xs">Interactive map coming in Phase 6</p>
+              <p className="text-xs text-muted-foreground/60">{t("focusAreaMapComingSoon")}</p>
             </div>
           </CardContent>
         </Card>

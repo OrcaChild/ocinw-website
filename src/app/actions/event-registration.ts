@@ -94,7 +94,7 @@ export async function submitEventRegistration(
       "get_event_registration_count",
       { p_event_id: data.eventId },
     );
-    const currentCount = (countResult as number) ?? 0;
+    const currentCount = typeof countResult === "number" ? countResult : 0;
 
     if (currentCount >= event.max_participants) {
       registrationStatus = "waitlisted";

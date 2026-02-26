@@ -30,6 +30,7 @@
 | #17     | 2026-02-25  | Phase 10 Events System                    | 1       |
 | #18     | 2026-02-25  | Security Fixes + Consent System + CI + README + License | 1 |
 | #19     | 2026-02-25  | README Redesign + VPS Deploy                            | 1 |
+| #20     | 2026-02-25  | Comprehensive 7-Dimension Site Audit                    | 1 |
 
 ---
 
@@ -800,6 +801,90 @@
   - [x] "Orca child" identity explained (Jordyn + every kid)
   - [x] All changes deployed to VPS and live
   - [x] User approved final header design
+
+---
+
+## Session #20 — Comprehensive 7-Dimension Site Audit (2026-02-25)
+
+- **Audit Scope:** Design Continuity, Security, Performance, Functionality, Bias, Inclusivity, Accessibility — covering all code added across Sessions #10-#19 (~7,000 new LOC).
+- **Quality Gates (baseline):** lint PASS (0 errors, 1 warning), type-check PASS, test PASS (238/238), build PASS (91 static pages), audit WARN (2 high, dev-only: hono in shadcn MCP SDK, rollup in vitest/vite).
+- **Issues Found:** 28 total across all 7 dimensions. **20 fixed in-session, 8 remain open, 3 deferred to content phase.**
+
+### CRITICAL / HIGH Fixes
+- **A1 (CRITICAL) — White-on-white button:** `text-coral-700` used in GetInvolvedCTA.tsx but coral-700 undefined in globals.css. Added coral-700/800/900 to globals.css.
+- **A2 (HIGH) — Incomplete color palettes:** sand, kelp, coral palettes stopped at -600. Added -700/-800/-900/-950 shades for all brand palettes.
+- **A3 (HIGH) — Missing -950 shades:** `dark:bg-ocean-950/30` etc. used but undefined. Added -950 for ocean, teal, kelp, coral.
+- **A4 (HIGH) — Dynamic Tailwind classes:** `bg-${color}-500/10` string interpolation undetectable by Tailwind v4 JIT. Replaced with explicit class maps (`bgClass`, `iconClass`) in volunteer/page.tsx and learn/page.tsx. Also remapped non-brand colors (amber→sand, primary→ocean, rose→coral).
+- **A5 (HIGH) — Hardcoded "en-US" dates:** 13 instances across EventCard, EventMeta, event slug page. Added `locale` prop, used `useLocale()` hook so Spanish users see Spanish-formatted dates.
+
+### MEDIUM Fixes
+- **A6 — CSRF on validateConsentCode:** Only server action missing origin validation. Added `isValidOrigin()` check in parent-consent.ts.
+- **A7 — Unsafe `as number` assertions:** Replaced with `typeof x === "number" ? x : 0` in event-registration.ts and events.ts.
+- **A8 — No slug validation in iCal route:** Added regex `^[a-z0-9-]{1,200}$` validation.
+- **A9 — Header injection risk:** Sanitized Content-Disposition filename in iCal route.
+- **A10 — EventCard empty alt text:** Changed `alt=""` to `alt={event.title}` for informational images.
+- **A11 — Zeffy iframe missing aria-label:** Added `aria-label` to DonationWidget.tsx iframe.
+- **A12 — Hardcoded English on about page:** "Interactive map coming in Phase 6" moved to translation key `focusAreaMapComingSoon`.
+- **A13 — "Mentors" references (no mentor program):** Changed to "communities" in EN and ES. User emphasized: as a 501(c)(3), they don't have a mentor program — they go into communities to make a difference.
+
+### LOW Fixes
+- **A14 — Non-null assertion in VolunteerForm:** Replaced `!` with safe optional pattern.
+- **A15-A20 — Ability-inclusive language in MDX content (6 fixes):**
+  - "tide pool walks" → "tide pool explorations" (2 files)
+  - "walking near tide pools" → "moving through tide pool areas"
+  - "walking trails" → "trails"
+  - "walking only on bare rock" → "stepping only on bare rock"
+  - "walk newer volunteers" → "guide newer volunteers"
+  - "Conservation takes physical effort" → "Young volunteers bring energy and dedication"
+
+### Open Issues (not fixed this session)
+- A21 (HIGH): Production CSP needs nonces instead of `unsafe-inline`
+- A22-A24 (MEDIUM): Hardcoded English in global-error.tsx, WeatherErrorBoundary.tsx, LocationSelector.tsx (~14 strings)
+- A25 (MEDIUM): 10 Image components missing `sizes` attribute
+- A26-A28 (LOW): Design consistency — dark backgrounds, button shapes, non-brand colors
+
+### Deferred (content phase)
+- D8: 23 MDX files need Spanish translations
+- D9: 16 MDX files missing `readingLevel` frontmatter
+- D10: No accessibility accommodations info anywhere
+
+### Documentation
+- **ProjectHealth.md** fully rewritten with Session #20 audit results, new scoring (Overall: 8.8/10 A-), all 20 fixed issues, 8 open, 3 deferred.
+- **Handoff.md** updated with Session #20 state.
+- **Completed.md** updated (this entry).
+
+- **Artifacts Modified:**
+  - `src/app/globals.css` — 16 new color variable definitions (coral/sand/kelp 700-950, ocean/teal 950)
+  - `src/components/home/GetInvolvedCTA.tsx` — no code change needed (color fix in CSS)
+  - `src/components/events/EventCard.tsx` — alt text + locale prop
+  - `src/components/events/EventMeta.tsx` — locale prop, 5 hardcoded "en-US" replaced
+  - `src/app/[locale]/conservation/events/page.tsx` — useLocale + locale prop
+  - `src/app/[locale]/conservation/events/[slug]/page.tsx` — useLocale + 5 locale replacements
+  - `src/app/[locale]/volunteer/page.tsx` — explicit Tailwind class maps + brand colors
+  - `src/app/[locale]/learn/page.tsx` — explicit Tailwind class maps + brand colors
+  - `src/app/[locale]/about/page.tsx` — translation key for map placeholder
+  - `src/app/actions/parent-consent.ts` — CSRF check on validateConsentCode
+  - `src/app/actions/event-registration.ts` — safe type guard
+  - `src/lib/api/events.ts` — safe type guard
+  - `src/app/api/events/[slug]/ical/route.ts` — slug validation + header sanitization
+  - `src/components/volunteer/VolunteerForm.tsx` — non-null assertion removed
+  - `src/components/donate/DonationWidget.tsx` — aria-label on iframe
+  - `messages/en.json` — focusAreaMapComingSoon key + mentors→communities
+  - `messages/es.json` — focusAreaMapComingSoon key + mentores→comunidades
+  - 7 MDX files — ability-inclusive language fixes
+  - `.claude/ProjectHealth.md` — complete rewrite with audit results
+  - `.claude/Handoff.md` — Session #20 update
+  - `.claude/Completed.md` — Session #20 entry
+- **Acceptance Criteria:**
+  - [x] All quality gates pass after fixes (lint, type-check, test, build)
+  - [x] 20/28 issues fixed in-session
+  - [x] No regressions (238/238 tests passing)
+  - [x] ProjectHealth.md fully updated with new scores and issue tracker
+  - [x] User's white-on-white button fixed (coral palette complete)
+  - [x] All "mentors" references removed/changed to "communities"
+  - [x] Animated wave video idea noted in plan backlog
+  - [ ] 8 open issues tracked for future sessions
+  - [ ] 3 deferred content items tracked
 
 ---
 

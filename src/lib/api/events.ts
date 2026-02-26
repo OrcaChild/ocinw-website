@@ -57,7 +57,7 @@ export async function getRegistrationCount(eventId: string): Promise<number> {
     return 0;
   }
 
-  return (data as number) ?? 0;
+  return typeof data === "number" ? data : 0;
 }
 
 /** Get all upcoming/active events with capacity information */

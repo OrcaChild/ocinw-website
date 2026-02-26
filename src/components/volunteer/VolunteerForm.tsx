@@ -583,9 +583,10 @@ export function VolunteerForm() {
             <div className="space-y-2">
               <p className="text-sm font-medium">{t("ageRangeLabel")}</p>
               <p className="rounded-md border bg-muted/50 px-3 py-2 text-sm">
-                {ageRangeOptions.find((o) => o.value === selectedAgeRange)
-                  ? t(ageRangeOptions.find((o) => o.value === selectedAgeRange)!.labelKey)
-                  : selectedAgeRange}
+                {(() => {
+                  const option = ageRangeOptions.find((o) => o.value === selectedAgeRange);
+                  return option ? t(option.labelKey) : selectedAgeRange;
+                })()}
               </p>
               {/* Hidden field for form data */}
               <input type="hidden" {...volunteerForm.register("ageRange")} />

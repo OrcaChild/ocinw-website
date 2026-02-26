@@ -105,6 +105,12 @@ export async function validateConsentCode(
 ): Promise<CodeValidationResult> {
   const headersList = await headers();
 
+  // CSRF
+  const origin = headersList.get("origin");
+  if (!isValidOrigin(origin)) {
+    return { status: "error", message: "Invalid request origin." };
+  }
+
   // Rate limiting
   const ip =
     headersList.get("x-real-ip") ??

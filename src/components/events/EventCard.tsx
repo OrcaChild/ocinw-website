@@ -6,6 +6,7 @@ import { EventStatusBadge, EventCapacityBadge } from "./EventStatusBadge";
 
 interface EventCardProps {
   event: EventWithCapacity;
+  locale: string;
   viewLabel: string;
   statusLabel: string;
   capacityLabels: {
@@ -16,7 +17,7 @@ interface EventCardProps {
   };
 }
 
-export function EventCard({ event, viewLabel, statusLabel, capacityLabels }: EventCardProps) {
+export function EventCard({ event, locale, viewLabel, statusLabel, capacityLabels }: EventCardProps) {
   const start = new Date(event.start_date);
 
   return (
@@ -25,7 +26,7 @@ export function EventCard({ event, viewLabel, statusLabel, capacityLabels }: Eve
         <Link href={`/conservation/events/${event.slug}`} className="block overflow-hidden">
           <Image
             src={event.image_url}
-            alt=""
+            alt={event.title}
             width={600}
             height={340}
             className="aspect-[16/9] w-full object-cover transition-transform duration-300 group-hover:scale-105"
@@ -48,9 +49,9 @@ export function EventCard({ event, viewLabel, statusLabel, capacityLabels }: Eve
         <div className="mt-2 space-y-1 text-sm text-muted-foreground">
           <p className="flex items-center gap-1">
             <Calendar className="size-3.5 shrink-0" aria-hidden="true" />
-            {start.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
+            {start.toLocaleDateString(locale, { weekday: "long", month: "long", day: "numeric", year: "numeric" })}
             {" · "}
-            {start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" })}
+            {start.toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" })}
           </p>
           <p className="flex items-center gap-1">
             <MapPin className="size-3.5 shrink-0" aria-hidden="true" />

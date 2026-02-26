@@ -20,6 +20,11 @@ export async function GET(
 ): Promise<NextResponse> {
   const { slug } = await params;
 
+  // Validate slug format (alphanumeric + hyphens, max 200 chars)
+  if (!/^[a-z0-9-]{1,200}$/.test(slug)) {
+    return NextResponse.json({ error: "Invalid event slug" }, { status: 400 });
+  }
+
   const supabase = await createClient();
   const { data: event, error } = await supabase
     .from("events")
@@ -60,7 +65,7 @@ export async function GET(
   return new NextResponse(icsContent, {
     headers: {
       "Content-Type": "text/calendar; charset=utf-8",
-      "Content-Disposition": `attachment; filename="${event.slug}.ics"`,
+      "Content-Disposition": `attachment; filename="${event.slug.replace(/[^a-z0-9-]/g, "")}.ics"`,
     },
   });
 }

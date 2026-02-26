@@ -50,7 +50,8 @@ function LearnContent({ locale }: { locale: "en" | "es" }) {
       countKey: "articlesCount" as const,
       count: articles.length,
       href: "/learn/articles",
-      color: "primary",
+      bgClass: "bg-ocean-500/10",
+      iconClass: "text-ocean-600 dark:text-ocean-400",
     },
     {
       icon: Fish,
@@ -59,7 +60,8 @@ function LearnContent({ locale }: { locale: "en" | "es" }) {
       countKey: "speciesCount" as const,
       count: species.length,
       href: "/learn/species",
-      color: "teal",
+      bgClass: "bg-teal-500/10",
+      iconClass: "text-teal-600 dark:text-teal-400",
     },
     {
       icon: TreePalm,
@@ -68,7 +70,8 @@ function LearnContent({ locale }: { locale: "en" | "es" }) {
       countKey: "ecosystemsCount" as const,
       count: ecosystems.length,
       href: "/learn/ecosystems",
-      color: "amber",
+      bgClass: "bg-kelp-500/10",
+      iconClass: "text-kelp-600 dark:text-kelp-400",
     },
     {
       icon: ExternalLink,
@@ -77,7 +80,8 @@ function LearnContent({ locale }: { locale: "en" | "es" }) {
       countKey: undefined,
       count: 0,
       href: "/learn/resources",
-      color: "rose",
+      bgClass: "bg-coral-500/10",
+      iconClass: "text-coral-600 dark:text-coral-400",
     },
   ] as const;
 
@@ -120,14 +124,14 @@ function LearnContent({ locale }: { locale: "en" | "es" }) {
             {t("categoriesHeading")}
           </h2>
           <div className="mt-12 grid gap-6 sm:grid-cols-2">
-            {categories.map(({ icon: Icon, titleKey, descKey, countKey, count, href, color }) => (
+            {categories.map(({ icon: Icon, titleKey, descKey, countKey, count, href, bgClass, iconClass }) => (
               <Link
                 key={titleKey}
                 href={href}
                 className="group rounded-2xl border border-border/50 bg-white/60 p-6 shadow-sm backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg dark:bg-white/5"
               >
-                <div className={`flex size-12 items-center justify-center rounded-full bg-${color}-500/10`}>
-                  <Icon className={`size-6 text-${color}-600 dark:text-${color}-400`} aria-hidden="true" />
+                <div className={`flex size-12 items-center justify-center rounded-full ${bgClass}`}>
+                  <Icon className={`size-6 ${iconClass}`} aria-hidden="true" />
                 </div>
                 <h3 className="mt-4 font-heading text-xl font-bold">
                   {t(titleKey)}

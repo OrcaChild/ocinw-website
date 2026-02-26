@@ -3,7 +3,7 @@ import Image from "next/image";
 import { hasLocale } from "next-intl";
 import { setRequestLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import { CalendarDays, Users } from "lucide-react";
@@ -46,6 +46,7 @@ const statusLabels = {
 
 function EventsContent({ events }: { events: EventWithCapacity[] }) {
   const t = useTranslations("events");
+  const locale = useLocale();
 
   const capacityLabels = {
     spotsRemaining: (count: number) => t("spotsRemaining", { count }),
@@ -92,6 +93,7 @@ function EventsContent({ events }: { events: EventWithCapacity[] }) {
                 <EventCard
                   key={event.id}
                   event={event}
+                  locale={locale}
                   viewLabel={t("viewEvent")}
                   statusLabel={t(statusLabels[event.status])}
                   capacityLabels={capacityLabels}

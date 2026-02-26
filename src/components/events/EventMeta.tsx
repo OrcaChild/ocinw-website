@@ -5,6 +5,7 @@ import { EventCapacityBadge } from "./EventStatusBadge";
 interface EventMetaProps {
   startDate: string;
   endDate: string;
+  locale: string;
   locationName: string;
   locationAddress: string | null;
   capacityStatus: CapacityStatus;
@@ -22,6 +23,7 @@ interface EventMetaProps {
 export function EventMeta({
   startDate,
   endDate,
+  locale,
   locationName,
   locationAddress,
   capacityStatus,
@@ -33,11 +35,11 @@ export function EventMeta({
   const isSameDay =
     start.toDateString() === end.toDateString();
 
-  const fullDate = start.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-  const startTime = start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-  const endTime = end.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-  const shortStart = start.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  const shortEnd = end.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const fullDate = start.toLocaleDateString(locale, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  const startTime = start.toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" });
+  const endTime = end.toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" });
+  const shortStart = start.toLocaleDateString(locale, { month: "short", day: "numeric" });
+  const shortEnd = end.toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" });
 
   const dateDisplay = isSameDay
     ? `${fullDate} · ${startTime} – ${endTime}`

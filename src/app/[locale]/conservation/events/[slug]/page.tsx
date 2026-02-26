@@ -3,7 +3,7 @@ import Image from "next/image";
 import { hasLocale } from "next-intl";
 import { setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
 import {
@@ -61,16 +61,17 @@ const statusLabels = {
 
 function EventDetailContent({ event }: { event: EventWithCapacity }) {
   const t = useTranslations("events");
+  const locale = useLocale();
 
   const start = new Date(event.start_date);
   const end = new Date(event.end_date);
   const isSameDay = start.toDateString() === end.toDateString();
 
-  const fullDate = start.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric", year: "numeric" });
-  const startTime = start.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-  const endTime = end.toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit" });
-  const shortStart = start.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-  const shortEnd = end.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+  const fullDate = start.toLocaleDateString(locale, { weekday: "long", month: "long", day: "numeric", year: "numeric" });
+  const startTime = start.toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" });
+  const endTime = end.toLocaleTimeString(locale, { hour: "numeric", minute: "2-digit" });
+  const shortStart = start.toLocaleDateString(locale, { month: "short", day: "numeric" });
+  const shortEnd = end.toLocaleDateString(locale, { month: "short", day: "numeric", year: "numeric" });
 
   const dateDisplay = isSameDay
     ? `${fullDate} · ${startTime} – ${endTime}`

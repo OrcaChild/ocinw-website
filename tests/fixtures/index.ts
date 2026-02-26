@@ -272,12 +272,13 @@ export const validNewsletterForm = {
 };
 
 export const validEventRegistration = {
-  eventId: "event-001",
+  eventId: "a1b2c3d4-e5f6-7890-abcd-ef1234567890",
   firstName: "Casey",
   lastName: "Johnson",
   email: "casey@example.com",
   age: 14,
+  parentEmail: "pat@example.com",
   emergencyContact: "Pat Johnson",
   emergencyPhone: "3105551234",
-  waiverAccepted: true,
+  waiverAccepted: true as const,
 };

@@ -143,6 +143,9 @@ export function MobileNav() {
                   <MobileLink href="/conservation/projects" onClick={closeMenu}>
                     {t("conservationProjects")}
                   </MobileLink>
+                  <MobileLink href="/conservation/events" onClick={closeMenu}>
+                    {t("conservationEvents")}
+                  </MobileLink>
                   <MobileLink href="/conservation/impact" onClick={closeMenu}>
                     {t("conservationImpact")}
                   </MobileLink>

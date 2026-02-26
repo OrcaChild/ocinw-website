@@ -116,17 +116,32 @@ export const newsletterFormSchema = z.object({
 export type NewsletterFormData = z.infer<typeof newsletterFormSchema>;
 
 /** Event registration form */
-export const eventRegistrationSchema = z.object({
-  eventId: z.string().max(100),
-  firstName: z.string().min(2).max(100),
-  lastName: z.string().min(2).max(100),
-  email: z.email(),
+const eventRegistrationBaseSchema = z.object({
+  eventId: z.string().uuid("Invalid event ID"),
+  firstName: z.string().min(2, "First name must be at least 2 characters").max(100, "Name is too long"),
+  lastName: z.string().min(2, "Last name must be at least 2 characters").max(100, "Name is too long"),
+  email: z.email("Please enter a valid email address"),
   phone: z.union([z.string().regex(/^\d{10}$/, "Please enter a valid 10-digit phone number"), z.literal("")]).optional(),
-  age: z.number().int().min(8).max(120),
-  parentEmail: z.email().optional(),
-  emergencyContact: z.string().min(2).max(100),
+  age: z.number().int().min(8, "Minimum age is 8").max(120, "Please enter a valid age"),
+  parentEmail: z.union([z.email("Please enter a valid parent/guardian email"), z.literal("")]).optional(),
+  emergencyContact: z.string().min(2, "Emergency contact name is required").max(100, "Name is too long"),
   emergencyPhone: z.string().regex(/^\d{10}$/, "Please enter a valid 10-digit phone number"),
-  waiverAccepted: z.boolean(),
+  waiverAccepted: z.literal(true, {
+    error: "You must accept the liability waiver",
+  }),
 });
 
-export type EventRegistrationData = z.infer<typeof eventRegistrationSchema>;
+export const eventRegistrationSchema = eventRegistrationBaseSchema.refine(
+  (data) => {
+    if (data.age < 18) {
+      return !!data.parentEmail && data.parentEmail !== "";
+    }
+    return true;
+  },
+  {
+    message: "Parent/guardian email is required for participants under 18",
+    path: ["parentEmail"],
+  },
+);
+
+export type EventRegistrationData = z.infer<typeof eventRegistrationBaseSchema>;

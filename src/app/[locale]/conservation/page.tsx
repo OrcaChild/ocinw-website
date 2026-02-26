@@ -6,7 +6,7 @@ import { notFound } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
-import { Sparkles, FolderOpen, BarChart3, Users } from "lucide-react";
+import { Sparkles, FolderOpen, BarChart3, Users, CalendarDays } from "lucide-react";
 import { getProjects } from "@/lib/content";
 import { ProjectCard } from "@/components/conservation/ProjectCard";
 
@@ -73,9 +73,10 @@ function ConservationContent({ locale }: { locale: "en" | "es" }) {
 
       {/* Quick nav cards */}
       <section className="px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-4xl gap-4 sm:grid-cols-3">
+        <div className="mx-auto grid max-w-4xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {[
             { icon: FolderOpen, label: t("projectsTitle"), desc: t("projectsDescription"), href: "/conservation/projects" },
+            { icon: CalendarDays, label: t("eventsTitle"), desc: t("eventsDescription"), href: "/conservation/events" },
             { icon: BarChart3, label: t("impactTitle"), desc: t("impactDescription"), href: "/conservation/impact" },
             { icon: Users, label: t("getInvolvedHeading"), desc: t("getInvolvedText"), href: "/volunteer" },
           ].map(({ icon: Icon, label, desc, href }) => (

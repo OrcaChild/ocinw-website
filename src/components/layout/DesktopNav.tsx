@@ -114,6 +114,10 @@ export function DesktopNav() {
                 title={t("conservationProjects")}
               />
               <DropdownLink
+                href="/conservation/events"
+                title={t("conservationEvents")}
+              />
+              <DropdownLink
                 href="/conservation/impact"
                 title={t("conservationImpact")}
               />

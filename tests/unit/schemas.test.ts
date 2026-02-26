@@ -357,7 +357,7 @@ describe("eventRegistrationSchema", () => {
     expect(result.success).toBe(false);
   });
 
-  it("requires waiverAccepted as boolean", () => {
+  it("requires waiverAccepted to be true", () => {
     const accepted = eventRegistrationSchema.safeParse({
       ...validEventRegistration,
       waiverAccepted: true,
@@ -368,8 +368,8 @@ describe("eventRegistrationSchema", () => {
       ...validEventRegistration,
       waiverAccepted: false,
     });
-    // waiverAccepted is z.boolean() — false is valid (unlike agreeToTerms which is z.literal(true))
-    expect(declined.success).toBe(true);
+    // waiverAccepted is z.literal(true) — false is rejected (waiver must be accepted)
+    expect(declined.success).toBe(false);
   });
 
   it("rejects non-boolean waiverAccepted", () => {

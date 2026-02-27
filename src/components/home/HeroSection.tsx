@@ -30,10 +30,7 @@ export function HeroSection() {
         <h1 className="font-heading text-4xl font-bold tracking-tight text-white drop-shadow-lg sm:text-5xl md:text-6xl lg:text-7xl">
           {t("title")}
         </h1>
-        <p className="mt-3 text-sm font-medium tracking-wide text-white/75 drop-shadow-sm">
-          {t("heroTagline")}
-        </p>
-        <p className="mx-auto mt-5 max-w-2xl text-lg text-white/90 drop-shadow-md sm:text-xl">
+        <p className="mx-auto mt-6 max-w-2xl text-lg text-white/90 drop-shadow-md sm:text-xl">
           {t("subtitle")}
         </p>
         <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center">

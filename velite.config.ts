@@ -73,6 +73,7 @@ const species = defineCollection({
     bestViewingSeason: s.string().optional(),
     featuredImage: s.string().optional(),
     featuredImageAlt: s.string().optional(),
+    imageCredit: s.string().optional(),
     language: s.enum(["en", "es"]).default("en"),
     translationSlug: s.string().optional(),
     published: s.boolean().default(false),

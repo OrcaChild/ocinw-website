@@ -64,17 +64,24 @@ export default async function SpeciesDetailPage({ params }: Props) {
 
         {/* Hero */}
         {sp.featuredImage && (
-          <div className="mt-6 overflow-hidden rounded-2xl">
-            <Image
-              src={sp.featuredImage}
-              alt={sp.featuredImageAlt ?? ""}
-              width={900}
-              height={500}
-              priority
-              sizes="(max-width: 896px) 100vw, 896px"
-              className="aspect-[16/9] w-full object-cover"
-            />
-          </div>
+          <figure className="mt-6">
+            <div className="overflow-hidden rounded-2xl">
+              <Image
+                src={sp.featuredImage}
+                alt={sp.featuredImageAlt ?? ""}
+                width={900}
+                height={500}
+                priority
+                sizes="(max-width: 896px) 100vw, 896px"
+                className="aspect-[16/9] w-full object-cover"
+              />
+            </div>
+            {sp.imageCredit && (
+              <figcaption className="mt-1.5 text-right text-xs text-muted-foreground/70">
+                {sp.imageCredit}
+              </figcaption>
+            )}
+          </figure>
         )}
 
         {/* Header */}

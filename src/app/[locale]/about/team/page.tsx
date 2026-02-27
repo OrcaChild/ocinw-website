@@ -38,18 +38,6 @@ const boardMembers: TeamMember[] = [
   },
 ];
 
-const juniorProtectors: TeamMember[] = [
-  {
-    name: "Scout Rosario",
-    title: "Junior Marine Protector",
-    bio: "Scout is one of OCINW's founding Junior Marine Protectors and a natural ocean advocate. With a love of sea creatures and an unstoppable curiosity about the natural world, Scout helps prove that young people have real power to protect our coastlines — one cleanup and one conversation at a time.",
-  },
-  {
-    name: "Elenore Rosario",
-    title: "Junior Marine Protector",
-    bio: "Elenore brings creativity and compassion to the OCINW mission as a founding Junior Marine Protector. Whether exploring tide pools, learning about marine ecosystems, or spreading the word with friends and family, Elenore shows every day that conservation starts with caring people of all ages.",
-  },
-];
 
 function MemberCard({ member }: { member: TeamMember }) {
   return (
@@ -104,24 +92,6 @@ function TeamContent() {
         </h2>
         <div className="mt-6 space-y-4">
           {boardMembers.map((member) => (
-            <MemberCard key={member.name} member={member} />
-          ))}
-        </div>
-      </section>
-
-      <Separator className="my-12" />
-
-      {/* Junior Marine Protectors */}
-      <section>
-        <h2 className="font-heading text-2xl font-bold">
-          Junior Marine Protectors
-        </h2>
-        <p className="mt-2 text-muted-foreground">
-          Our Junior Marine Protectors are the heart of OCINW — young people leading by example
-          and showing the world that ocean conservation starts with passion, not age.
-        </p>
-        <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {juniorProtectors.map((member) => (
             <MemberCard key={member.name} member={member} />
           ))}
         </div>

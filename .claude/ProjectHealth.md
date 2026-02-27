@@ -102,15 +102,20 @@
 | A19  | LOW      | Inclusivity     | "walk newer volunteers" (figurative)           | Changed to "guide newer volunteers"                            |
 | A20  | LOW      | Inclusivity     | "Conservation takes physical effort"           | Revised to "Young volunteers bring energy and dedication"      |
 
-### OPEN — Should Fix Soon
+### RESOLVED — Session #21
+
+| ID   | Severity | Category    | Issue                                          | Resolution |
+| ---- | -------- | ----------- | ---------------------------------------------- | ---------- |
+| A21  | HIGH     | Security    | Production CSP uses `unsafe-inline` not nonces | Nonce-based CSP in `proxy.ts` (Session #21) |
+| A22  | MEDIUM   | i18n        | Global error boundary hardcoded English        | Lazy useState locale detection (Session #21) |
+| A23  | MEDIUM   | i18n        | WeatherErrorBoundary hardcoded English         | Extracted functional component with `useTranslations` (Session #21) |
+| A24  | MEDIUM   | i18n        | LocationSelector hardcoded English             | 3 strings replaced with translation keys (Session #21) |
+| A25  | MEDIUM   | Performance | 10+ Image components missing `sizes` attribute | Fixed ~16 Image components (Session #21) |
+
+### OPEN — Low Priority Design Polish
 
 | ID   | Severity | Category    | Issue                                          | Location |
 | ---- | -------- | ----------- | ---------------------------------------------- | -------- |
-| A21  | HIGH     | Security    | Production CSP uses `unsafe-inline` not nonces | `next.config.ts:31`, `proxy.ts` |
-| A22  | MEDIUM   | i18n        | Global error boundary hardcoded English        | `global-error.tsx` (5 strings) |
-| A23  | MEDIUM   | i18n        | WeatherErrorBoundary hardcoded English         | `WeatherErrorBoundary.tsx` (3 strings) |
-| A24  | MEDIUM   | i18n        | LocationSelector hardcoded English             | `LocationSelector.tsx` (3 strings) |
-| A25  | MEDIUM   | Performance | 10 Image components missing `sizes` attribute  | 5 card components + 5 slug pages |
 | A26  | LOW      | Design      | Inconsistent dark section backgrounds          | 3 patterns: `white/[0.02]`, `muted/30`, `muted/20` |
 | A27  | LOW      | Design      | Some CTA buttons use `rounded-md` not `rounded-full` | not-found, error, about, team pages |
 | A28  | LOW      | Design      | DonorRecognition uses non-brand colors         | sky, emerald, indigo, purple gradients |
@@ -136,7 +141,7 @@
 | Control                    | Status |
 | -------------------------- | ------ |
 | OWASP injection prevention | PASS   |
-| `dangerouslySetInnerHTML`  | PASS (0 instances) |
+| `dangerouslySetInnerHTML`  | PASS (3 instances — all JSON-LD on server components, trusted data) |
 | `any` type usage           | PASS (0 instances) |
 | Secrets in code            | PASS (0 hardcoded) |
 | CSP headers (dev)          | PASS   |
@@ -242,18 +247,109 @@
 
 ---
 
+## 10. Content Continuity Checks
+
+Run these at the start of every session and before every commit involving MDX files.
+These checks caught real bugs in session #23 (duplicate YAML keys, future-dated articles).
+
+### 10a. Article Date Integrity
+No article should be dated in the future (relative to today) or more than 90 days in the past before launch.
+
+```bash
+# Find future-dated articles (replace TODAY with today's date)
+grep -rn "^date:" src/content/articles/ | awk -F'"' '{print $2, $0}' | sort
+```
+**Pass:** All dates in format `YYYY-MM-DD`, none dated after today.
+
+### 10b. YAML Frontmatter Duplicate Keys
+Duplicate YAML keys are silently ignored by parsers (last value wins) but indicate copy-paste errors.
+
+```bash
+# Check for duplicate frontmatter keys in MDX files (SOH artifact detection)
+python3 -c "
+import glob, re
+for f in glob.glob('src/content/**/*.mdx', recursive=True):
+    with open(f, 'rb') as fh:
+        raw = fh.read()
+    if b'\x01' in raw or b'\x02' in raw:
+        print('CORRUPT:', f)
+    lines = raw.split(b'\n')
+    in_front = False; seen = {}
+    for line in lines:
+        l = line.rstrip(b'\r')
+        if l == b'---':
+            if not in_front: in_front = True
+            else: break
+        if in_front and b':' in l:
+            key = l.split(b':')[0].strip()
+            if key in seen:
+                print('DUPLICATE KEY:', key.decode(), 'in', f)
+            seen[key] = True
+"
+```
+**Pass:** No output (no corrupted bytes, no duplicate keys).
+
+### 10c. Referenced Image Existence
+Every `featuredImage:` path in MDX frontmatter must resolve to an actual file in `public/`.
+
+```bash
+python3 -c "
+import glob, re
+missing = []
+for f in glob.glob('src/content/**/*.mdx', recursive=True):
+    with open(f) as fh:
+        for line in fh:
+            m = re.match(r'featuredImage:\s*\"(/[^\"]+)\"', line.strip())
+            if m:
+                path = 'public' + m.group(1)
+                import os
+                if not os.path.exists(path):
+                    missing.append((f, path))
+for f, p in missing:
+    print('MISSING IMAGE:', p, 'referenced in', f)
+"
+```
+**Pass:** No output (all referenced images exist).
+
+### 10d. MDX Required Frontmatter
+All published MDX files must have: `title`, `slug`, `published`.
+Articles additionally need: `date`, `author`, `excerpt`, `category`.
+Species additionally need: `scientificName`, `category`, `conservationStatus`.
+
+```bash
+# Quick spot-check — look for MDX files without title
+grep -rL "^title:" src/content/
+```
+**Pass:** No output.
+
+### 10e. dangerouslySetInnerHTML Audit
+All uses of `dangerouslySetInnerHTML` must be for trusted server-side data only (JSON-LD, sanitized HTML).
+
+```bash
+grep -rn "dangerouslySetInnerHTML" src/ --include="*.tsx" --include="*.ts"
+```
+**Expected (approved uses):**
+- `src/app/[locale]/learn/articles/[slug]/page.tsx` — JSON-LD (trusted Article schema)
+- `src/app/[locale]/learn/species/[slug]/page.tsx` — JSON-LD (trusted Article/Thing schema)
+- `src/app/[locale]/conservation/events/[slug]/page.tsx` — JSON-LD (trusted Event schema)
+
+**Any other file:** Investigate immediately.
+
+---
+
 ## How to Re-Run This Audit
 
 1. **Quality gates:** `pnpm lint && pnpm type-check && pnpm test && pnpm build && pnpm audit`
-2. **Security scan:** Search for `dangerouslySetInnerHTML`, `any`, unvalidated `as`, `!` assertions, `console.log` with PII
-3. **Design:** Check all color references resolve to defined `--color-*` vars, verify buttons consistent
-4. **Accessibility:** Run Lighthouse + axe-core on all pages, check alt text, ARIA, keyboard nav
-5. **i18n:** Compare EN/ES key counts, search for hardcoded English in `.tsx` files
-6. **Inclusivity:** Search for ability-assuming language, check family structure neutrality
-7. **Bias:** Review content for gender/race/economic/age assumptions
-8. **Dependencies:** `pnpm audit`, check for unused imports
-9. **Test coverage:** `pnpm test --coverage`
-10. **Bundle size:** `ANALYZE=true pnpm build`
+2. **Content continuity:** Run all 5 checks in Section 10 above
+3. **Security scan:** Search for `dangerouslySetInnerHTML` (see 10e for approved list), `any`, unvalidated `as`, `!` assertions, `console.log` with PII
+4. **Design:** Check all color references resolve to defined `--color-*` vars, verify buttons consistent
+5. **Accessibility:** Run Lighthouse + axe-core on all pages, check alt text, ARIA, keyboard nav
+6. **i18n:** Compare EN/ES key counts, search for hardcoded English in `.tsx` files
+7. **Inclusivity:** Search for ability-assuming language, check family structure neutrality
+8. **Bias:** Review content for gender/race/economic/age assumptions
+9. **Dependencies:** `pnpm audit`, check for unused imports
+10. **Test coverage:** `pnpm test --coverage`
+11. **Bundle size:** `ANALYZE=true pnpm build`
 
 ---
 

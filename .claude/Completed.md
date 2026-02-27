@@ -32,6 +32,7 @@
 | #19     | 2026-02-25  | README Redesign + VPS Deploy                            | 1 |
 | #20     | 2026-02-25  | Comprehensive 7-Dimension Site Audit                    | 1 |
 | #21     | 2026-02-26  | Audit Fixes (A21–A25) + SEO Foundations                 | 1 |
+| #22     | 2026-02-26  | Content Fixes + Volunteer Form Polish + Beach Guide Plan | 1 |
 
 ---
 
@@ -960,6 +961,74 @@ Resolved all 5 remaining HIGH/MEDIUM audit issues from Session #20, fixed a pre-
 - `src/app/layout.tsx` — Open Graph + JSON-LD added
 - `.claude/Handoff.md` — updated
 - `.claude/Completed.md` — this entry
+
+---
+
+---
+
+## [SESSION #22] 2026-02-26 — Content Fixes + Volunteer Form Polish + Beach Guide Plan
+
+### What
+Simplified volunteer age ranges (removed granular adult options, kept Under 13 / 13–17 / 18+), fixed nav dropdown centering, fixed article category enum errors, and created a detailed plan for the post-signup volunteer welcome email with beach day guide.
+
+### Scope
+
+**Volunteer age range simplification**
+- `AGE_RANGES` reduced from 6 values to 3: `["under-13", "13-17", "18+"]`
+- Full COPPA parental consent state machine (initial → parent_contact → code_entry → full_form) preserved unchanged
+- Removed accidental `agreeToAge: z.literal(true)` field that was introduced and abandoned mid-session
+- `src/lib/types/forms.ts`, `src/components/volunteer/VolunteerForm.tsx` updated
+- `messages/en.json` + `messages/es.json`: removed `agreeToAge` key, restored all consent/code/validation i18n keys, updated FAQ1 to welcome all ages with parental consent note for minors
+
+**Nav dropdown alignment**
+- `src/components/layout/DesktopNav.tsx`: `viewport={false}` on NavigationMenu + `className="left-1/2 -translate-x-1/2"` on all three NavigationMenuContent elements
+- About, Education, and Conservation dropdowns now center under their respective triggers
+
+**Article category fixes**
+- `src/content/articles/california-tide-pools-guide.mdx`: `"Marine Science"` → `"Marine Biology"`
+- `src/content/articles/kelp-forest-southern-california.mdx`: same fix
+- Both articles now appear correctly in article listings
+
+**Test suite updates**
+- `tests/fixtures/index.ts`: fixed `validVolunteerForm` (ageRange: "18+", removed agreeToAge), restored `validMinorVolunteerForm`, `validParentConsentRequest`, `validConsentCode`
+- `tests/unit/schemas.test.ts`: updated age range iteration test to use ["under-13", "13-17", "18+"], updated `parentConsentRequestSchema` adult rejection test to use "18+"
+
+**Beach Day Email Plan**
+- Created `.claude/plans/volunteer-welcome-email.md` — full implementation plan:
+  - Welcome email with embedded beach day guide (what to bring, what we provide, coral-safe sunscreen requirement)
+  - Admin notification email
+  - Resend + React Email implementation approach
+  - Error handling: email failure does not block signup
+  - CAN-SPAM compliance notes
+
+### Artifacts
+
+**Modified:**
+- `src/lib/types/forms.ts`
+- `src/components/volunteer/VolunteerForm.tsx`
+- `messages/en.json`
+- `messages/es.json`
+- `src/content/articles/california-tide-pools-guide.mdx`
+- `src/content/articles/kelp-forest-southern-california.mdx`
+- `src/components/layout/DesktopNav.tsx`
+- `tests/fixtures/index.ts`
+- `tests/unit/schemas.test.ts`
+
+**Created:**
+- `.claude/plans/volunteer-welcome-email.md`
+
+### Acceptance Criteria
+- ✅ `pnpm lint` — 0 errors, 0 warnings
+- ✅ `pnpm type-check` — 0 errors
+- ✅ `pnpm test` — 238/238 passing
+- ✅ `pnpm build` — 99 pages compiled
+- ✅ VPS deployed (PM2 online, git pull confirmed)
+
+### Unblocks
+- Volunteer form is production-ready with correct age grouping for OCINW's audience
+- Navigation dropdowns now visually correct (no misalignment)
+- Both new articles appear in article listings (Velite enum fix)
+- Next session can implement the volunteer welcome email using the plan doc
 
 ---
 

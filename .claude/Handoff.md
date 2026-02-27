@@ -2,13 +2,13 @@
 
 > **Session Continuity Document**
 > Last updated: 2026-02-26
-> Session: #21 (Audit Fixes A21–A25 + SEO Foundations)
+> Session: #22 (Content Fixes + Volunteer Form Polish)
 
 ---
 
 ## At A Glance
 
-**Current Phase:** Phase 10 COMPLETE (code) — All HIGH/MEDIUM audit items resolved | **Security:** A21 RESOLVED (nonce-based CSP) | **Tests:** 238 passing | **Next Action:** SQL migrations → low-priority design polish → Event/Article JSON-LD → Page-level OG meta
+**Current Phase:** Phase 10 COMPLETE (code) — All HIGH/MEDIUM audit items resolved | **Security:** A21 RESOLVED (nonce-based CSP) | **Tests:** 238 passing | **Next Action:** SQL migrations → low-priority design polish → Event/Article JSON-LD → Volunteer welcome email
 
 ---
 
@@ -60,7 +60,15 @@ Base OG/JSON-LD is now live. Next layer:
 
 Insert 2-3 sample events into the `events` table so pages have real content to display.
 
-### 5. Phase 12 — Pre-Launch Checklist
+### 5. Volunteer Welcome Email (plan ready)
+
+Detailed plan at `.claude/plans/volunteer-welcome-email.md`. Requires:
+- `pnpm add resend @react-email/components`
+- Create `src/emails/VolunteerWelcome.tsx` and `src/emails/VolunteerNotification.tsx`
+- Wire up in `src/app/actions/volunteer.ts` (replace two `// TODO` comments)
+- Content: welcome + beach day guide (what to bring, what we provide, coral-safe sunscreen only)
+
+### 6. Phase 12 — Pre-Launch Checklist
 
 Once SQL migrations are run and test events are seeded, Phase 12 can begin:
 - Accessibility audit (axe-core on live pages)
@@ -68,6 +76,40 @@ Once SQL migrations are run and test events are seeded, Phase 12 can begin:
 - Security headers audit (securityheaders.com)
 - Privacy policy + terms finalization
 - Google Search Console setup (after sitemap submission)
+
+---
+
+## What Was Completed This Session (#22)
+
+### Volunteer Form — Age Range Simplification
+- Removed granular adult age ranges (18-25, 26-40, 41-60, 60+) — now just `Under 13 / 13-17 / 18+`
+- Cleaned up accidental `agreeToAge` field (introduced and abandoned mid-session; removed from schema, form component, en.json, es.json)
+- Full COPPA parental consent flow (state machine: initial → parent_contact → code_entry → full_form) untouched
+- `src/lib/types/forms.ts` — `AGE_RANGES = ["under-13", "13-17", "18+"]`
+- `src/components/volunteer/VolunteerForm.tsx` — simplified age options, removed `isUnder16` alert
+- `messages/en.json` + `messages/es.json` — restored all consent/code/validation keys, updated FAQ1
+
+### Nav Dropdown Alignment
+- `src/components/layout/DesktopNav.tsx` — added `viewport={false}` to NavigationMenu, `className="left-1/2 -translate-x-1/2"` to all three NavigationMenuContent elements
+- Each dropdown now centers under its own trigger (About, Education, Conservation)
+
+### Article Category Fixes
+- `california-tide-pools-guide.mdx` — `"Marine Science"` → `"Marine Biology"` (fixes Velite enum)
+- `kelp-forest-southern-california.mdx` — same fix
+
+### Tests Updated
+- `tests/fixtures/index.ts` — fixed `validVolunteerForm` (ageRange: "18+", removed agreeToAge), restored `validMinorVolunteerForm`, `validParentConsentRequest`, `validConsentCode`
+- `tests/unit/schemas.test.ts` — updated age range test to use ["under-13", "13-17", "18+"], updated parentConsentRequestSchema adult rejection test
+
+### Beach Day Email Plan Doc
+- Created `.claude/plans/volunteer-welcome-email.md` — detailed plan for post-signup auto-email with beach guide, equipment list, coral-safe sunscreen note, implementation approach using Resend + React Email
+
+### Quality Gates (all passing)
+- ✅ `pnpm lint` — 0 errors
+- ✅ `pnpm type-check` — 0 errors
+- ✅ `pnpm test` — 238/238 passing
+- ✅ `pnpm build` — 99 pages compiled
+- ✅ VPS deployed — PM2 online
 
 ---
 

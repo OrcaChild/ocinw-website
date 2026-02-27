@@ -44,7 +44,23 @@
       "Bash(ssh -i ~/.ssh/orcachild_vps -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 -p 443 orcachild@72.62.200.30 \"echo ''SSH CONNECTED''; whoami; uname -a\")",
       "Bash(ssh -i ~/.ssh/orcachild_vps -o StrictHostKeyChecking=accept-new -o ConnectTimeout=10 -p 22 orcachild@72.62.200.30 \"echo connected\")",
       "Bash(chmod 600 ~/.ssh/orcachild_vps)",
-      "Bash(ssh -i ~/.ssh/orcachild_vps -o ConnectTimeout=15 -p 443 orcachild@72.62.200.30 \":*)"
+      "Bash(ssh -i ~/.ssh/orcachild_vps -o ConnectTimeout=15 -p 443 orcachild@72.62.200.30 \":*)",
+      "Bash(git rm header-options.md)",
+      "Bash(ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30 \"cd ~/ocinw-website && git pull && pnpm install --frozen-lockfile && pnpm build && pm2 restart ocinw\")",
+      "Bash(git pull --rebase)",
+      "Bash(grep -rn \"export.*articles\\\\|export.*species\\\\|export.*ecosystems\\\\|export.*projects\\\\|from.*#content\" c:/OrcaChild/src/app/[locale]/learn/articles/page.tsx)",
+      "Bash(ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30 \"cd ~/ocinw-website && git pull && pnpm install --frozen-lockfile && pnpm build && pm2 restart ocinw && pm2 status\")",
+      "Bash(ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30 \"cd ~/ocinw-website && git pull && pnpm build && pm2 restart ocinw && pm2 status\")",
+      "Bash(Impact Story Starts Here\" page — honest about being new, with:*)",
+      "WebFetch(domain:commons.wikimedia.org)",
+      "WebFetch(domain:en.wikipedia.org)",
+      "Bash(grep \"featuredImage:\" /c/OrcaChild/src/content/species/*.mdx)",
+      "Bash(git diff HEAD -- src/app/[locale]/learn/species/[slug]/page.tsx)",
+      "Bash(grep -n \"featuredImageAlt\\\\|featuredImage\\\\|imageCredit\\\\|bestViewingSeason\" src/content/species/*.mdx)",
+      "Bash(grep -rn \"generateMetadata\\\\|export.*metadata\" src/app/[locale]/ --include=\"*.tsx\")",
+      "Bash(grep -n \"jsonLd\\\\|JSON-LD\\\\|application/ld\\\\|@type.*Article\\\\|@type.*Event\\\\|script.*type\" src/app/[locale]/learn/articles/[slug]/page.tsx src/app/[locale]/learn/species/[slug]/page.tsx src/app/[locale]/conservation/events/[slug]/page.tsx)",
+      "Bash(grep -n \"SITE_URL\\\\|siteUrl\\\\|orcachildinthewild\\\\|openGraph\\\\|canonical\" src/app/layout.tsx src/app/[locale]/page.tsx)",
+      "Bash(grep -n \"^date:\" src/content/articles/*.mdx)"
     ]
   }
 }

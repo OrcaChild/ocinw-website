@@ -8,7 +8,7 @@ const missions = [
     icon: Shield,
     titleKey: "missionProtectTitle" as const,
     descKey: "missionProtectDescription" as const,
-    href: "/conservation/projects",
+    href: "/conservation/events",
     image: "/images/activities/tide-pool.jpg",
     imageAlt: "missionProtectImageAlt" as const,
     gradient: "from-teal-600/80 to-teal-800/60",

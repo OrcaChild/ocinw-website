@@ -5,7 +5,6 @@ import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
 import { HeroSection } from "@/components/home/HeroSection";
 import { MissionCards } from "@/components/home/MissionCards";
-import { ImpactCounter } from "@/components/home/ImpactCounter";
 import { WeatherPreview } from "@/components/home/WeatherPreview";
 import { FeaturedContent } from "@/components/home/FeaturedContent";
 import { GetInvolvedCTA } from "@/components/home/GetInvolvedCTA";
@@ -44,7 +43,6 @@ export default async function HomePage({ params }: Props) {
     <>
       <HeroSection />
       <MissionCards />
-      <ImpactCounter />
       <WeatherPreview />
       <FeaturedContent />
       <GetInvolvedCTA />

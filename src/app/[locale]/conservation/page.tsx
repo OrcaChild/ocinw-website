@@ -6,9 +6,7 @@ import { notFound } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { routing } from "@/i18n/routing";
 import { Link } from "@/i18n/navigation";
-import { Sparkles, FolderOpen, BarChart3, Users, CalendarDays } from "lucide-react";
-import { getProjects } from "@/lib/content";
-import { ProjectCard } from "@/components/conservation/ProjectCard";
+import { Sparkles, CalendarDays, Users } from "lucide-react";
 
 type Props = {
   params: Promise<{ locale: string }>;
@@ -32,15 +30,8 @@ export default async function ConservationPage({ params }: Props) {
   return <ConservationContent locale={locale as "en" | "es"} />;
 }
 
-const statusLabels = {
-  planned: "statusPlanned",
-  active: "statusActive",
-  completed: "statusCompleted",
-} as const;
-
-function ConservationContent({ locale }: { locale: "en" | "es" }) {
+function ConservationContent({ locale: _locale }: { locale: "en" | "es" }) {
   const t = useTranslations("conservation");
-  const projects = getProjects(locale);
 
   return (
     <>
@@ -73,11 +64,9 @@ function ConservationContent({ locale }: { locale: "en" | "es" }) {
 
       {/* Quick nav cards */}
       <section className="px-4 py-16 sm:px-6 lg:px-8">
-        <div className="mx-auto grid max-w-4xl gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="mx-auto grid max-w-2xl gap-4 sm:grid-cols-2">
           {[
-            { icon: FolderOpen, label: t("projectsTitle"), desc: t("projectsDescription"), href: "/conservation/projects" },
             { icon: CalendarDays, label: t("eventsTitle"), desc: t("eventsDescription"), href: "/conservation/events" },
-            { icon: BarChart3, label: t("impactTitle"), desc: t("impactDescription"), href: "/conservation/impact" },
             { icon: Users, label: t("getInvolvedHeading"), desc: t("getInvolvedText"), href: "/volunteer" },
           ].map(({ icon: Icon, label, desc, href }) => (
             <Link
@@ -92,42 +81,6 @@ function ConservationContent({ locale }: { locale: "en" | "es" }) {
           ))}
         </div>
       </section>
-
-      {/* Active Projects */}
-      {projects.length > 0 && (
-        <section className="bg-sand-50/50 px-4 py-20 dark:bg-white/[0.02] sm:px-6 lg:px-8">
-          <div className="mx-auto max-w-6xl">
-            <h2 className="text-center font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-              {t("projectsTitle")}
-            </h2>
-            <div className="mt-12 grid gap-6 sm:grid-cols-2">
-              {projects.map((project) => (
-                <ProjectCard
-                  key={project.slug}
-                  project={project}
-                  viewLabel={t("viewProject")}
-                  statusLabel={t(statusLabels[project.status])}
-                />
-              ))}
-            </div>
-            <div className="mt-8 text-center">
-              <Link
-                href="/conservation/projects"
-                className="inline-flex items-center rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
-              >
-                {t("projectsHeading")} &rarr;
-              </Link>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* Wave divider */}
-      <div aria-hidden="true">
-        <svg viewBox="0 0 1440 80" className="block w-full fill-sand-50/50 dark:fill-white/[0.02]" preserveAspectRatio="none">
-          <path d="M0,40 C360,80 720,0 1080,40 C1260,60 1380,30 1440,40 L1440,80 L0,80 Z" />
-        </svg>
-      </div>
     </>
   );
 }

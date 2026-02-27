@@ -110,16 +110,8 @@ export function DesktopNav() {
           <NavigationMenuContent>
             <ul className="grid w-[280px] gap-1 p-2">
               <DropdownLink
-                href="/conservation/projects"
-                title={t("conservationProjects")}
-              />
-              <DropdownLink
                 href="/conservation/events"
                 title={t("conservationEvents")}
-              />
-              <DropdownLink
-                href="/conservation/impact"
-                title={t("conservationImpact")}
               />
             </ul>
           </NavigationMenuContent>

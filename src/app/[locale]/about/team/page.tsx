@@ -34,20 +34,20 @@ const boardMembers: TeamMember[] = [
   {
     name: "Jordyn Rosario",
     title: "Founder & Executive Director",
-    bio: "Passionate about ocean conservation since childhood, Jordyn founded OCINW to empower young people to protect aquatic ecosystems.",
+    bio: "Jordyn Rosario founded Orca Child in the Wild out of a deep love for Southern California's coastlines and a belief that young people don't have to wait to make a difference. Jordyn leads OCINW with a hands-on, community-first approach — organizing cleanups, building educational programs, and rallying the next generation of ocean stewards from Los Angeles to San Diego.",
   },
 ];
 
-const youthCouncil: TeamMember[] = [
+const juniorProtectors: TeamMember[] = [
   {
-    name: "Youth Member 1",
-    title: "Youth Advisory Council",
-    bio: "Placeholder — real profiles coming soon.",
+    name: "Scout Rosario",
+    title: "Junior Marine Protector",
+    bio: "Scout is one of OCINW's founding Junior Marine Protectors and a natural ocean advocate. With a love of sea creatures and an unstoppable curiosity about the natural world, Scout helps prove that young people have real power to protect our coastlines — one cleanup and one conversation at a time.",
   },
   {
-    name: "Youth Member 2",
-    title: "Youth Advisory Council",
-    bio: "Placeholder — real profiles coming soon.",
+    name: "Elenore Rosario",
+    title: "Junior Marine Protector",
+    bio: "Elenore brings creativity and compassion to the OCINW mission as a founding Junior Marine Protector. Whether exploring tide pools, learning about marine ecosystems, or spreading the word with friends and family, Elenore shows every day that conservation starts with caring people of all ages.",
   },
 ];
 
@@ -111,13 +111,17 @@ function TeamContent() {
 
       <Separator className="my-12" />
 
-      {/* Youth Advisory Council */}
+      {/* Junior Marine Protectors */}
       <section>
         <h2 className="font-heading text-2xl font-bold">
-          {t("teamYouthHeading")}
+          Junior Marine Protectors
         </h2>
+        <p className="mt-2 text-muted-foreground">
+          Our Junior Marine Protectors are the heart of OCINW — young people leading by example
+          and showing the world that ocean conservation starts with passion, not age.
+        </p>
         <div className="mt-6 grid gap-4 sm:grid-cols-2">
-          {youthCouncil.map((member) => (
+          {juniorProtectors.map((member) => (
             <MemberCard key={member.name} member={member} />
           ))}
         </div>

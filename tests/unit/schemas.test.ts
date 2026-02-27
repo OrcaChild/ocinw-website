@@ -133,7 +133,7 @@ describe("volunteerFormSchema", () => {
   });
 
   it("accepts all valid ageRange values", () => {
-    for (const range of ["under-13", "13-17", "18-25", "26-40", "41-60", "60+"]) {
+    for (const range of ["under-13", "13-17", "18+"]) {
       const data = range === "under-13" || range === "13-17"
         ? { ...validVolunteerForm, ageRange: range, parentGuardianName: "Pat Smith", parentGuardianEmail: "pat@example.com", parentGuardianPhone: "3105551234", consentCode: "A3B7C9D2E" }
         : { ...validVolunteerForm, ageRange: range };
@@ -473,7 +473,7 @@ describe("parentConsentRequestSchema", () => {
   it("rejects adult age range", () => {
     const result = parentConsentRequestSchema.safeParse({
       ...validParentConsentRequest,
-      ageRange: "18-25",
+      ageRange: "18+",
     });
     expect(result.success).toBe(false);
   });

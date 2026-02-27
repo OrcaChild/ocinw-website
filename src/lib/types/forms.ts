@@ -14,13 +14,13 @@ export type ContactFormData = z.infer<typeof contactFormSchema>;
 export const AGE_RANGES = [
   "under-13",
   "13-17",
-  "18-25",
-  "26-40",
-  "41-60",
-  "60+",
+  "18+",
 ] as const;
 
 export type AgeRange = (typeof AGE_RANGES)[number];
+
+/** Minor age ranges that require parental consent */
+export const MINOR_AGE_RANGES = ["under-13", "13-17"] as const;
 
 /** Interest options for volunteer form */
 export const VOLUNTEER_INTERESTS = [
@@ -60,9 +60,6 @@ export const HOW_HEARD_OPTIONS = [
   "other",
 ] as const;
 
-/** Minor age ranges that require parental consent */
-export const MINOR_AGE_RANGES = ["under-13", "13-17"] as const;
-
 /** Parent consent request — Phase 1 of minor volunteer flow (zero child PII) */
 export const parentConsentRequestSchema = z.object({
   parentName: z.string().min(2, "Parent/guardian name must be at least 2 characters").max(100, "Name is too long"),
@@ -78,7 +75,7 @@ export const consentCodeSchema = z.string()
   .length(9, "Consent code must be exactly 9 characters")
   .regex(/^[A-Z0-9]{9}$/, "Consent code must contain only uppercase letters and numbers");
 
-/** Volunteer registration form — full Phase 8 spec */
+/** Volunteer registration form */
 const volunteerBaseSchema = z.object({
   firstName: z.string().min(2, "First name must be at least 2 characters").max(100, "Name is too long"),
   lastName: z.string().min(2, "Last name must be at least 2 characters").max(100, "Name is too long"),

@@ -258,10 +258,35 @@ export const validVolunteerForm = {
   firstName: "Jordan",
   lastName: "Smith",
   email: "jordan@example.com",
-  ageRange: "18-25" as const,
+  ageRange: "18+" as const,
   zipCode: "92008",
   interests: ["beach-cleanup"],
   availability: ["weekend-morning"],
+  agreeToCodeOfConduct: true as const,
+  agreeToPrivacy: true as const,
+};
+
+export const validParentConsentRequest = {
+  parentName: "Alex Smith",
+  parentEmail: "alex@example.com",
+  parentPhone: "3105551234",
+  ageRange: "13-17" as const,
+};
+
+export const validConsentCode = "A3B7C9D2E";
+
+export const validMinorVolunteerForm = {
+  firstName: "Morgan",
+  lastName: "Smith",
+  email: "morgan@example.com",
+  ageRange: "13-17" as const,
+  zipCode: "92008",
+  interests: ["beach-cleanup"],
+  availability: ["weekend-morning"],
+  parentGuardianName: "Alex Smith",
+  parentGuardianEmail: "alex@example.com",
+  parentGuardianPhone: "3105551234",
+  consentCode: "A3B7C9D2E",
   agreeToCodeOfConduct: true as const,
   agreeToPrivacy: true as const,
 };
@@ -283,31 +308,3 @@ export const validEventRegistration = {
   waiverAccepted: true as const,
 };
 
-// ---------------------------------------------------------------------------
-// Parent Consent Fixtures
-// ---------------------------------------------------------------------------
-
-export const validParentConsentRequest = {
-  parentName: "Pat Smith",
-  parentEmail: "pat@example.com",
-  parentPhone: "3105551234",
-  ageRange: "under-13" as const,
-};
-
-export const validConsentCode = "A3B7C9D2E";
-
-export const validMinorVolunteerForm = {
-  firstName: "Jordan",
-  lastName: "Smith",
-  email: "jordan@example.com",
-  ageRange: "13-17" as const,
-  zipCode: "92008",
-  interests: ["beach-cleanup"],
-  availability: ["weekend-morning"],
-  parentGuardianName: "Pat Smith",
-  parentGuardianEmail: "pat@example.com",
-  parentGuardianPhone: "3105551234",
-  consentCode: "A3B7C9D2E",
-  agreeToCodeOfConduct: true as const,
-  agreeToPrivacy: true as const,
-};

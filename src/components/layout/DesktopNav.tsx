@@ -60,12 +60,12 @@ export function DesktopNav() {
   const t = useTranslations("nav");
 
   return (
-    <NavigationMenu className="hidden lg:flex">
+    <NavigationMenu className="hidden lg:flex" viewport={false}>
       <NavigationMenuList>
         {/* About dropdown */}
         <NavigationMenuItem>
           <NavigationMenuTrigger>{t("about")}</NavigationMenuTrigger>
-          <NavigationMenuContent>
+          <NavigationMenuContent className="left-1/2 -translate-x-1/2">
             <ul className="grid w-[280px] gap-1 p-2">
               <DropdownLink href="/about" title={t("about")} />
               <DropdownLink href="/about/mission" title={t("aboutMission")} />
@@ -82,7 +82,7 @@ export function DesktopNav() {
         {/* Learn dropdown */}
         <NavigationMenuItem>
           <NavigationMenuTrigger>{t("education")}</NavigationMenuTrigger>
-          <NavigationMenuContent>
+          <NavigationMenuContent className="left-1/2 -translate-x-1/2">
             <ul className="grid w-[280px] gap-1 p-2">
               <DropdownLink
                 href="/learn/articles"
@@ -107,7 +107,7 @@ export function DesktopNav() {
         {/* Conservation dropdown */}
         <NavigationMenuItem>
           <NavigationMenuTrigger>{t("conservation")}</NavigationMenuTrigger>
-          <NavigationMenuContent>
+          <NavigationMenuContent className="left-1/2 -translate-x-1/2">
             <ul className="grid w-[280px] gap-1 p-2">
               <DropdownLink
                 href="/conservation/events"

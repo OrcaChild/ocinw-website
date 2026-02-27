@@ -64,10 +64,7 @@ const availabilityOptions = [
 const ageRangeOptions = [
   { value: "under-13", labelKey: "ageUnder13" },
   { value: "13-17", labelKey: "age13to17" },
-  { value: "18-25", labelKey: "age18to25" },
-  { value: "26-40", labelKey: "age26to40" },
-  { value: "41-60", labelKey: "age41to60" },
-  { value: "60+", labelKey: "age60plus" },
+  { value: "18+", labelKey: "age18plus" },
 ] as const;
 
 const howHeardOptions = [
@@ -136,7 +133,6 @@ export function VolunteerForm() {
   });
 
   const isMinor = selectedAgeRange === "under-13" || selectedAgeRange === "13-17";
-  const isUnder16 = selectedAgeRange === "under-13" || selectedAgeRange === "13-17";
 
   function handleAgeRangeSelect(value: string) {
     setSelectedAgeRange(value);
@@ -330,15 +326,6 @@ export function VolunteerForm() {
               {t("consentNotice")}
             </p>
           </div>
-
-          {isUnder16 && (
-            <div className="mt-3 flex items-start gap-3 rounded-lg bg-red-100/60 p-4 text-sm dark:bg-red-900/20" role="alert">
-              <AlertTriangle className="mt-0.5 size-5 shrink-0 text-red-600 dark:text-red-400" aria-hidden="true" />
-              <p className="font-medium text-red-800 dark:text-red-200">
-                {t("parentPresentNotice")}
-              </p>
-            </div>
-          )}
 
           <Form {...parentForm}>
             <form onSubmit={parentForm.handleSubmit(onParentSubmit)} className="mt-6 space-y-6">
@@ -615,13 +602,6 @@ export function VolunteerForm() {
             <legend className="font-heading text-xl font-bold">
               {t("parentHeading")}
             </legend>
-
-            {isUnder16 && (
-              <div className="flex items-start gap-3 rounded-lg bg-red-100/60 p-4 text-sm dark:bg-red-900/20" role="alert">
-                <AlertTriangle className="mt-0.5 size-5 shrink-0 text-red-600 dark:text-red-400" aria-hidden="true" />
-                <p className="font-medium text-red-800 dark:text-red-200">{t("parentPresentNotice")}</p>
-              </div>
-            )}
 
             <FormField
               control={volunteerForm.control}

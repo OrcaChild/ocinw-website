@@ -6,15 +6,17 @@ const intlMiddleware = createMiddleware(routing);
 
 const isDev = process.env.NODE_ENV === "development";
 
-function buildCsp(nonce: string): string {
+function buildCsp(): string {
   const directives = [
     "default-src 'self'",
-    // Dev: allow HMR eval; prod: nonce-based with strict-dynamic
-    // ('unsafe-inline' is ignored by CSP3 browsers when strict-dynamic is present;
-    //  kept as CSP2 fallback for maximum compatibility)
+    // Next.js SSG pre-renders HTML at build time, so per-request nonces cannot
+    // be embedded in static script tags. 'self' blocks all external-domain
+    // scripts (the primary XSS vector); 'unsafe-inline' is required for
+    // Next.js hydration chunks and JSON-LD structured data injected at build time.
+    // Dev adds 'unsafe-eval' for HMR.
     isDev
       ? "script-src 'self' 'unsafe-inline' 'unsafe-eval'"
-      : `script-src 'self' 'nonce-${nonce}' 'strict-dynamic' 'unsafe-inline'`,
+      : "script-src 'self' 'unsafe-inline'",
     "style-src 'self' 'unsafe-inline'",
     "img-src 'self' data: https:",
     "connect-src 'self' https://api.open-meteo.com https://marine-api.open-meteo.com https://api.tidesandcurrents.noaa.gov https://*.supabase.co https://nominatim.openstreetmap.org",
@@ -25,26 +27,18 @@ function buildCsp(nonce: string): string {
 }
 
 export default function middleware(request: NextRequest): NextResponse {
-  const nonce = Buffer.from(crypto.randomUUID()).toString("base64");
-  const csp = buildCsp(nonce);
+  const csp = buildCsp();
 
   // Run intl middleware for locale routing
   const intlResponse = intlMiddleware(request) as NextResponse;
 
-  // Redirect responses (locale routing): just stamp the CSP, no nonce needed
+  // Redirect responses (locale routing): stamp CSP and return
   if (intlResponse.headers.get("location")) {
     intlResponse.headers.set("Content-Security-Policy", csp);
     return intlResponse;
   }
 
-  // Normal render: create a new response that forwards the nonce to server
-  // components via request headers so layout.tsx can read it with headers()
-  const requestHeaders = new Headers(request.headers);
-  requestHeaders.set("x-nonce", nonce);
-
-  const response = NextResponse.next({
-    request: { headers: requestHeaders },
-  });
+  const response = NextResponse.next({ request });
 
   // Preserve intl's set-cookie (locale preference) and any rewrite headers
   const setCookie = intlResponse.headers.get("set-cookie");

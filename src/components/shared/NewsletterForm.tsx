@@ -44,6 +44,7 @@ export function NewsletterForm() {
           id="newsletter-email"
           type="email"
           name="email"
+          autoComplete="email"
           placeholder={t("newsletterPlaceholder")}
           required
           className="h-9 flex-1"

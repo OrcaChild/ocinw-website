@@ -349,7 +349,7 @@ export function VolunteerForm() {
                   <FormItem>
                     <FormLabel>{t("consentParentNameLabel")}</FormLabel>
                     <FormControl>
-                      <Input placeholder={t("consentParentNamePlaceholder")} {...field} />
+                      <Input autoComplete="name" placeholder={t("consentParentNamePlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -363,7 +363,7 @@ export function VolunteerForm() {
                   <FormItem>
                     <FormLabel>{t("consentParentEmailLabel")}</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder={t("consentParentEmailPlaceholder")} {...field} />
+                      <Input type="email" autoComplete="email" placeholder={t("consentParentEmailPlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -377,7 +377,7 @@ export function VolunteerForm() {
                   <FormItem>
                     <FormLabel>{t("consentParentPhoneLabel")}</FormLabel>
                     <FormControl>
-                      <Input type="tel" placeholder={t("consentParentPhonePlaceholder")} {...field} />
+                      <Input type="tel" autoComplete="tel" placeholder={t("consentParentPhonePlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -446,6 +446,7 @@ export function VolunteerForm() {
               </label>
               <Input
                 id="consent-code"
+                autoComplete="one-time-code"
                 value={consentCode}
                 onChange={(e) => {
                   setConsentCode(e.target.value.toUpperCase());
@@ -528,7 +529,7 @@ export function VolunteerForm() {
                 <FormItem>
                   <FormLabel>{t("firstNameLabel")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("firstNamePlaceholder")} {...field} />
+                    <Input autoComplete="given-name" placeholder={t("firstNamePlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -542,7 +543,7 @@ export function VolunteerForm() {
                 <FormItem>
                   <FormLabel>{t("lastNameLabel")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("lastNamePlaceholder")} {...field} />
+                    <Input autoComplete="family-name" placeholder={t("lastNamePlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -557,7 +558,7 @@ export function VolunteerForm() {
               <FormItem>
                 <FormLabel>{t("emailLabel")}</FormLabel>
                 <FormControl>
-                  <Input type="email" placeholder={t("emailPlaceholder")} {...field} />
+                  <Input type="email" autoComplete="email" placeholder={t("emailPlaceholder")} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -571,7 +572,7 @@ export function VolunteerForm() {
               <FormItem>
                 <FormLabel>{t("phoneLabel")}</FormLabel>
                 <FormControl>
-                  <Input type="tel" placeholder={t("phonePlaceholder")} {...field} />
+                  <Input type="tel" autoComplete="tel" placeholder={t("phonePlaceholder")} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -599,7 +600,7 @@ export function VolunteerForm() {
                 <FormItem>
                   <FormLabel>{t("zipCodeLabel")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("zipCodePlaceholder")} maxLength={5} {...field} />
+                    <Input autoComplete="postal-code" placeholder={t("zipCodePlaceholder")} maxLength={5} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -629,7 +630,7 @@ export function VolunteerForm() {
                 <FormItem>
                   <FormLabel>{t("parentNameLabel")}</FormLabel>
                   <FormControl>
-                    <Input placeholder={t("parentNamePlaceholder")} {...field} />
+                    <Input autoComplete="section-parent name" placeholder={t("parentNamePlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -643,7 +644,7 @@ export function VolunteerForm() {
                 <FormItem>
                   <FormLabel>{t("parentEmailLabel")}</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder={t("parentEmailPlaceholder")} {...field} />
+                    <Input type="email" autoComplete="section-parent email" placeholder={t("parentEmailPlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -657,7 +658,7 @@ export function VolunteerForm() {
                 <FormItem>
                   <FormLabel>{t("parentPhoneLabel")}</FormLabel>
                   <FormControl>
-                    <Input type="tel" placeholder={t("parentPhonePlaceholder")} {...field} />
+                    <Input type="tel" autoComplete="section-parent tel" placeholder={t("parentPhonePlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -798,7 +799,7 @@ export function VolunteerForm() {
               <FormItem>
                 <FormLabel>{t("skillsLabel")}</FormLabel>
                 <FormControl>
-                  <Textarea placeholder={t("skillsPlaceholder")} rows={3} {...field} />
+                  <Textarea autoComplete="off" placeholder={t("skillsPlaceholder")} rows={3} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>
@@ -812,7 +813,7 @@ export function VolunteerForm() {
               <FormItem>
                 <FormLabel>{t("messageLabel")}</FormLabel>
                 <FormControl>
-                  <Textarea placeholder={t("messagePlaceholder")} rows={3} {...field} />
+                  <Textarea autoComplete="off" placeholder={t("messagePlaceholder")} rows={3} {...field} />
                 </FormControl>
                 <FormMessage />
               </FormItem>

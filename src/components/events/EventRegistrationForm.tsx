@@ -131,7 +131,7 @@ export function EventRegistrationForm({
                   <FormItem>
                     <FormLabel>{t("firstNameLabel")}</FormLabel>
                     <FormControl>
-                      <Input placeholder={t("firstNamePlaceholder")} {...field} />
+                      <Input autoComplete="given-name" placeholder={t("firstNamePlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -145,7 +145,7 @@ export function EventRegistrationForm({
                   <FormItem>
                     <FormLabel>{t("lastNameLabel")}</FormLabel>
                     <FormControl>
-                      <Input placeholder={t("lastNamePlaceholder")} {...field} />
+                      <Input autoComplete="family-name" placeholder={t("lastNamePlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -160,7 +160,7 @@ export function EventRegistrationForm({
                 <FormItem>
                   <FormLabel>{t("emailLabel")}</FormLabel>
                   <FormControl>
-                    <Input type="email" placeholder={t("emailPlaceholder")} {...field} />
+                    <Input type="email" autoComplete="email" placeholder={t("emailPlaceholder")} {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -175,7 +175,7 @@ export function EventRegistrationForm({
                   <FormItem>
                     <FormLabel>{t("phoneLabel")}</FormLabel>
                     <FormControl>
-                      <Input type="tel" placeholder={t("phonePlaceholder")} {...field} />
+                      <Input type="tel" autoComplete="tel" placeholder={t("phonePlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -193,6 +193,7 @@ export function EventRegistrationForm({
                         type="number"
                         min={13}
                         max={120}
+                        autoComplete="off"
                         placeholder={t("agePlaceholder")}
                         {...field}
                         onChange={(e) => field.onChange(e.target.value ? Number(e.target.value) : undefined)}
@@ -231,7 +232,7 @@ export function EventRegistrationForm({
                   <FormItem>
                     <FormLabel>{t("parentEmailLabel")}</FormLabel>
                     <FormControl>
-                      <Input type="email" placeholder={t("parentEmailPlaceholder")} {...field} />
+                      <Input type="email" autoComplete="section-parent email" placeholder={t("parentEmailPlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -254,7 +255,7 @@ export function EventRegistrationForm({
                   <FormItem>
                     <FormLabel>{t("emergencyContactLabel")}</FormLabel>
                     <FormControl>
-                      <Input placeholder={t("emergencyContactPlaceholder")} {...field} />
+                      <Input autoComplete="off" placeholder={t("emergencyContactPlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>
@@ -268,7 +269,7 @@ export function EventRegistrationForm({
                   <FormItem>
                     <FormLabel>{t("emergencyPhoneLabel")}</FormLabel>
                     <FormControl>
-                      <Input type="tel" placeholder={t("emergencyPhonePlaceholder")} {...field} />
+                      <Input type="tel" autoComplete="off" placeholder={t("emergencyPhonePlaceholder")} {...field} />
                     </FormControl>
                     <FormMessage />
                   </FormItem>

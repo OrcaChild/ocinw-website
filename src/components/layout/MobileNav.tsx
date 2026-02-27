@@ -88,23 +88,12 @@ export function MobileNav() {
 
           <nav className="flex flex-col px-2 py-2" aria-label="Mobile navigation">
             <Accordion type="multiple" className="w-full">
-              {/* About */}
-              <AccordionItem value="about" className="border-b-0">
-                <AccordionTrigger className="px-3 py-2 text-sm font-medium hover:no-underline">
-                  {t("about")}
-                </AccordionTrigger>
-                <AccordionContent className="pb-1 pl-3">
-                  <MobileLink href="/about" onClick={closeMenu}>
-                    {t("about")}
-                  </MobileLink>
-                  <MobileLink href="/about/mission" onClick={closeMenu}>
-                    {t("aboutMission")}
-                  </MobileLink>
-                  <MobileLink href="/about/team" onClick={closeMenu}>
-                    {t("aboutTeam")}
-                  </MobileLink>
-                </AccordionContent>
-              </AccordionItem>
+              {/* Volunteer */}
+              <div className="px-3 py-2">
+                <MobileLink href="/volunteer" onClick={closeMenu}>
+                  {t("volunteer")}
+                </MobileLink>
+              </div>
 
               {/* Weather & Tides */}
               <div className="px-3 py-2">
@@ -146,12 +135,23 @@ export function MobileNav() {
                 </AccordionContent>
               </AccordionItem>
 
-              {/* Volunteer */}
-              <div className="px-3 py-2">
-                <MobileLink href="/volunteer" onClick={closeMenu}>
-                  {t("volunteer")}
-                </MobileLink>
-              </div>
+              {/* About */}
+              <AccordionItem value="about" className="border-b-0">
+                <AccordionTrigger className="px-3 py-2 text-sm font-medium hover:no-underline">
+                  {t("about")}
+                </AccordionTrigger>
+                <AccordionContent className="pb-1 pl-3">
+                  <MobileLink href="/about" onClick={closeMenu}>
+                    {t("about")}
+                  </MobileLink>
+                  <MobileLink href="/about/mission" onClick={closeMenu}>
+                    {t("aboutMission")}
+                  </MobileLink>
+                  <MobileLink href="/about/team" onClick={closeMenu}>
+                    {t("aboutTeam")}
+                  </MobileLink>
+                </AccordionContent>
+              </AccordionItem>
 
               {/* Contact */}
               <div className="px-3 py-2">

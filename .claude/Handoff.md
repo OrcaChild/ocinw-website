@@ -2,13 +2,13 @@
 
 > **Session Continuity Document**
 > Last updated: 2026-02-26
-> Session: #23 (Species Photos + SEO JSON-LD + Homepage Hero + Team Page)
+> Session: #24 (Nav reorder + Hero fixes + ZIP expansion in progress)
 
 ---
 
 ## At A Glance
 
-**Current Phase:** Phase 13 — Live on VPS, all code complete | **Security:** A+ (nonce CSP, full RLS, CSRF) | **Tests:** 238 passing | **Deployed:** `https://www.orcachildinthewild.com` | **Next Action:** SQL migrations → volunteer welcome email → Phase 12 pre-launch checklist
+**Current Phase:** Phase 13 — Live on VPS | **Security:** A+ | **Tests:** 238 passing | **Deployed:** `https://www.orcachildinthewild.com` | **Next Action:** Finish ZIP expansion + "Beaches Near You" feature → SQL migrations → volunteer welcome email
 
 ---
 
@@ -35,7 +35,81 @@
 
 ## NEXT SESSION — Priority Actions (in order)
 
-### 1. Run SQL Migrations in Supabase (user action required)
+### 1. FINISH IN-PROGRESS: ZIP Expansion + "Beaches Near You" (code half-written)
+
+**Context:** Session #24 was mid-implementation when context limit hit.
+
+**What's done:**
+- Nav reordered: Volunteer → Weather & Tides → Learn → Conservation → About (committed `773bd12`, `abacb98`, `cc0354f`)
+- Hero title single-row fix: `md:whitespace-nowrap`, cap at `sm:text-5xl` (committed)
+- heroTagline chip removed; subtitle now ends "All welcome." (committed)
+- Nav changes committed and pushed — but NOT yet deployed to VPS
+
+**What's NOT done yet (start here):**
+
+#### A. Write `src/lib/data/socal-beaches.ts` — full ZIP expansion
+The Write tool call was started but interrupted. The file still has the OLD 44-ZIP version.
+Replace the `ZIP_COORDINATES` export with comprehensive tri-county coverage (~280 ZIPs).
+Organize as:
+- LA County: Malibu, Santa Monica, Venice, Playa Vista, South Bay, Torrance, San Pedro, Long Beach, Seal Beach + all major neighborhoods (Downtown, Hollywood, Mid-City, South LA, Boyle Heights, Eagle Rock, Pasadena, Inglewood, Hawthorne, Gardena, Carson, Lakewood, Cerritos, Downey, etc.)
+- Orange County: Full coverage — Huntington, Costa Mesa, Newport, Laguna, Dana Point, San Clemente, Irvine, Anaheim, Fullerton, Garden Grove, Westminster, Santa Ana, Tustin, Orange, Brea, Yorba Linda, Mission Viejo, Lake Forest, RSM, Ladera Ranch
+- San Diego County: Full coverage — Oceanside, Vista, Carlsbad, Encinitas, Cardiff, Solana Beach, Del Mar, Rancho Santa Fe, Poway, Carmel Valley, La Jolla, Pacific/Mission/Ocean Beach, Point Loma, Midway, Clairemont, Kearny Mesa, Linda Vista, University City, Mira Mesa, Sorrento, Scripps Ranch, Rancho Bernardo, Rancho Peñasquitos, Downtown SD, North Park, Hillcrest, Normal Heights, Coronado, Barrio Logan, National City, Bonita, Chula Vista, Imperial Beach, San Ysidro, La Mesa, Lemon Grove, Spring Valley, El Cajon, Lakeside, Santee, Alpine + Inland Empire (Corona, Riverside, Murrieta, Temecula, Lake Elsinore, Moreno Valley, Perris, Rancho Cucamonga, Fontana, San Bernardino)
+
+Key rule: any ZIP a kid might plausibly enter from LA to the SD/Mexico border should return a result.
+
+#### B. Update `src/components/weather/LocationSelector.tsx` — "Beaches Near You"
+**Goal:** When user has a location set, the "Popular Beaches" section becomes "Beaches Near You" — dynamically sorted by distance.
+
+**Steps:**
+1. Add `currentLat?: number | null` and `currentLon?: number | null` to `LocationSelectorProps`
+2. Import `haversineDistance` from `@/lib/utils/geo`
+3. Inside the component, compute:
+```ts
+const displayBeaches = currentLat != null && currentLon != null
+  ? [...POPULAR_BEACHES]
+      .sort((a, b) =>
+        haversineDistance(currentLat, currentLon, a.latitude, a.longitude) -
+        haversineDistance(currentLat, currentLon, b.latitude, b.longitude)
+      )
+      .slice(0, 6)
+  : POPULAR_BEACHES;
+const beachSectionLabel = currentLat != null ? t("beachesNearYou") : t("popularBeaches");
+```
+4. Replace `{POPULAR_BEACHES.map(...)}` with `{displayBeaches.map(...)}`
+5. Replace the section heading to use `beachSectionLabel`
+
+#### C. Update `src/components/weather/WeatherDashboard.tsx`
+Pass coordinates to LocationSelector:
+```tsx
+<LocationSelector
+  ...existing props...
+  currentLat={geo.latitude}
+  currentLon={geo.longitude}
+/>
+```
+
+#### D. Add i18n keys
+`messages/en.json` — in the `"weather"` namespace:
+```json
+"beachesNearYou": "Beaches Near You"
+```
+`messages/es.json`:
+```json
+"beachesNearYou": "Playas Cercanas"
+```
+
+#### E. Quality gates + deploy
+```bash
+pnpm lint && pnpm type-check && pnpm test && pnpm build
+git add -A && git commit -m "feat: comprehensive ZIP coverage + Beaches Near You"
+git push origin main
+ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30 \
+  "cd ~/ocinw-website && git pull && pnpm install --frozen-lockfile && pnpm build && pm2 restart ocinw"
+```
+
+---
+
+### 2. Run SQL Migrations in Supabase (user action required)
 
 Run in Supabase SQL Editor → these unlock events and parental consent:
 
@@ -66,6 +140,34 @@ Once SQL migrations are run:
 - **A26:** Standardize dark section backgrounds (3 patterns: `white/[0.02]`, `muted/30`, `muted/20`)
 - **A27:** Standardize CTA button shapes — some `rounded-md` vs `rounded-full` (not-found, error, about, team)
 - **A28:** DonorRecognition uses non-brand colors (sky, emerald, indigo, purple)
+
+---
+
+## What Was Completed This Session (#24)
+
+### Nav Reorder
+- **Desktop + Mobile nav** reordered to: Volunteer → Weather & Tides → Learn → Conservation → About
+- `src/components/layout/DesktopNav.tsx` — items reordered
+- `src/components/layout/MobileNav.tsx` — items reordered (mobile accordion order matches desktop)
+- Committed + pushed; VPS deploy pending (will bundle with ZIP work)
+
+### Hero — "Guardians of Our Waters" Single Row
+- Removed `md:text-6xl lg:text-7xl` size ramp — font now caps at `sm:text-5xl` (48px)
+- Added `md:whitespace-nowrap` — title renders on one line from tablet up
+- `src/components/home/HeroSection.tsx` — committed
+
+### Hero — "All welcome." (Subtle LGBTQ+ Inclusive Language)
+- Removed the visible "Youth-led · All ages welcome · Families · Community" chip tagline
+- `heroTagline` key removed from `messages/en.json` and `messages/es.json`
+- Subtitle now ends with "All welcome." (EN) / "Todos bienvenidos." (ES)
+- Subtle, woven into prose — not a separate UI element
+- Committed + pushed
+
+### Commits This Session
+- `773bd12` — fix: hero h1 — single row on desktop (cap at 5xl, whitespace-nowrap md+)
+- `abacb98` — fix: remove heroTagline chip — subtle inclusive language in subtitle instead
+- `cc0354f` — fix: subtitle — 'All welcome.' (tighten phrasing)
+- Nav reorder — committed but not yet pushed as of handoff (lint + type-check passed)
 
 ---
 

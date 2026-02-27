@@ -33,6 +33,8 @@
 | #20     | 2026-02-25  | Comprehensive 7-Dimension Site Audit                    | 1 |
 | #21     | 2026-02-26  | Audit Fixes (A21–A25) + SEO Foundations                 | 1 |
 | #22     | 2026-02-26  | Content Fixes + Volunteer Form Polish + Beach Guide Plan | 1 |
+| #23     | 2026-02-26  | Species Photos + SEO JSON-LD + Homepage Hero + Team Page | 1 |
+| #24     | 2026-02-26  | Nav Reorder + Hero Single Row + "All welcome." tagline   | 1 |
 
 ---
 

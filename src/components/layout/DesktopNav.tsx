@@ -62,16 +62,9 @@ export function DesktopNav() {
   return (
     <NavigationMenu className="hidden lg:flex" viewport={false}>
       <NavigationMenuList>
-        {/* About dropdown */}
+        {/* Volunteer - single link */}
         <NavigationMenuItem>
-          <NavigationMenuTrigger>{t("about")}</NavigationMenuTrigger>
-          <NavigationMenuContent className="left-1/2 -translate-x-1/2">
-            <ul className="grid w-[280px] gap-1 p-2">
-              <DropdownLink href="/about" title={t("about")} />
-              <DropdownLink href="/about/mission" title={t("aboutMission")} />
-              <DropdownLink href="/about/team" title={t("aboutTeam")} />
-            </ul>
-          </NavigationMenuContent>
+          <NavLink href="/volunteer">{t("volunteer")}</NavLink>
         </NavigationMenuItem>
 
         {/* Weather & Tides - single link */}
@@ -117,9 +110,16 @@ export function DesktopNav() {
           </NavigationMenuContent>
         </NavigationMenuItem>
 
-        {/* Volunteer - single link */}
+        {/* About dropdown */}
         <NavigationMenuItem>
-          <NavLink href="/volunteer">{t("volunteer")}</NavLink>
+          <NavigationMenuTrigger>{t("about")}</NavigationMenuTrigger>
+          <NavigationMenuContent className="left-1/2 -translate-x-1/2">
+            <ul className="grid w-[280px] gap-1 p-2">
+              <DropdownLink href="/about" title={t("about")} />
+              <DropdownLink href="/about/mission" title={t("aboutMission")} />
+              <DropdownLink href="/about/team" title={t("aboutTeam")} />
+            </ul>
+          </NavigationMenuContent>
         </NavigationMenuItem>
 
         {/* Donate CTA */}

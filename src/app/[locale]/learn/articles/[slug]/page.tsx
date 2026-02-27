@@ -28,6 +28,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title: article.title,
     description: article.excerpt,
+    openGraph: {
+      type: "article",
+      title: article.title,
+      description: article.excerpt,
+      publishedTime: article.date,
+      authors: [article.author],
+      ...(article.featuredImage && { images: [article.featuredImage] }),
+    },
   };
 }
 
@@ -44,8 +52,27 @@ export default async function ArticlePage({ params }: Props) {
     .filter((a) => a.slug !== slug && a.category === article.category)
     .slice(0, 3);
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: article.title,
+    description: article.excerpt,
+    datePublished: article.date,
+    author: { "@type": "Person", name: article.author },
+    publisher: {
+      "@type": "Organization",
+      name: "Orca Child in the Wild",
+      url: "https://www.orcachildinthewild.com",
+    },
+    ...(article.featuredImage && { image: article.featuredImage }),
+  };
+
   return (
     <article className="px-4 py-12 sm:px-6 lg:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto max-w-3xl">
         {/* Back link */}
         <Link

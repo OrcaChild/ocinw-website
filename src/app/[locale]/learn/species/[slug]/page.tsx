@@ -34,9 +34,16 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!hasLocale(routing.locales, locale)) return {};
   const sp = getSpeciesBySlug(slug);
   if (!sp) return {};
+  const description = `Learn about ${sp.title} (${sp.scientificName}), a ${sp.category.toLowerCase()} species found in Southern California. Conservation status: ${sp.conservationStatus}.`;
   return {
     title: `${sp.title} (${sp.scientificName})`,
-    description: `Learn about ${sp.title}, a ${sp.category.toLowerCase()} species found in Southern California.`,
+    description,
+    openGraph: {
+      type: "article",
+      title: `${sp.title} (${sp.scientificName})`,
+      description,
+      ...(sp.featuredImage && { images: [sp.featuredImage] }),
+    },
   };
 }
 
@@ -50,8 +57,30 @@ export default async function SpeciesDetailPage({ params }: Props) {
 
   const t = await getTranslations({ locale, namespace: "learn" });
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Article",
+    headline: `${sp.title} (${sp.scientificName})`,
+    description: `Learn about ${sp.title} (${sp.scientificName}), a ${sp.category.toLowerCase()} species found in Southern California. Conservation status: ${sp.conservationStatus}.`,
+    about: {
+      "@type": "Thing",
+      name: sp.title,
+      alternateName: sp.scientificName,
+    },
+    publisher: {
+      "@type": "Organization",
+      name: "Orca Child in the Wild",
+      url: "https://www.orcachildinthewild.com",
+    },
+    ...(sp.featuredImage && { image: sp.featuredImage }),
+  };
+
   return (
     <article className="px-4 py-12 sm:px-6 lg:px-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <div className="mx-auto max-w-4xl">
         {/* Back */}
         <Link

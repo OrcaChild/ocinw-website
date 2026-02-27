@@ -30,14 +30,29 @@ type Props = {
   params: Promise<{ locale: string; slug: string }>;
 };
 
+// Map our DB status to schema.org EventStatus
+const schemaEventStatus: Record<string, string> = {
+  upcoming: "https://schema.org/EventScheduled",
+  active: "https://schema.org/EventScheduled",
+  completed: "https://schema.org/EventScheduled",
+  cancelled: "https://schema.org/EventCancelled",
+};
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale, slug } = await params;
   if (!hasLocale(routing.locales, locale)) return {};
   const event = await getEventBySlugWithCapacity(slug);
   if (!event) return {};
+  const description = event.description.slice(0, 160);
   return {
     title: event.title,
-    description: event.description.slice(0, 160),
+    description,
+    openGraph: {
+      type: "article",
+      title: event.title,
+      description,
+      ...(event.image_url && { images: [event.image_url] }),
+    },
   };
 }
 
@@ -49,7 +64,36 @@ export default async function EventDetailPage({ params }: Props) {
   const event = await getEventBySlugWithCapacity(slug);
   if (!event) notFound();
 
-  return <EventDetailContent event={event} />;
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: event.title,
+    description: event.description,
+    startDate: event.start_date,
+    endDate: event.end_date,
+    eventStatus: schemaEventStatus[event.status] ?? "https://schema.org/EventScheduled",
+    location: {
+      "@type": "Place",
+      name: event.location_name,
+      ...(event.location_address && { address: event.location_address }),
+    },
+    organizer: {
+      "@type": "Organization",
+      name: "Orca Child in the Wild",
+      url: "https://www.orcachildinthewild.com",
+    },
+    ...(event.image_url && { image: event.image_url }),
+  };
+
+  return (
+    <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+      <EventDetailContent event={event} />
+    </>
+  );
 }
 
 const statusLabels = {

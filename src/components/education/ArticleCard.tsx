@@ -19,6 +19,7 @@ export function ArticleCard({ article, readingTimeLabel, readArticleLabel }: Art
             alt={article.featuredImageAlt ?? ""}
             width={600}
             height={340}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="aspect-[16/9] w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         </Link>

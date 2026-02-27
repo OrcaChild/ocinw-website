@@ -285,7 +285,12 @@
     "unitMph": "mph",
     "unitFt": "ft",
     "unitIn": "in",
-    "unitSeconds": "s"
+    "unitSeconds": "s",
+    "errorTitle": "Weather data error",
+    "errorMessage": "Something went wrong loading weather data. This can happen with certain location coordinates. Click below to reset and try a different location.",
+    "errorReset": "Reset Location & Retry",
+    "or": "or",
+    "cancel": "Cancel"
   },
   "error": {
     "notFoundTitle": "Page Not Found",

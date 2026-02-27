@@ -46,7 +46,7 @@ export function LocationSelector({
         <div className="flex items-center gap-2">
           <MapPin className="size-5 text-ocean-500" aria-hidden="true" />
           <span className="font-medium">
-            {t("locationBar")}: <span className="text-ocean-600 dark:text-ocean-400">{locationName ?? "Current Location"}</span>
+            {t("locationBar")}: <span className="text-ocean-600 dark:text-ocean-400">{locationName ?? t("locationBar")}</span>
           </span>
         </div>
         <Button
@@ -87,7 +87,7 @@ export function LocationSelector({
             <span className="w-full border-t" />
           </div>
           <div className="relative flex justify-center text-xs uppercase">
-            <span className="bg-card px-2 text-muted-foreground">or</span>
+            <span className="bg-card px-2 text-muted-foreground">{t("or")}</span>
           </div>
         </div>
 
@@ -153,7 +153,7 @@ export function LocationSelector({
               size="sm"
               onClick={() => setShowBeaches(false)}
             >
-              Cancel
+              {t("cancel")}
             </Button>
           </div>
         ) : null}

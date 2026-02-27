@@ -1,18 +1,23 @@
 # CLAUDE.md — Orca Child in the Wild (OCINW) Project Instructions
 
-> This file configures Claude Code's behavior for every session on this project.
-> Security, performance, and reliability are non-negotiable first principles.
+> **Universal Pillars:** Security Minded | Structure | Performance | Inclusive | Non-Bias | UX Minded
+>
+> These six pillars govern every decision across all Rosario family projects.
+> Tech-specific details vary by stack — the principles never do.
 
 ---
 
 ## Project Identity
 
-- **Project:** Orca Child in the Wild (OCINW)
-- **Type:** Youth-run nonprofit — ocean, marine, river, lake, pond conservation & education
-- **Founder:** Jordyn Rosario and Family
-- **Region:** Southern California (Los Angeles to San Diego)
-- **Audience:** Mixed — youth (8-18), families, educators, donors, community members
-- **Languages:** English (primary), Spanish (secondary)
+| Attribute | Value |
+|-----------|-------|
+| **Project** | Orca Child in the Wild (OCINW) |
+| **Type** | Youth-run nonprofit — ocean, marine, river, lake, pond conservation & education |
+| **Founder** | Jordyn Rosario and Family |
+| **Region** | Southern California (Los Angeles to San Diego) |
+| **Audience** | Mixed — youth (8-18), families, educators, donors, community members |
+| **Languages** | English (primary), Spanish (secondary) |
+| **GitHub** | OrcaChild / ocinw-website |
 
 ---
 
@@ -63,403 +68,387 @@ These decisions are final. Do not propose alternatives unless explicitly asked.
 
 ---
 
-## Security Standards
-
-### OWASP Top 10 — Mandatory Protections
+## Pillar 1: Security Minded
 
 Every line of code must be defensively written. This site collects personal data from minors (COPPA applies).
 
-1. **Injection Prevention**
-   - All user input validated server-side via Zod schemas before any database operation
-   - Use Supabase parameterized queries exclusively — never string-concatenate SQL
-   - Sanitize all inputs rendered in HTML (React handles this by default — never use `dangerouslySetInnerHTML` without explicit sanitization)
+### Universal Rules (All Projects)
+- **Validate all input at system boundaries** — never trust client-submitted data
+- **Never commit secrets** — `.env`, credentials, API keys are always git-ignored
+- **Principle of least privilege** — grant minimum access needed, nothing more
+- **Never expose internal errors to users** — log server-side, show generic messages
+- **Dependency hygiene** — audit packages before adding, prefer well-maintained libraries
 
-2. **Authentication & Session Security**
-   - Admin routes protected via Supabase Auth with email/password
-   - Session tokens stored in httpOnly cookies — never localStorage
-   - Implement idle timeout (30 minutes) for admin sessions
-   - Rate limit login attempts (5 per minute per IP)
+### Tech-Specific (This Project)
 
-3. **Sensitive Data Protection**
-   - **Never commit secrets.** All API keys, database URLs, and credentials live in `.env.local` (git-ignored)
-   - `.env.example` contains variable names only — never actual values
-   - Supabase `service_role_key` used only in server-side API routes — never exposed to client
-   - `NEXT_PUBLIC_` prefix only for non-sensitive values (Supabase anon key is designed to be public)
-   - Volunteer personal data (email, phone, parent info) protected by Row Level Security — only authenticated admins can read
+**Injection Prevention**
+- All user input validated server-side via Zod schemas before any database operation
+- Use Supabase parameterized queries exclusively — never string-concatenate SQL
+- Sanitize all inputs rendered in HTML — never use `dangerouslySetInnerHTML` without explicit sanitization
 
-4. **Access Control**
-   - Supabase Row Level Security (RLS) enabled on ALL tables — no exceptions
-   - Public users: INSERT only (forms)
-   - Authenticated admins: SELECT, UPDATE, DELETE
-   - API routes verify authentication before returning sensitive data
-   - Never trust client-side auth state alone — always verify server-side
+**Authentication & Session Security**
+- Admin routes protected via Supabase Auth with email/password
+- Session tokens stored in httpOnly cookies — never localStorage
+- Idle timeout: 30 minutes for admin sessions
+- Rate limit login attempts: 5 per minute per IP
 
-5. **CSRF Protection**
-   - All form submissions use server actions or API routes with origin validation
-   - Verify `Origin` and `Referer` headers on API routes that modify data
+**Sensitive Data Protection**
+- `.env.example` contains variable names only — never actual values
+- Supabase `service_role_key` used only in server-side API routes — never exposed to client
+- `NEXT_PUBLIC_` prefix only for non-sensitive values
+- Volunteer personal data protected by Row Level Security
 
-6. **Security Headers (next.config.ts)**
+**Access Control**
+- Supabase RLS enabled on ALL tables — no exceptions
+- Public users: INSERT only (forms)
+- Authenticated admins: SELECT, UPDATE, DELETE
+- API routes verify authentication before returning sensitive data
 
-   **Development CSP** (Next.js requires `'unsafe-eval'` for hot module replacement):
-   ```
-   Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.open-meteo.com https://marine-api.open-meteo.com https://api.tidesandcurrents.noaa.gov https://*.supabase.co; frame-src https://www.zeffy.com;
-   ```
+**CSRF Protection**
+- All form submissions use server actions or API routes with origin validation
+- Verify `Origin` and `Referer` headers on data-modifying API routes
 
-   **Production CSP** (strict — no unsafe-eval, use nonce for inline scripts):
-   ```
-   Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-{random}'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.open-meteo.com https://marine-api.open-meteo.com https://api.tidesandcurrents.noaa.gov https://*.supabase.co; frame-src https://www.zeffy.com;
-   ```
-   Configure via `next.config.ts` headers with environment-specific CSP. Generate nonce per-request in middleware.
+**Security Headers (next.config.ts)**
 
-   **All environments:**
-   ```
-   X-Frame-Options: DENY
-   X-Content-Type-Options: nosniff
-   Referrer-Policy: strict-origin-when-cross-origin
-   Permissions-Policy: camera=(), microphone=(), geolocation=(self)
-   ```
-
-7. **Dependency Security**
-   - Run `pnpm audit` before every PR merge
-   - No packages with known critical vulnerabilities
-   - Pin major versions in `package.json` to prevent supply chain attacks
-   - Prefer packages with >1000 weekly downloads and active maintenance
-
-8. **COPPA Compliance (Children Under 13)**
-   - Parental consent required before collecting personal data from under-13 users
-   - Age-gating on volunteer form: if "Under 13" selected, parent/guardian fields become required
-   - Consent email sent to parent before storing child's data
-   - Minimal data collection — only what's strictly necessary
-   - Never share children's data with third parties
-
-9. **Rate Limiting**
-   - API routes: 10 requests/minute per IP for form submissions
-   - Contact form: 3 submissions/hour per IP
-   - Newsletter signup: 5 attempts/hour per IP
-   - Implement via Vercel middleware or Supabase edge functions
-
-10. **Error Handling**
-    - Never expose stack traces, database errors, or internal paths to users
-    - Log errors server-side (Vercel function logs)
-    - **Never log PII** (names, emails, phone numbers) in error messages — log only: error type, timestamp, URL, anonymized user ID (hash). COPPA prohibits logging children's personal data.
-    - Return generic error messages to client: "Something went wrong. Please try again."
-    - Custom error boundaries catch and handle React rendering errors gracefully
-
-11. **Request Payload Size Limits**
-    - Limit request body to 1MB for form submissions
-    - Limit file uploads to 5MB (event photos only, admin-authenticated)
-    - Configure via Next.js API route config: `export const config = { api: { bodyParser: { sizeLimit: '1mb' } } }`
-    - Reject oversized payloads early to prevent DoS via oversized requests
-
-12. **Backup & Disaster Recovery**
-    - Supabase free tier includes daily backups with 7-day retention
-    - Export database weekly via `pg_dump` stored in a private GitHub repository
-    - MDX content is Git-versioned (inherently backed up with full history)
-    - Document recovery procedure: (1) Restore Supabase from dashboard backup, (2) Re-deploy from Git main branch, (3) Verify data integrity post-restore
-    - Test recovery procedure once before launch (Phase 12)
-
----
-
-## Performance Standards
-
-### Core Web Vitals Targets (Non-Negotiable)
-
-| Metric | Target | What It Means |
-|--------|--------|---------------|
-| LCP (Largest Contentful Paint) | < 2.5s | Main content visible in under 2.5 seconds |
-| FCP (First Contentful Paint) | < 1.8s | First meaningful pixel rendered in under 1.8 seconds |
-| FID (First Input Delay) | < 100ms | Site responds to first click in under 100ms |
-| CLS (Cumulative Layout Shift) | < 0.1 | Content doesn't jump around while loading |
-| INP (Interaction to Next Paint) | < 200ms | Every interaction gets visual feedback within 200ms |
-| Lighthouse Performance | 90+ | — |
-| Lighthouse Accessibility | 100 | Zero accessibility violations |
-| Lighthouse Best Practices | 90+ | — |
-| Lighthouse SEO | 90+ | — |
-
-### Performance Rules
-
-1. **Images**
-   - Always use Next.js `<Image>` component — never raw `<img>` tags
-   - All images served as WebP with responsive `sizes` attribute
-   - Lazy load all images below the fold
-   - Hero images use `priority` prop for immediate loading
-   - Maximum image dimensions: 2400px wide (larger is wasted bandwidth)
-
-2. **Fonts**
-   - Load via `next/font` — zero layout shift
-   - Subset fonts to Latin characters only (reduces file size 60%+)
-   - Two font families maximum (heading + body)
-
-3. **JavaScript**
-   - Use server components by default — add `"use client"` only when interactivity is required
-   - Dynamic import (`next/dynamic`) for heavy components (maps, charts) with loading skeletons
-   - Tree-shake all imports: `import { Button } from "./ui/button"` not `import * as UI from "./ui"`
-   - No packages over 50KB gzipped without explicit justification
-
-4. **Data Fetching**
-   - Weather data: Cache 15 minutes (client-side state + Vercel edge cache)
-   - Tide data: Cache 6 hours (predictions are stable)
-   - MDX content: Static generation with ISR (revalidate every 1 hour)
-   - API responses: Set `Cache-Control` headers appropriately
-   - Never fetch data client-side when server-side fetching is possible
-
-5. **Bundle Size**
-   - Monitor with `@next/bundle-analyzer`
-   - Alert on any PR that increases bundle by >10KB
-   - No duplicate dependencies (e.g., both `moment` and `date-fns`)
-
-6. **Database Query Optimization**
-   - Always use `.select()` with specific columns — never `SELECT *`
-   - Paginate all list queries using `.range(from, to)` — never fetch unbounded result sets
-   - Use `.single()` for known single-row results (avoids returning an array)
-   - Index frequently queried columns: `email`, `slug`, `status`, `created_at`
-   - Use Supabase connection pooling via PgBouncer (enabled by default on free tier)
-   - Avoid N+1 queries — use `.select('*, events(*)')` for joined data instead of separate queries
-
----
-
-## Reliability Standards
-
-### Error Boundaries
-
-- Global error boundary at `src/app/error.tsx` catches all unhandled errors
-- Page-level error boundaries for critical sections (weather, donations, forms)
-- Every error boundary shows a user-friendly message with a retry action
-- Errors logged server-side for debugging
-
-### API Resilience
-
-- All external API calls (Open-Meteo, NOAA) wrapped in try/catch with fallback UI
-- Timeout: 10 seconds maximum for any external API call
-- If weather API fails: Show "Weather data temporarily unavailable" with last cached data
-- If NOAA API fails: Show "Tide data temporarily unavailable" with generic tide chart
-- Never let an API failure crash the entire page — isolate failures to their component
-
-### Form Reliability
-
-- Client-side validation (Zod) provides instant feedback
-- Server-side validation (same Zod schema) is the source of truth — never trust client alone
-- Show inline field errors immediately on blur
-- Show form-level error summary on submit failure
-- Disable submit button during processing to prevent double-submission
-- Display success confirmation with clear next steps
-
-### Database Reliability
-
-- Supabase connection errors handled gracefully — show retry option
-- All database writes are idempotent where possible (prevent duplicate volunteer signups via UNIQUE constraints)
-- Newsletter: UNIQUE on email prevents duplicates
-- Volunteer: UNIQUE on email prevents duplicate registrations
-
----
-
-## Code Standards
-
-### TypeScript Rules
-
-```typescript
-// GOOD: Explicit types, null safety
-function getVolunteerAge(ageRange: AgeRange): { isMinor: boolean; requiresConsent: boolean } {
-  const isMinor = ageRange === "under-13" || ageRange === "13-17";
-  return { isMinor, requiresConsent: isMinor };
-}
-
-// BAD: any type, no null checking
-function getVolunteerAge(ageRange: any) {
-  return ageRange === "under-13";
-}
+Development CSP (Next.js requires `'unsafe-eval'` for HMR):
+```
+Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.open-meteo.com https://marine-api.open-meteo.com https://api.tidesandcurrents.noaa.gov https://*.supabase.co; frame-src https://www.zeffy.com;
 ```
 
-- **Never use `any`** — use `unknown` and narrow with type guards if the type is truly unknown
-- **Never use `as` type assertions** unless you've verified the type at runtime
+Production CSP (strict — nonce-based):
+```
+Content-Security-Policy: default-src 'self'; script-src 'self' 'nonce-{random}'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; connect-src 'self' https://api.open-meteo.com https://marine-api.open-meteo.com https://api.tidesandcurrents.noaa.gov https://*.supabase.co; frame-src https://www.zeffy.com;
+```
+
+All environments:
+```
+X-Frame-Options: DENY
+X-Content-Type-Options: nosniff
+Referrer-Policy: strict-origin-when-cross-origin
+Permissions-Policy: camera=(), microphone=(), geolocation=(self)
+```
+
+**Dependency Security**
+- Run `pnpm audit` before every PR merge
+- No packages with known critical vulnerabilities
+- Pin major versions to prevent supply chain attacks
+- Prefer packages with >1000 weekly downloads and active maintenance
+
+**COPPA Compliance (Children Under 13)**
+- Parental consent required before collecting personal data from under-13 users
+- Age-gating on volunteer form: under-13 triggers parent/guardian required fields
+- Consent email sent to parent before storing child's data
+- Minimal data collection — only what's strictly necessary
+- Never share children's data with third parties
+
+**Rate Limiting**
+- API routes: 10 requests/minute per IP for form submissions
+- Contact form: 3 submissions/hour per IP
+- Newsletter signup: 5 attempts/hour per IP
+
+**Error Handling**
+- Never expose stack traces, database errors, or internal paths to users
+- **Never log PII** — log only: error type, timestamp, URL, anonymized user ID
+- COPPA prohibits logging children's personal data
+- Return generic error messages to client
+
+**Request Payload Limits**
+- Form submissions: 1MB max
+- File uploads: 5MB max (event photos only, admin-authenticated)
+
+**Backup & Disaster Recovery**
+- Supabase free tier: daily backups with 7-day retention
+- Weekly `pg_dump` export stored in private GitHub repository
+- MDX content Git-versioned (inherently backed up)
+- Recovery procedure documented and tested before launch
+
+---
+
+## Pillar 2: Structure
+
+Clean architecture makes every session productive. A fresh Claude instance should be able to pick up seamlessly.
+
+### Universal Rules (All Projects)
+- **Single source of truth** — every domain has ONE authoritative document
+- **Handoff-readiness** — update docs as you build, not as an afterthought
+- **Archive pattern** — when docs grow past limits, move completed sections to archive with key facts retained inline
+- **No file bloat** — prefer editing existing files over creating new ones
+- **Code tidiness** — remove dead code, no legacy shims, clean as you go
+
+### Tech-Specific (This Project)
+
+**TypeScript Rules**
+- **Never use `any`** — use `unknown` and narrow with type guards
+- **Never use `as` type assertions** unless type is verified at runtime
 - **Never use `!` non-null assertions** — handle null/undefined explicitly
 - **Always define return types** for exported functions
-- **Use discriminated unions** for state: `{ status: "loading" } | { status: "error"; message: string } | { status: "success"; data: T }`
+- **Use discriminated unions** for state
 
-### Component Patterns
-
-```typescript
-// GOOD: Server component by default
-// src/app/learn/articles/page.tsx
-export default async function ArticlesPage() {
-  const articles = await getArticles(); // Server-side data fetch
-  return <ArticleGrid articles={articles} />;
-}
-
-// GOOD: Client component only when needed
-// src/components/weather/LocationSearch.tsx
-"use client";
-export function LocationSearch() {
-  const [zip, setZip] = useState("");
-  // ... interactive logic
-}
-```
-
-- Server components by default — only add `"use client"` for interactivity (useState, useEffect, event handlers)
+**Component Patterns**
+- Server components by default — `"use client"` only for interactivity
 - Co-locate component, types, and tests: `WeatherCard.tsx`, `WeatherCard.test.tsx`
 - One component per file — named export matching filename
 - Props defined as TypeScript interface above the component
-- Destructure props in function signature
 
-### File Naming
+**File Naming**
 
 | Type | Convention | Example |
 |------|-----------|---------|
 | Components | PascalCase | `WeatherCard.tsx` |
 | Pages | lowercase `page.tsx` | `src/app/donate/page.tsx` |
 | Utilities | camelCase | `formatTideHeight.ts` |
-| Types | camelCase | `weather.ts` |
 | Constants | camelCase | `constants.ts` |
 | MDX Content | kebab-case | `california-gray-whale.mdx` |
 | Test files | same as source + `.test` | `WeatherCard.test.tsx` |
 
-### Import Order
-
-```typescript
-// 1. React/Next.js
-import { Suspense } from "react";
-import Image from "next/image";
-import Link from "next/link";
-
-// 2. External packages
-import { z } from "zod";
-import { format } from "date-fns";
-
-// 3. Internal: components
-import { Button } from "@/components/ui/button";
-import { WeatherCard } from "@/components/weather/WeatherCard";
-
-// 4. Internal: utilities, hooks, types
-import { formatTideHeight } from "@/lib/utils/format";
-import { useWeather } from "@/lib/hooks/useWeather";
-import type { TidePrediction } from "@/lib/types/tides";
-
-// 5. Styles (if any)
-import "./styles.css";
+**Import Order**
+```
+1. React/Next.js
+2. External packages
+3. Internal: components
+4. Internal: utilities, hooks, types
+5. Styles (if any)
 ```
 
-### Environment Variable Typing
+**Environment Variable Typing**
+- `src/env.ts` with Zod schema validates all env vars at startup — fail fast if missing
+- Import `env` instead of accessing `process.env` directly
 
-Create `src/env.ts` to validate all environment variables at startup — fail fast if a required variable is missing rather than discovering it at runtime:
-
-```typescript
-import { z } from "zod";
-
-const envSchema = z.object({
-  NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
-  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(1),
-  SUPABASE_SERVICE_ROLE_KEY: z.string().min(1),
-  RESEND_API_KEY: z.string().min(1),
-  // ... all other env vars
-});
-
-export const env = envSchema.parse(process.env);
-```
-
-Import `env` instead of accessing `process.env` directly throughout the codebase.
-
-### Git Commit Messages
-
+**Git Commit Messages**
 ```
 <type>: <short description>
 
-<optional body explaining WHY, not WHAT>
-
 Co-Authored-By: Claude Opus 4.6 <noreply@anthropic.com>
 ```
-
 Types: `feat`, `fix`, `docs`, `style`, `refactor`, `test`, `build`, `ci`, `chore`
 
-Examples:
-- `feat: add tide chart component with 24-hour visualization`
-- `fix: prevent double-submission on volunteer signup form`
-- `docs: add species profile content guide for contributors`
+---
+
+## Pillar 3: Performance
+
+Respect the user's time, bandwidth, and device — many visitors are youth on mobile.
+
+### Universal Rules (All Projects)
+- **No bloat** — don't add packages, files, or abstractions without clear justification
+- **Lazy load where possible** — defer heavy content below the fold
+- **Efficient queries** — select only what you need
+- **Minimize re-renders** — server-first where applicable
+- **Fast feedback loops** — tests should run in seconds, dev server should reload instantly
+
+### Core Web Vitals Targets (Non-Negotiable)
+
+| Metric | Target |
+|--------|--------|
+| LCP | < 2.5s |
+| FCP | < 1.8s |
+| FID | < 100ms |
+| CLS | < 0.1 |
+| INP | < 200ms |
+| Lighthouse Performance | 90+ |
+| Lighthouse Accessibility | 100 |
+| Lighthouse Best Practices | 90+ |
+| Lighthouse SEO | 90+ |
+
+### Tech-Specific Rules
+
+**Images**
+- Always use Next.js `<Image>` — never raw `<img>` tags
+- WebP with responsive `sizes`, lazy loaded below the fold
+- Hero images use `priority` prop
+- Maximum 2400px wide
+
+**Fonts**
+- Load via `next/font` — zero layout shift
+- Subset to Latin characters, two families maximum
+
+**JavaScript**
+- Dynamic import for heavy components (maps, charts) with loading skeletons
+- Tree-shake all imports — no `import *`
+- No packages over 50KB gzipped without justification
+
+**Data Fetching**
+- Weather: cache 15 minutes
+- Tides: cache 6 hours
+- MDX: static generation with ISR (revalidate 1 hour)
+- Never fetch client-side when server-side is possible
+
+**Database Queries**
+- Always `.select()` with specific columns
+- Paginate with `.range(from, to)` — never unbounded
+- Use `.single()` for known single-row results
+- Avoid N+1 — use joined selects
+
+**Bundle Size**
+- Monitor with `@next/bundle-analyzer`
+- Alert on PRs that increase bundle by >10KB
 
 ---
 
-## Accessibility Standards (WCAG 2.1 AA)
+## Pillar 4: Inclusive
 
-These are not optional. Every component, every page, every interaction.
+Every person who touches our systems deserves to feel seen, safe, and respected. This is non-negotiable.
 
-1. **All images have alt text** — descriptive for informational, empty (`alt=""`) for decorative
-2. **Color contrast 4.5:1 minimum** for all text — test with WebAIM contrast checker
-3. **All interactive elements keyboard-accessible** — Tab, Enter, Space, Escape, Arrow keys
-4. **Visible focus indicators** on all focusable elements — never `outline: none` without replacement
-5. **Semantic HTML** — use `<button>` for actions, `<a>` for navigation, `<nav>`, `<main>`, `<header>`, `<footer>`
-6. **ARIA only as last resort** — prefer semantic HTML; ARIA supplements, never replaces
-7. **Forms: every input has a `<label>`** linked via `htmlFor`/`id`. Group related inputs (radio buttons, checkbox groups) in `<fieldset>` with `<legend>`. Example: volunteer interests, availability selections.
-8. **Error messages linked to inputs** via `aria-describedby`
-9. **Skip-to-content link** as first focusable element on every page
-10. **Respect `prefers-reduced-motion`** — disable animations when user prefers reduced motion
-11. **Touch targets 44x44px minimum** on mobile
-12. **Content readable at 200% zoom** without horizontal scrolling
-13. **Dynamic content announcements** — Use `aria-live="polite"` for non-urgent updates (weather data loaded, form saved) and `aria-live="assertive"` for urgent feedback (form errors, critical alerts). Toast notifications must use `role="alert"`.
+### Accessibility (WCAG 2.1 AA — All Projects)
+- **All images have alt text** — descriptive for informational, empty (`alt=""`) for decorative
+- **Color contrast 4.5:1 minimum** for all text
+- **All interactive elements keyboard-accessible** — Tab, Enter, Space, Escape
+- **Visible focus indicators** — never `outline: none` without replacement
+- **Semantic HTML** — `<button>` for actions, `<a>` for navigation, proper landmarks
+- **Touch targets 44x44px minimum** on mobile
+- **Respect `prefers-reduced-motion`** — disable animations when preferred
+- **Proper heading hierarchy** — no skipped levels
+
+### LGBTQA+ Inclusive (All Projects)
+- **Gender-neutral language by default** — use "they/them" when gender is unknown, "partner" instead of "husband/wife" in examples and templates
+- **No binary gender assumptions** — forms that collect gender should offer inclusive options or open text fields, never just "Male/Female"
+- **Inclusive examples and content** — represent diverse identities, family structures, and relationships
+- **No assumptions about personal lives** — focus on the person, not their identity
+- **Safe space in all communication** — tone and language never alienates, mocks, or others anyone
+
+### AI Inclusive (All Projects)
+- **Transparent about AI use** — users know when AI is involved in analysis or content generation
+- **AI as amplifier, not replacement** — extends human capability, doesn't replace human judgment or creativity
+- **Accessible AI interactions** — prompts and AI-generated content should be understandable to people who aren't tech-savvy
+- **Human review before delivery** — AI output reviewed and personalized before reaching users
+- **RAI gates where applicable** — deliverables require human review confirmation before being marked as sent
+
+### Neurodivergent-Friendly (All Projects)
+- **Scannability** — documents use headers, bullets, tables, and short paragraphs. No walls of text
+- **Clear hierarchy** — most important info first, details follow
+- **Visual structure** — use formatting to reduce cognitive load
+- **Capacity-aware design** — designed for real life, not ideal conditions
+
+### Tech-Specific (This Project)
+
+**Extended Accessibility (OCINW-Specific)**
+- **ARIA only as last resort** — prefer semantic HTML
+- **Forms: every input has a `<label>`** linked via `htmlFor`/`id`
+- **Error messages linked to inputs** via `aria-describedby`
+- **Skip-to-content link** as first focusable element on every page
+- **Content readable at 200% zoom** without horizontal scrolling
+- **Dynamic content announcements** — `aria-live="polite"` for non-urgent, `aria-live="assertive"` for urgent
+
+**COPPA (Children Under 13)**
+- Parental consent required before collecting personal data from under-13 users
+- Age-gating on volunteer form triggers parent/guardian required fields
+- Minimal data collection — only what's strictly necessary
+
+**i18n (English/Spanish)**
+- All user-visible strings in `src/i18n/en.json` and `src/i18n/es.json`
+- Never hardcode English text in components
+- MDX has separate files per language via `translationSlug` frontmatter
+- URL structure: `/en/...` and `/es/...`
+- Default locale from browser `Accept-Language` header
 
 ---
 
-## i18n (English/Spanish)
+## Pillar 5: Non-Bias
 
-- All user-visible strings in translation files: `src/i18n/en.json` and `src/i18n/es.json`
-- Never hardcode English text in components — always use translation keys
-- Content (MDX) has separate files per language, linked via `translationSlug` frontmatter
-- URL structure uses locale prefix: `/en/...` and `/es/...`
-- Default locale detected from browser `Accept-Language` header
-- Language preference persisted in cookie
+Our work should never reinforce stereotypes, make assumptions, or exclude. We build for everyone.
+
+### Universal Rules (All Projects)
+- **Diverse test data and examples** — names, businesses, backgrounds, and identities should reflect real-world diversity
+- **No cultural or demographic assumptions** — don't assume race, ethnicity, religion, ability, orientation, or socioeconomic status
+- **Inclusive default language** — avoid idioms, slang, or references that exclude non-native English speakers or specific cultural groups
+- **Challenge AI bias** — review AI-generated content for stereotypes, assumptions, or exclusionary language before use
+- **No "default" user** — design for the full range of people who will use our systems, not just the most common case
+- **Representation matters** — when examples or personas are needed, they should represent a range of identities, not a homogeneous group
+
+### Responsible AI Ethics (All Projects)
+- **Disclose AI involvement** — be transparent about what AI does and doesn't do
+- **Verify AI output** — never deliver AI-generated content without human review
+- **No AI as authority** — AI provides analysis and suggestions, humans make decisions
+- **Data privacy** — user data stays within the system, never shared externally
+- **No manipulative patterns** — AI should inform and empower, never pressure or deceive
+
+### Tech-Specific (This Project)
+- **Youth-appropriate content** — all content suitable for ages 8+
+- **Conservation framing** — science-based, action-oriented, never doom-focused
+- **Multi-lingual respect** — Spanish translations are full translations, not afterthoughts
+
+---
+
+## Pillar 6: UX Minded
+
+Every interaction should feel intentional, clear, and respectful of the user's time.
+
+### Universal Rules (All Projects)
+- **Clear feedback** — every action gets a visible response (loading, success, error)
+- **Error recovery** — errors are recoverable with clear instructions, never dead ends
+- **Progressive disclosure** — show what's needed now, reveal complexity as needed
+- **Consistent patterns** — same action works the same way everywhere
+- **Mobile-first** — design for small screens first, enhance for larger
+
+### Tech-Specific (This Project)
+
+**Reliability Standards**
+- Global error boundary at `src/app/error.tsx` catches unhandled errors
+- Page-level error boundaries for critical sections (weather, donations, forms)
+- Every error boundary shows user-friendly message with retry action
+
+**API Resilience**
+- All external API calls wrapped in try/catch with fallback UI
+- Timeout: 10 seconds for external API calls
+- API failures isolated to their component — never crash the full page
+
+**Form UX**
+- Client-side validation (Zod) for instant feedback
+- Server-side validation (same schema) is source of truth
+- Inline field errors on blur, form-level summary on submit failure
+- Disable submit during processing — prevent double-submission
+- Success confirmation with clear next steps
+
+**Database Reliability**
+- Connection errors handled gracefully with retry option
+- UNIQUE constraints prevent duplicate signups
+- Idempotent writes where possible
 
 ---
 
 ## Testing Requirements
 
 ### Before Every PR
-
 1. `pnpm lint` — zero errors, zero warnings
 2. `pnpm type-check` — zero TypeScript errors
 3. `pnpm test` — all unit tests pass
 4. `pnpm build` — production build succeeds
 5. `pnpm audit` — no critical vulnerabilities
 
-### Test Coverage Minimums
+### Coverage Minimums
 
-| Category | Minimum Coverage |
-|----------|-----------------|
+| Category | Minimum |
+|----------|---------|
 | Utility functions | 90% |
-| API clients (weather, tides) | 80% |
+| API clients | 80% |
 | Hooks | 80% |
 | Zod schemas | 100% |
 | Overall | 70% |
 
 ### What To Test
-
-- **Always test:** Validation schemas, API response parsing, data transformations, conditional rendering (age-based parent fields, location states), error states
-- **Always E2E test:** Donation flow, volunteer signup flow, contact form, navigation, language switching
-- **Always accessibility test:** Run axe-core on every page in E2E suite — zero violations
-- **Visual regression:** Use Playwright's built-in screenshot comparison (`expect(page).toHaveScreenshot()`) for design system components. Run on desktop (1280px) and mobile (375px) viewports.
+- Validation schemas, API response parsing, data transformations
+- Conditional rendering (age-based parent fields, location states)
+- E2E: donation flow, volunteer signup, contact form, navigation, language switching
+- Accessibility: axe-core on every page — zero violations
 
 ---
 
 ## Session Protocol
 
-### Starting a Session
+### Starting
 1. Read `Handoff.md` for current state
-2. Confirm understanding with user before starting work
-3. Pick up where last session left off — or pivot based on user's new priorities
+2. Read `Completed.md` for what's done
+3. Consult `OCINW.MD` for architectural WHY
+4. Use `Teams.md` for specialist delegation
 
-### During a Session
-1. Update `Handoff.md` as work progresses (in-progress items, blockers, decisions)
-2. Mark completed tasks in `Handoff.md`
-3. Move completed work descriptions to `Completed.md` with timestamps
-4. Consult `Teams.md` when delegating to specialist agents
+### During
+1. Update `Handoff.md` as work progresses
+2. Mark completed tasks
+3. Move completed work to `Completed.md` with timestamps
 
-### Ending a Session
-1. Update `Handoff.md` with:
-   - What was completed this session
-   - What is currently in-progress
-   - What should be done next
-   - Any blockers or open questions
-   - Any decisions made and their reasoning
+### Ending
+1. Update `Handoff.md` — what's done, in-progress, next, blockers, decisions
 2. Move all completed items to `Completed.md`
-3. Ensure all code changes are saved
-4. Recommend next steps to user
+3. Recommend next steps
 
 ---
 
@@ -472,6 +461,6 @@ These are not optional. Every component, every page, every interaction.
 - **Never use `eslint-disable`** without a comment explaining why
 - **Never delete user data** without explicit user request
 - **Never skip form validation** — both client and server-side are mandatory
-- **Never store sensitive data in localStorage** — use httpOnly cookies for auth tokens
+- **Never store sensitive data in localStorage** — use httpOnly cookies
 - **Never embed third-party scripts** without CSP review
 - **Never ignore accessibility warnings** from axe-core or eslint-plugin-jsx-a11y

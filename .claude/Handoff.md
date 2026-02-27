@@ -1,14 +1,14 @@
 # Handoff — Orca Child in the Wild
 
 > **Session Continuity Document**
-> Last updated: 2026-02-25
-> Session: #20 (Comprehensive 7-Dimension Site Audit)
+> Last updated: 2026-02-26
+> Session: #21 (Audit Fixes A21–A25 + SEO Foundations)
 
 ---
 
 ## At A Glance
 
-**Current Phase:** Phase 10 COMPLETE (code) — Site audited, 20 issues fixed | **Security:** 14/14 + 6 new fixed | **Tests:** 238 passing | **Next Action:** Fix remaining audit items → SQL migrations → SEO
+**Current Phase:** Phase 10 COMPLETE (code) — All HIGH/MEDIUM audit items resolved | **Security:** A21 RESOLVED (nonce-based CSP) | **Tests:** 238 passing | **Next Action:** SQL migrations → low-priority design polish → Event/Article JSON-LD → Page-level OG meta
 
 ---
 
@@ -35,88 +35,102 @@
 
 ## NEXT SESSION — Priority Actions (in order)
 
-### 1. Fix Remaining Audit Issues (8 open)
+### 1. Run SQL Migrations in Supabase (user action required)
 
-**HIGH:**
-- **A21:** Implement CSP nonces for production — replace `unsafe-inline` in script-src (`next.config.ts`, `proxy.ts`)
-
-**MEDIUM:**
-- **A22:** Internationalize global-error.tsx (5 hardcoded English strings)
-- **A23:** Internationalize WeatherErrorBoundary.tsx (3 hardcoded English strings)
-- **A24:** Internationalize LocationSelector.tsx (3 hardcoded English strings)
-- **A25:** Add `sizes` attribute to 10 Image components (5 card components + 5 slug pages)
-
-**LOW (optional):**
-- **A26:** Standardize dark section backgrounds (3 patterns: `white/[0.02]`, `muted/30`, `muted/20`)
-- **A27:** Standardize CTA button shapes — some use `rounded-md` vs `rounded-full` (not-found, error, about, team)
-- **A28:** DonorRecognition uses non-brand colors (sky, emerald, indigo, purple) — consider brand palettes
-
-### 2. Run SQL Migrations in Supabase (user action)
-
-Two migration files need to be run in Supabase SQL Editor:
+Two migration files need to be run in Supabase SQL Editor before events/consent goes live:
 
 1. **`supabase/migrations/002_events_phase10.sql`** — Events tables, RPC function, UNIQUE constraint, deleted_at column
 2. **`supabase/migrations/003_parental_consent.sql`** — Consent request + consent code tables, RLS, indexes
 
-### 3. SEO Foundations (start ranking in search)
+### 2. SEO — Page-Level Metadata & Rich Snippets
 
-User wants to rank alongside orgs like Heal the Bay and OC Coastkeeper.
+Base OG/JSON-LD is now live. Next layer:
+- Add `generateMetadata()` to key pages (home, about, conservation, learn, donate, volunteer) with page-specific og:title, og:description, canonical URL
+- Event pages: JSON-LD `Event` schema (startDate, endDate, location, organizer)
+- Article pages: JSON-LD `Article` schema (datePublished, author, image)
+- Species/ecosystem pages: JSON-LD `Article` or `Thing` schema
 
-- `src/app/sitemap.ts` — Dynamic sitemap generation
-- `src/app/robots.ts` — robots.txt config
-- JSON-LD structured data (Organization, Event, Article schemas)
-- Open Graph + Twitter Card meta tags
-- Rich meta descriptions on key pages
+### 3. Low-Priority Design Polish (optional, A26–A28)
+
+- **A26:** Standardize dark section backgrounds (3 patterns: `white/[0.02]`, `muted/30`, `muted/20`)
+- **A27:** Standardize CTA button shapes — some use `rounded-md` vs `rounded-full` (not-found, error, about, team)
+- **A28:** DonorRecognition uses non-brand colors (sky, emerald, indigo, purple) — consider brand palettes
 
 ### 4. Seed Test Events
 
-Insert 2-3 sample events into the `events` table so pages have content.
+Insert 2-3 sample events into the `events` table so pages have real content to display.
+
+### 5. Phase 12 — Pre-Launch Checklist
+
+Once SQL migrations are run and test events are seeded, Phase 12 can begin:
+- Accessibility audit (axe-core on live pages)
+- Performance audit (Lighthouse on VPS)
+- Security headers audit (securityheaders.com)
+- Privacy policy + terms finalization
+- Google Search Console setup (after sitemap submission)
 
 ---
 
-## What Was Completed This Session (#20)
+## What Was Completed This Session (#21)
 
-### Comprehensive 7-Dimension Audit
-- Audited **all code from Sessions #10-#19** (~7,000 new LOC, codebase now ~14,257 LOC)
-- **28 issues found** across Design, Security, Performance, i18n, Accessibility, Bias, Inclusivity
-- **20 fixed in-session**, 8 remain open, 3 deferred to content phase
-- All quality gates pass after fixes (lint, type-check, 238 tests, build)
+### Audit Fixes (A21–A25) — all HIGH/MEDIUM items from Session #20 resolved
 
-### Key Fixes Applied
-1. **Design:** Completed all brand color palettes (coral/sand/kelp -700 to -950, ocean/teal -950), fixed dynamic Tailwind class construction, remapped to brand colors
-2. **Security:** CSRF on validateConsentCode, safe type guards replacing `as number`, slug validation on iCal route, header sanitization, non-null assertion removal
-3. **Accessibility:** EventCard alt text, Zeffy iframe aria-label
-4. **i18n:** Locale-aware date formatting on all event pages, hardcoded English → translation keys
-5. **Inclusivity:** 6 ability-inclusive language fixes in MDX content
-6. **Bias:** Removed all "mentors" references → "communities" (no mentor program)
+**A21 — CSP Nonces (HIGH security)**
+- `proxy.ts` rewritten: generates per-request nonce, sets nonce-based CSP
+- Production: `script-src 'self' 'nonce-{nonce}' 'strict-dynamic' 'unsafe-inline'` — CSP3 browsers use nonce+strict-dynamic (unsafe-inline ignored); CSP2 fallback preserved
+- `next.config.ts`: CSP removed (now per-request in middleware), pre-existing lint warning fixed
 
-### Documentation Updated
-- `ProjectHealth.md` — Complete rewrite with audit scores (Overall: 8.8/10 A-)
-- `Handoff.md` — This file
-- `Completed.md` — Session #20 entry with all details
+**A22–A24 — i18n fixes**
+- `global-error.tsx`: inline EN/ES translations, lazy useState locale detection from URL
+- `WeatherErrorBoundary.tsx`: extracted `ErrorFallback` functional component with `useTranslations`
+- `LocationSelector.tsx`: 3 hardcoded strings replaced with translation keys
+- `messages/en.json` + `es.json`: 5 new weather keys
+
+**A25 — Image sizes**
+- Added `sizes` to all 10 Image components missing it (5 card components + 5 slug pages)
+- Bonus: also fixed 6 additional page-level Images that were missing it (total: ~16 fixed)
+
+### SEO Foundations
+- `src/app/sitemap.ts` — created (28 static + all published content, hreflang alternates)
+- `src/app/robots.ts` — created
+- `src/app/layout.tsx` — added Open Graph, Twitter card, robots directives, NonprofitOrganization JSON-LD
+
+### Quality Gates
+- ✅ `pnpm lint` — 0 errors, 0 warnings
+- ✅ `pnpm type-check` — 0 errors
+- ✅ `pnpm test` — 238/238 passing
 
 ---
 
-## Audit Health Summary
+## Audit Health Summary (updated Session #21)
 
-| Dimension         | Score   | Grade |
-| ----------------- | ------- | ----- |
-| Quality Gates     | 5/5     | A+    |
-| Code Quality      | 9/10    | A     |
-| Security          | 9/10    | A     |
-| Accessibility     | 9/10    | A     |
-| Performance       | 9/10    | A     |
-| i18n              | 8/10    | B+    |
-| Inclusivity       | 8/10    | B+    |
-| Bias              | 9/10    | A     |
-| Test Coverage     | 9/10    | A     |
-| Design Continuity | 8/10    | B+    |
-| Tech Debt         | 8/10    | B+    |
-| Dependencies      | 9/10    | A     |
-| Documentation     | 10/10   | A+    |
-| **Overall**       | **8.8** | **A-**|
+| Dimension         | Score   | Grade | Change |
+| ----------------- | ------- | ----- | ------ |
+| Quality Gates     | 5/5     | A+    | —      |
+| Code Quality      | 9/10    | A     | —      |
+| Security          | 10/10   | A+    | ↑ A21 resolved |
+| Accessibility     | 9/10    | A     | —      |
+| Performance       | 9/10    | A     | ↑ Image sizes fixed |
+| i18n              | 9/10    | A     | ↑ A22-A24 fixed |
+| Inclusivity       | 8/10    | B+    | —      |
+| Bias              | 9/10    | A     | —      |
+| Test Coverage     | 9/10    | A     | —      |
+| Design Continuity | 8/10    | B+    | —      |
+| Tech Debt         | 9/10    | A     | ↑ lint warning fixed |
+| Dependencies      | 9/10    | A     | —      |
+| Documentation     | 10/10   | A+    | —      |
+| SEO               | 7/10    | B     | ↑ new (sitemap+OG+JSON-LD) |
+| **Overall**       | **9.1** | **A** | ↑ from 8.8 |
 
-See `.claude/ProjectHealth.md` for full issue tracker, security posture, and accessibility compliance details.
+---
+
+## Open Audit Items
+
+| ID  | Severity | Issue | Status |
+|-----|----------|-------|--------|
+| A26 | LOW      | Standardize dark section backgrounds | Open |
+| A27 | LOW      | Standardize CTA button shapes | Open |
+| A28 | LOW      | DonorRecognition non-brand colors | Open |
 
 ---
 
@@ -147,7 +161,30 @@ See `.claude/ProjectHealth.md` for full issue tracker, security posture, and acc
 | A8 | MEDIUM | No slug validation in iCal route | **RESOLVED** (Session #20) |
 | A9 | MEDIUM | Header injection in iCal route | **RESOLVED** (Session #20) |
 | A14 | LOW | Non-null assertion in VolunteerForm | **RESOLVED** (Session #20) |
-| A21 | HIGH | Production CSP needs nonces | **OPEN** |
+| A21 | HIGH | Production CSP needs nonces | **RESOLVED** (Session #21) |
+
+---
+
+## Blockers & Open Questions
+
+1. **SQL migrations not yet run** — must run 002 + 003 in Supabase SQL Editor before events/consent work
+2. **Zeffy account not created** — requires registered nonprofit
+3. **No logo yet** — using Waves icon placeholder
+4. **Original photos in progress** — user assembling real photos
+5. **Admin code generation** — currently manual via Supabase SQL Editor (no admin UI yet)
+6. **Website content is filler** — user will work with Jordyn to create real content
+7. **og-image.jpg not yet created** — placeholder referenced in Open Graph meta; needs a 1200×630 branded image
+
+---
+
+## Decisions Made This Session (#21)
+
+| Decision | Choice | Why |
+| -------- | ------ | --- |
+| CSP nonces approach | nonce + strict-dynamic + unsafe-inline fallback | strict-dynamic makes unsafe-inline ignored on CSP3 browsers; fallback ensures CSP2 compatibility |
+| global-error.tsx i18n | Lazy useState with window.location | No next-intl provider available; lazy initializer avoids useEffect + setState pattern, no flash |
+| Image sizes | Fixed all 10+ missing, not just the 10 from audit | Already reading all Image components, fixing all is better ROI |
+| sitemap | Include both EN and ES routes with hreflang | Bilingual site needs proper hreflang for Google to understand language targeting |
 
 ---
 
@@ -173,28 +210,6 @@ See `.claude/ProjectHealth.md` for full issue tracker, security posture, and acc
 ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30 \
   "cd ~/ocinw-website && git pull && pnpm install --frozen-lockfile && pnpm build && pm2 restart ocinw"
 ```
-
----
-
-## Blockers & Open Questions
-
-1. **SQL migrations not yet run** — must run 002 + 003 in Supabase SQL Editor before events/consent work
-2. **Zeffy account not created** — requires registered nonprofit
-3. **No logo yet** — using Waves icon placeholder
-4. **Original photos in progress** — user assembling real photos
-5. **Admin code generation** — currently manual via Supabase SQL Editor (no admin UI yet)
-6. **Website content is filler** — user will work with Jordyn to create real content
-
----
-
-## Decisions Made This Session
-
-| Decision | Choice | Why |
-| -------- | ------ | --- |
-| "Mentors" → "Communities" | Remove all mentor/mentorship references | 501(c)(3) nonprofit doesn't have a mentor program — they go into communities to make a difference |
-| Ability-inclusive language | Replace "walking" with neutral alternatives | Ensure all activity descriptions welcome people regardless of mobility |
-| Brand color remapping | amber→sand, primary→ocean, rose→coral | Maintain Carlsbad Coastal identity consistently across all pages |
-| Animated wave video | Deferred to idea backlog | User loves the idea but audit comes first |
 
 ---
 

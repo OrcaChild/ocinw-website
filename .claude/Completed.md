@@ -31,6 +31,7 @@
 | #18     | 2026-02-25  | Security Fixes + Consent System + CI + README + License | 1 |
 | #19     | 2026-02-25  | README Redesign + VPS Deploy                            | 1 |
 | #20     | 2026-02-25  | Comprehensive 7-Dimension Site Audit                    | 1 |
+| #21     | 2026-02-26  | Audit Fixes (A21–A25) + SEO Foundations                 | 1 |
 
 ---
 
@@ -885,6 +886,80 @@
   - [x] Animated wave video idea noted in plan backlog
   - [ ] 8 open issues tracked for future sessions
   - [ ] 3 deferred content items tracked
+
+---
+
+## [SESSION #21] 2026-02-26 — Audit Fixes (A21–A25) + SEO Foundations
+
+### What
+Resolved all 5 remaining HIGH/MEDIUM audit issues from Session #20, fixed a pre-existing lint warning, and built complete SEO foundations for search ranking.
+
+### Scope
+
+**A21 — CSP Nonces (HIGH security)**
+- Rewrote `src/proxy.ts` from 4-line passthrough to full middleware: generates a per-request cryptographic nonce, runs intl middleware for locale routing, copies locale cookies, sets nonce-based CSP on all responses
+- Production CSP: `script-src 'self' 'nonce-{nonce}' 'strict-dynamic' 'unsafe-inline'` (CSP3 browsers: strict-dynamic + nonce wins; 'unsafe-inline' is CSP2 fallback)
+- Dev CSP: unchanged (`unsafe-eval` for HMR)
+- Removed CSP from `next.config.ts` (now set per-request in proxy.ts with unique nonce; other security headers remain)
+- Nonce forwarded to server components via `x-nonce` request header — readable via `headers()` in layouts
+
+**A22 — global-error.tsx i18n (MEDIUM)**
+- Added inline `messages` object (EN + ES) — next-intl is unavailable in this component (no provider)
+- Locale detected via lazy `useState` initializer reading `window.location.pathname` — no useEffect needed, no flash, no SSR mismatch
+- Both lang attribute and all 4 visible strings now respond to locale
+
+**A23 — WeatherErrorBoundary.tsx i18n (MEDIUM)**
+- Class components cannot use hooks; extracted error UI into `ErrorFallback` functional component with `useTranslations("weather")`
+- Added 3 new translation keys: `weather.errorTitle`, `weather.errorMessage`, `weather.errorReset`
+- Class component renders `<ErrorFallback>` — pattern keeps error boundary semantics intact
+
+**A24 — LocationSelector.tsx i18n (MEDIUM)**
+- Fixed 3 hardcoded strings: `"Current Location"` fallback → `t("locationBar")`, `"or"` divider → `t("or")`, `"Cancel"` button → `t("cancel")`
+- Added `weather.or` and `weather.cancel` translation keys (both EN + ES)
+
+**A25 — Image `sizes` attribute (MEDIUM)**
+- Added `sizes` to 10 Image components (was 11 found — actually 21 total, fixed all)
+- Card components (5): `(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw`
+- Slug detail pages in max-w-4xl (4): `(max-width: 896px) 100vw, 896px`
+- Article slug page in max-w-3xl (1): `(max-width: 672px) 100vw, 672px`
+
+**SEO Foundations**
+- `src/app/sitemap.ts` — dynamic sitemap with static routes (14 pages × 2 locales) + all published MDX content (articles, species, ecosystems, projects), with hreflang alternates
+- `src/app/robots.ts` — allow all, disallow /api/, sitemap link
+- `src/app/layout.tsx` — added Open Graph (og:type, og:siteName, og:image 1200×630), Twitter card, `metadataBase`, `robots` directives, and Organization JSON-LD structured data (NonprofitOrganization schema with founder, areaServed, knowsAbout)
+
+**Lint cleanup**
+- Fixed pre-existing `@typescript-eslint/consistent-type-imports` warning in `next.config.ts` — replaced `typeof import("velite")` with explicit `VeliteExports` type
+
+### Quality Gates
+- [x] `pnpm lint` — 0 errors, 0 warnings
+- [x] `pnpm type-check` — 0 errors
+- [x] `pnpm test` — 238/238 passing
+- [x] All 5 audit items resolved (A21–A25)
+
+### Artifacts
+- `src/proxy.ts` — rewritten as full nonce middleware
+- `next.config.ts` — CSP removed, lint warning fixed, VeliteExports type added
+- `src/app/global-error.tsx` — i18n with lazy locale detection
+- `src/components/weather/WeatherErrorBoundary.tsx` — ErrorFallback functional wrapper
+- `src/components/weather/LocationSelector.tsx` — 3 hardcoded strings replaced
+- `messages/en.json` — 5 new weather keys
+- `messages/es.json` — 5 new weather keys (Spanish)
+- `src/components/conservation/ProjectCard.tsx` — sizes added
+- `src/components/education/ArticleCard.tsx` — sizes added
+- `src/components/education/EcosystemCard.tsx` — sizes added
+- `src/components/education/SpeciesCard.tsx` — sizes added
+- `src/components/events/EventCard.tsx` — sizes added
+- `src/app/[locale]/conservation/events/[slug]/page.tsx` — sizes added
+- `src/app/[locale]/conservation/projects/[slug]/page.tsx` — sizes added
+- `src/app/[locale]/learn/articles/[slug]/page.tsx` — sizes added
+- `src/app/[locale]/learn/ecosystems/[slug]/page.tsx` — sizes added
+- `src/app/[locale]/learn/species/[slug]/page.tsx` — sizes added
+- `src/app/sitemap.ts` — new file
+- `src/app/robots.ts` — new file
+- `src/app/layout.tsx` — Open Graph + JSON-LD added
+- `.claude/Handoff.md` — updated
+- `.claude/Completed.md` — this entry
 
 ---
 

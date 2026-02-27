@@ -18,6 +18,7 @@ export function SpeciesCard({ species, viewLabel }: SpeciesCardProps) {
             alt={species.featuredImageAlt ?? ""}
             width={400}
             height={300}
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             className="aspect-[4/3] w-full object-cover transition-transform duration-300 group-hover:scale-105"
           />
         </Link>

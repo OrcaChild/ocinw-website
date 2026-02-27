@@ -96,6 +96,7 @@ export default async function ArticlePage({ params }: Props) {
               width={800}
               height={450}
               priority
+              sizes="(max-width: 672px) 100vw, 672px"
               className="aspect-[16/9] w-full object-cover"
             />
           </div>

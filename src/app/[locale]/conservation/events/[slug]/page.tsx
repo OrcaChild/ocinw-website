@@ -118,6 +118,7 @@ function EventDetailContent({ event }: { event: EventWithCapacity }) {
               width={900}
               height={500}
               priority
+              sizes="(max-width: 896px) 100vw, 896px"
               className="aspect-[16/9] w-full object-cover"
             />
           </div>

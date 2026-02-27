@@ -285,7 +285,12 @@
     "unitMph": "mph",
     "unitFt": "pie",
     "unitIn": "pulg",
-    "unitSeconds": "s"
+    "unitSeconds": "s",
+    "errorTitle": "Error en los datos del tiempo",
+    "errorMessage": "Algo salió mal al cargar los datos del tiempo. Esto puede ocurrir con ciertas coordenadas. Haz clic abajo para restablecer y probar una ubicación diferente.",
+    "errorReset": "Restablecer ubicación e intentar de nuevo",
+    "or": "o",
+    "cancel": "Cancelar"
   },
   "error": {
     "notFoundTitle": "Página no encontrada",

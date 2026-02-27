@@ -1,16 +1,49 @@
 "use client";
 
-// global-error.tsx replaces the root layout, so Tailwind classes are unavailable.
-// All styles must be inline. Colors match the OCINW ocean theme.
+// global-error.tsx replaces the root layout, so Tailwind classes AND next-intl
+// providers are unavailable. All styles must be inline. Locale is detected
+// from window.location on first render; English is the SSR default.
+
+import { useState } from "react";
 
 type Props = {
   error: Error & { digest?: string };
   reset: () => void;
 };
 
+const messages = {
+  en: {
+    title: "Something Went Wrong",
+    description:
+      "An unexpected error occurred. Please try again, or head back to the homepage.",
+    retry: "Try Again",
+    home: "Go to Homepage",
+  },
+  es: {
+    title: "Algo salió mal",
+    description:
+      "Ocurrió un error inesperado. Por favor intenta de nuevo o regresa al inicio.",
+    retry: "Intentar de nuevo",
+    home: "Ir al inicio",
+  },
+} as const;
+
 export default function GlobalError({ reset }: Props) {
+  // Lazy initializer — runs on client first render, reads URL for locale
+  const [locale] = useState<"en" | "es">(() => {
+    if (
+      typeof window !== "undefined" &&
+      window.location.pathname.startsWith("/es")
+    ) {
+      return "es";
+    }
+    return "en";
+  });
+
+  const m = messages[locale];
+
   return (
-    <html lang="en">
+    <html lang={locale}>
       <body
         style={{
           display: "flex",
@@ -27,11 +60,10 @@ export default function GlobalError({ reset }: Props) {
         }}
       >
         <h1 style={{ fontSize: "1.875rem", fontWeight: 700, margin: 0 }}>
-          Something Went Wrong
+          {m.title}
         </h1>
         <p style={{ marginTop: "1rem", maxWidth: "28rem", color: "#506070" }}>
-          An unexpected error occurred. Please try again, or head back to the
-          homepage.
+          {m.description}
         </p>
         <div style={{ marginTop: "2rem", display: "flex", gap: "1rem" }}>
           <button
@@ -47,7 +79,7 @@ export default function GlobalError({ reset }: Props) {
               cursor: "pointer",
             }}
           >
-            Try Again
+            {m.retry}
           </button>
           {/* eslint-disable-next-line @next/next/no-html-link-for-pages -- global-error replaces root layout, so next/link is unavailable */}
           <a
@@ -62,7 +94,7 @@ export default function GlobalError({ reset }: Props) {
               textDecoration: "none",
             }}
           >
-            Go to Homepage
+            {m.home}
           </a>
         </div>
       </body>

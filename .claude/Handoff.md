@@ -2,13 +2,13 @@
 
 > **Session Continuity Document**
 > Last updated: 2026-02-26
-> Session: #22 (Content Fixes + Volunteer Form Polish)
+> Session: #23 (Species Photos + SEO JSON-LD + Homepage Hero)
 
 ---
 
 ## At A Glance
 
-**Current Phase:** Phase 10 COMPLETE (code) — All HIGH/MEDIUM audit items resolved | **Security:** A21 RESOLVED (nonce-based CSP) | **Tests:** 238 passing | **Next Action:** SQL migrations → low-priority design polish → Event/Article JSON-LD → Volunteer welcome email
+**Current Phase:** Phase 10 COMPLETE (code) — All HIGH/MEDIUM audit items resolved | **Security:** A21 RESOLVED (nonce-based CSP) | **Tests:** 238 passing | **Next Action:** SQL migrations → volunteer welcome email → low-priority design polish (A26–A28)
 
 ---
 
@@ -42,13 +42,13 @@ Two migration files need to be run in Supabase SQL Editor before events/consent 
 1. **`supabase/migrations/002_events_phase10.sql`** — Events tables, RPC function, UNIQUE constraint, deleted_at column
 2. **`supabase/migrations/003_parental_consent.sql`** — Consent request + consent code tables, RLS, indexes
 
-### 2. SEO — Page-Level Metadata & Rich Snippets
+### 2. Volunteer Welcome Email (plan ready)
 
-Base OG/JSON-LD is now live. Next layer:
-- Add `generateMetadata()` to key pages (home, about, conservation, learn, donate, volunteer) with page-specific og:title, og:description, canonical URL
-- Event pages: JSON-LD `Event` schema (startDate, endDate, location, organizer)
-- Article pages: JSON-LD `Article` schema (datePublished, author, image)
-- Species/ecosystem pages: JSON-LD `Article` or `Thing` schema
+Detailed plan at `.claude/plans/volunteer-welcome-email.md`. Requires:
+- `pnpm add resend @react-email/components`
+- Create `src/emails/VolunteerWelcome.tsx` and `src/emails/VolunteerNotification.tsx`
+- Wire up in `src/app/actions/volunteer.ts` (replace two `// TODO` comments)
+- Content: welcome + beach day guide (what to bring, what we provide, coral-safe sunscreen only)
 
 ### 3. Low-Priority Design Polish (optional, A26–A28)
 
@@ -60,15 +60,7 @@ Base OG/JSON-LD is now live. Next layer:
 
 Insert 2-3 sample events into the `events` table so pages have real content to display.
 
-### 5. Volunteer Welcome Email (plan ready)
-
-Detailed plan at `.claude/plans/volunteer-welcome-email.md`. Requires:
-- `pnpm add resend @react-email/components`
-- Create `src/emails/VolunteerWelcome.tsx` and `src/emails/VolunteerNotification.tsx`
-- Wire up in `src/app/actions/volunteer.ts` (replace two `// TODO` comments)
-- Content: welcome + beach day guide (what to bring, what we provide, coral-safe sunscreen only)
-
-### 6. Phase 12 — Pre-Launch Checklist
+### 5. Phase 12 — Pre-Launch Checklist
 
 Once SQL migrations are run and test events are seeded, Phase 12 can begin:
 - Accessibility audit (axe-core on live pages)
@@ -76,6 +68,51 @@ Once SQL migrations are run and test events are seeded, Phase 12 can begin:
 - Security headers audit (securityheaders.com)
 - Privacy policy + terms finalization
 - Google Search Console setup (after sitemap submission)
+
+---
+
+## What Was Completed This Session (#23)
+
+### Species Photos + Image Credits
+- Added 10 real species photos to `public/images/species/` (all public domain or Creative Commons)
+- Added `imageCredit` field to `velite.config.ts` species schema
+- Updated all 10 species MDX files: real species-specific images + proper attribution
+- Species page hero wrapped in `<figure>/<figcaption>` to display photo credit
+- Fixed file corruption: removed SOH (`\x01`) byte artifacts from all 10 MDX frontmatter blocks
+  (orphaned duplicate `featuredImageAlt` keys left by previous edit pass)
+
+### SEO — JSON-LD Structured Data
+- Article pages: JSON-LD `Article` schema + OG `type: "article"` with publishedTime and authors
+- Species pages: JSON-LD `Article/Thing` schema + OG description including conservation status
+- Event pages: JSON-LD `Event` schema (startDate, endDate, location, eventStatus mapped to
+  `EventScheduled`/`EventCancelled`) + OG image; injected in server component (client component
+  renders UI, JSON-LD lives in server wrapper)
+- All `dangerouslySetInnerHTML` uses are trusted server-side data only (JSON.stringify of schema objects)
+
+### Article Date Fixes
+- 7 articles had March 2026 dates (future-dated); corrected to Feb 20–26 to reflect launch week
+
+### Homepage Hero
+- Title: "Young Guardians of Our Waters" → **"Guardians of Our Waters"** (EN + ES)
+- Added `heroTagline` below title: "Youth-led · All ages welcome · Families · Community"
+  (subtle, `text-white/75`, makes clear the org is youth-run but open to everyone)
+
+### ProjectHealth.md — Content Continuity Checks (Section 10)
+- Added 5 runnable checks: date integrity, YAML duplicate keys + SOH bytes, image path existence,
+  required frontmatter fields, `dangerouslySetInnerHTML` audit
+- Marked A21–A25 as RESOLVED (fixed in sessions #21–22; were still showing as open)
+- Updated security posture: `dangerouslySetInnerHTML` now shows 3 approved JSON-LD uses
+
+### Quality Gates (all passing)
+- ✅ `pnpm lint` — 0 errors
+- ✅ `pnpm type-check` — 0 errors
+- ✅ `pnpm test` — 238/238 passing
+- ✅ `pnpm build` — clean (not re-run after final commit but lint/type/test all green)
+
+### Commits This Session
+- `b31a84d` — feat: add real species photos with image credits to all 10 species pages
+- `e2bce0d` — feat: SEO — JSON-LD structured data + OG images for articles, species, events
+- `43ced20` — feat: homepage hero — 'Guardians of Our Waters' + everyone welcome tagline
 
 ---
 

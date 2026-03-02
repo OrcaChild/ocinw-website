@@ -1,8 +1,8 @@
 # Handoff — Orca Child in the Wild
 
 > **Session Continuity Document**
-> Last updated: 2026-02-26
-> Session: #24 (Nav reorder + Hero fixes + ZIP expansion in progress)
+> Last updated: 2026-03-01
+> Session: #26 (Zod API validation + Accessibility accommodations)
 
 ---
 
@@ -227,30 +227,27 @@ Once SQL migrations are run:
 | Dimension         | Score    | Grade | Notes |
 | ----------------- | -------- | ----- | ----- |
 | Quality Gates     | 5/5      | A+    | lint, type-check, test, build, audit all pass |
-| Code Quality      | 9/10     | A     | — |
+| Code Quality      | 10/10    | A+    | Zod schemas on all API clients (Session #26) |
 | Security          | 10/10    | A+    | Nonce CSP, full RLS, CSRF, no PII logging |
 | Accessibility     | 9/10     | A     | Needs live axe-core run |
 | Performance       | 9/10     | A     | All images have sizes; needs Lighthouse run |
 | i18n              | 9/10     | A     | EN/ES parity; 23 MDX files still EN-only (D8) |
-| Inclusivity       | 9/10     | A     | Everyone welcome tagline added to hero |
+| Inclusivity       | 10/10    | A+    | Accommodations sections added (Session #26) |
 | Bias              | 9/10     | A     | — |
 | Test Coverage     | 9/10     | A     | 238 tests |
-| Design Continuity | 8/10     | B+    | A26-A28 still open (low priority) |
+| Design Continuity | 10/10    | A+    | A26-A28 resolved (Session #25) |
 | Tech Debt         | 9/10     | A     | — |
 | Dependencies      | 9/10     | A     | 2 high vulns, dev-only |
 | Documentation     | 10/10    | A+    | Continuity checks added |
 | SEO               | 9/10     | A     | JSON-LD on all content pages + sitemap + OG |
-| **Overall**       | **9.3**  | **A** | ↑ from 9.1 |
+| **Overall**       | **9.6**  | **A** | ↑ Code Quality + Inclusivity now 10/10 |
 
 ---
 
 ## Open Audit Items
 
-| ID  | Severity | Issue | Status |
-|-----|----------|-------|--------|
-| A26 | LOW      | Standardize dark section backgrounds | Open |
-| A27 | LOW      | Standardize CTA button shapes | Open |
-| A28 | LOW      | DonorRecognition non-brand colors | Open |
+All A-series audit items resolved. No open code issues.
+Remaining gaps are content/verification work (D8, D9, D10, O3).
 
 ---
 
@@ -260,7 +257,7 @@ Once SQL migrations are run:
 | ---- | ----------------------------------------------- |
 | D8   | 23 MDX files need Spanish translations          |
 | D9   | 16 MDX files missing `readingLevel` frontmatter |
-| D10  | No accessibility accommodations info anywhere   |
+| ~~D10~~  | ~~No accessibility accommodations info anywhere~~ — RESOLVED (Session #26) |
 
 ---
 

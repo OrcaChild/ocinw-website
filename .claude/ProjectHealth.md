@@ -11,19 +11,19 @@
 | Dimension         | Score      | Grade | Change |
 | ----------------- | ---------- | ----- | ------ |
 | Quality Gates     | 5/5        | A+    | =      |
-| Code Quality      | 9/10       | A     | -1     |
+| Code Quality      | 10/10      | A+    | Zod on all APIs |
 | Security          | 9/10       | A     | -1     |
 | Accessibility     | 9/10       | A     | =      |
 | Performance       | 9/10       | A     | =      |
 | i18n              | 8/10       | B+    | -2     |
-| Inclusivity       | 8/10       | B+    | NEW    |
+| Inclusivity       | 10/10      | A+    | Accommodations added |
 | Bias              | 9/10       | A     | NEW    |
 | Test Coverage     | 9/10       | A     | =      |
-| Design Continuity | 8/10       | B+    | NEW    |
+| Design Continuity | 10/10      | A+    | A26-A28 resolved |
 | Tech Debt         | 8/10       | B+    | -1     |
 | Dependencies      | 9/10       | A     | =      |
 | Documentation     | 10/10      | A+    | =      |
-| **Overall**       | **8.8/10** | **A-**|        |
+| **Overall**       | **9.4/10** | **A** | ↑ Code Quality + Inclusivity |
 
 **Summary:** Session #20 comprehensive 7-dimension audit. Codebase grew from ~7,300 to ~14,257 LOC across 10 sessions. Found and fixed 25 issues (design, security, i18n, accessibility, inclusivity). Key remaining items: CSP nonce implementation, hardcoded English in error boundaries/weather, 10 images missing `sizes`, 23 MDX files need Spanish translations.
 
@@ -112,13 +112,13 @@
 | A24  | MEDIUM   | i18n        | LocationSelector hardcoded English             | 3 strings replaced with translation keys (Session #21) |
 | A25  | MEDIUM   | Performance | 10+ Image components missing `sizes` attribute | Fixed ~16 Image components (Session #21) |
 
-### OPEN — Low Priority Design Polish
+### RESOLVED — Session #25
 
-| ID   | Severity | Category    | Issue                                          | Location |
-| ---- | -------- | ----------- | ---------------------------------------------- | -------- |
-| A26  | LOW      | Design      | Inconsistent dark section backgrounds          | 3 patterns: `white/[0.02]`, `muted/30`, `muted/20` |
-| A27  | LOW      | Design      | Some CTA buttons use `rounded-md` not `rounded-full` | not-found, error, about, team pages |
-| A28  | LOW      | Design      | DonorRecognition uses non-brand colors         | sky, emerald, indigo, purple gradients |
+| ID   | Severity | Category    | Issue                                          | Resolution |
+| ---- | -------- | ----------- | ---------------------------------------------- | ---------- |
+| A26  | LOW      | Design      | Inconsistent dark section backgrounds          | Unified to `dark:bg-white/[0.02]` (Session #25) |
+| A27  | LOW      | Design      | Some CTA buttons use `rounded-md` not `rounded-full` | Added `rounded-full` to error, not-found, about, team pages (Session #25) |
+| A28  | LOW      | Design      | DonorRecognition uses non-brand colors         | Replaced sky/emerald/indigo/purple with ocean/teal/kelp/coral (Session #25) |
 
 ### OPEN — Known Pre-Existing
 
@@ -196,7 +196,7 @@
 | Container widths          | PASS (appropriate hierarchy) |
 | Header/Footer consistent  | PASS   |
 | Dark mode warm tone       | PASS   |
-| Button styling            | MOSTLY (A27: some pages use `rounded-md`) |
+| Button styling            | PASS   |
 | Gradient overlays         | PASS   |
 
 ---

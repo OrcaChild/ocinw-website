@@ -4,15 +4,30 @@
 // Free, no API key required. Authoritative US government data.
 // =============================================================================
 
+import { z } from "zod/v4";
 import type {
   TideData,
   TidePrediction,
   TideStation,
-  NoaaTidesResponse,
   CurrentTideStatus,
 } from "@/lib/types/tides";
 import { TIDE_STATIONS } from "@/lib/data/socal-beaches";
 import { findNearestStation } from "@/lib/utils/geo";
+
+// ---------------------------------------------------------------------------
+// Zod schema for NOAA CO-OPS API response validation
+// ---------------------------------------------------------------------------
+
+const noaaPredictionSchema = z.object({
+  t: z.string(),
+  v: z.string(),
+  type: z.enum(["H", "L"]).optional(),
+});
+
+const noaaTidesResponseSchema = z.object({
+  predictions: z.array(noaaPredictionSchema).optional(),
+  error: z.object({ message: z.string() }).optional(),
+});
 
 const NOAA_BASE_URL = "https://api.tidesandcurrents.noaa.gov/api/prod/datagetter";
 const API_TIMEOUT_MS = 10_000;
@@ -86,17 +101,21 @@ async function fetchTidePredictions(stationId: string): Promise<TidePrediction[]
     throw new Error(`NOAA API error: ${response.status}`);
   }
 
-  const data = (await response.json()) as NoaaTidesResponse;
-
-  if (data.error) {
-    throw new Error(`NOAA API error: ${data.error.message}`);
+  const json: unknown = await response.json();
+  const parsed = noaaTidesResponseSchema.safeParse(json);
+  if (!parsed.success) {
+    throw new Error("Invalid tide response from NOAA API");
   }
 
-  if (!data.predictions || data.predictions.length === 0) {
+  if (parsed.data.error) {
+    throw new Error(`NOAA API error: ${parsed.data.error.message}`);
+  }
+
+  if (!parsed.data.predictions || parsed.data.predictions.length === 0) {
     throw new Error("No tide predictions returned from NOAA");
   }
 
-  return data.predictions.map((p) => ({
+  return parsed.data.predictions.map((p) => ({
     time: noaaTimeToIso(p.t),
     height: parseFloat(p.v),
     type: p.type === "H" ? "H" as const : "L" as const,
@@ -130,13 +149,17 @@ export async function fetchHourlyTides(stationId: string): Promise<Array<{ time:
     throw new Error(`NOAA API error: ${response.status}`);
   }
 
-  const data = (await response.json()) as NoaaTidesResponse;
-
-  if (data.error) {
-    throw new Error(`NOAA API error: ${data.error.message}`);
+  const json: unknown = await response.json();
+  const parsed = noaaTidesResponseSchema.safeParse(json);
+  if (!parsed.success) {
+    throw new Error("Invalid tide response from NOAA API");
   }
 
-  return (data.predictions ?? []).map((p) => ({
+  if (parsed.data.error) {
+    throw new Error(`NOAA API error: ${parsed.data.error.message}`);
+  }
+
+  return (parsed.data.predictions ?? []).map((p) => ({
     time: noaaTimeToIso(p.t),
     height: parseFloat(p.v),
   }));

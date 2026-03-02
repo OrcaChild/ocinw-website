@@ -5,6 +5,7 @@ import { setRequestLocale, getTranslations } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { useTranslations } from "next-intl";
 import { routing } from "@/i18n/routing";
+import { Link } from "@/i18n/navigation";
 import {
   Accordion,
   AccordionContent,
@@ -16,6 +17,10 @@ import {
   BookOpen,
   Users,
   Award,
+  Accessibility,
+  Ear,
+  UtensilsCrossed,
+  Languages,
 } from "lucide-react";
 import { VolunteerForm } from "@/components/volunteer/VolunteerForm";
 
@@ -122,8 +127,54 @@ function VolunteerContent() {
         </div>
       </section>
 
-      {/* Signup Form */}
+      {/* Accessibility & Accommodations */}
       <section className="bg-sand-50/50 px-4 py-20 dark:bg-white/[0.02] sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-5xl">
+          <h2 className="text-center font-heading text-3xl font-bold tracking-tight sm:text-4xl">
+            {t("accommodationsHeading")}
+          </h2>
+          <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
+            {t("accommodationsDescription")}
+          </p>
+          <div className="mt-12 grid gap-6 sm:grid-cols-2">
+            {([
+              { icon: Accessibility, titleKey: "accommodationMobility", textKey: "accommodationMobilityText", iconClass: "text-ocean-600 dark:text-ocean-400" },
+              { icon: Ear, titleKey: "accommodationSensory", textKey: "accommodationSensoryText", iconClass: "text-teal-600 dark:text-teal-400" },
+              { icon: UtensilsCrossed, titleKey: "accommodationDietary", textKey: "accommodationDietaryText", iconClass: "text-coral-600 dark:text-coral-400" },
+              { icon: Languages, titleKey: "accommodationLanguage", textKey: "accommodationLanguageText", iconClass: "text-kelp-600 dark:text-kelp-400" },
+            ] as const).map(({ icon: Icon, titleKey, textKey, iconClass }) => (
+              <div
+                key={titleKey}
+                className="flex gap-4 rounded-2xl border border-border/50 bg-white/60 p-6 shadow-sm backdrop-blur-sm dark:bg-white/5"
+              >
+                <div className="shrink-0">
+                  <Icon
+                    className={`size-6 ${iconClass}`}
+                    aria-hidden="true"
+                  />
+                </div>
+                <div>
+                  <h3 className="font-heading text-lg font-bold">
+                    {t(titleKey)}
+                  </h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    {t(textKey)}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
+          <p className="mt-8 text-center text-sm text-muted-foreground">
+            {t("accommodationContact")}{" "}
+            <Link href="/contact" className="font-medium text-primary hover:underline">
+              orcachildinthewild@gmail.com
+            </Link>
+          </p>
+        </div>
+      </section>
+
+      {/* Signup Form */}
+      <section className="px-4 py-20 sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <div className="text-center">
             <h2 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
@@ -141,7 +192,7 @@ function VolunteerContent() {
       </section>
 
       {/* FAQ */}
-      <section className="px-4 py-20 sm:px-6 lg:px-8">
+      <section className="bg-sand-50/50 px-4 py-20 dark:bg-white/[0.02] sm:px-6 lg:px-8">
         <div className="mx-auto max-w-3xl">
           <h2 className="text-center font-heading text-3xl font-bold tracking-tight sm:text-4xl">
             {t("faqHeading")}

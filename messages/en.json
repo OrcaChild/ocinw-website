@@ -534,6 +534,19 @@
     "validationParentRequired": "Parent/guardian information is required for volunteers under 18.",
     "validationAgreeCodeOfConduct": "You must agree to the code of conduct.",
     "validationAgreePrivacy": "You must agree to the privacy policy.",
+
+    "accommodationsHeading": "Accessibility & Accommodations",
+    "accommodationsDescription": "We are committed to making our events accessible and welcoming for everyone. If you need accommodations, please let us know when you sign up or contact us directly.",
+    "accommodationMobility": "Wheelchair & mobility support",
+    "accommodationMobilityText": "We select accessible sites whenever possible and can arrange assistance for participants with mobility needs.",
+    "accommodationSensory": "Sensory-friendly options",
+    "accommodationSensoryText": "We offer quieter roles and flexible participation for those who may be sensitive to noise or crowds.",
+    "accommodationDietary": "Dietary accommodations",
+    "accommodationDietaryText": "When food is provided, we accommodate allergies and dietary restrictions. Let us know your needs in advance.",
+    "accommodationLanguage": "Language support",
+    "accommodationLanguageText": "Materials and instructions are available in English and Spanish. Additional language support can be arranged on request.",
+    "accommodationContact": "Need something else? Reach out to us at",
+
     "faqHeading": "Frequently Asked Questions",
     "faq1Question": "What age group can volunteer?",
     "faq1Answer": "Everyone is welcome — youth and adults of all ages. Volunteers under 18 need a parent or guardian to provide consent. We will walk your family through the simple process.",
@@ -754,6 +767,9 @@
     "whatToBringPlaceholder": "Details will be posted closer to the event date.",
     "whatToExpect": "What to Expect",
     "whatToExpectPlaceholder": "More information coming soon.",
+
+    "accommodationsHeading": "Accessibility & Accommodations",
+    "accommodationsText": "We strive to make every event accessible. If you need accommodations, please note them in your registration or contact us beforehand.",
 
     "registrationHeading": "Register for This Event",
     "registrationDescription": "Fill out the form below to secure your spot.",

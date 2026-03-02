@@ -534,6 +534,19 @@
     "validationParentRequired": "La información del padre/tutor es requerida para voluntarios menores de 18 años.",
     "validationAgreeCodeOfConduct": "Debes aceptar el código de conducta.",
     "validationAgreePrivacy": "Debes aceptar la política de privacidad.",
+
+    "accommodationsHeading": "Accesibilidad y adaptaciones",
+    "accommodationsDescription": "Nos comprometemos a hacer nuestros eventos accesibles y acogedores para todos. Si necesitas adaptaciones, indícalo al inscribirte o contáctanos directamente.",
+    "accommodationMobility": "Silla de ruedas y apoyo de movilidad",
+    "accommodationMobilityText": "Seleccionamos sitios accesibles siempre que sea posible y podemos coordinar asistencia para participantes con necesidades de movilidad.",
+    "accommodationSensory": "Opciones sensorialmente amigables",
+    "accommodationSensoryText": "Ofrecemos roles más tranquilos y participación flexible para quienes puedan ser sensibles al ruido o las multitudes.",
+    "accommodationDietary": "Adaptaciones alimentarias",
+    "accommodationDietaryText": "Cuando se proporciona comida, atendemos alergias y restricciones dietéticas. Indícanos tus necesidades con anticipación.",
+    "accommodationLanguage": "Apoyo lingüístico",
+    "accommodationLanguageText": "Los materiales e instrucciones están disponibles en inglés y español. Se puede coordinar apoyo en otros idiomas a solicitud.",
+    "accommodationContact": "¿Necesitas algo más? Contáctanos en",
+
     "faqHeading": "Preguntas frecuentes",
     "faq1Question": "¿Qué grupo de edad puede ser voluntario?",
     "faq1Answer": "Todos son bienvenidos — jóvenes y adultos de todas las edades. Los voluntarios menores de 18 años necesitan que un padre o tutor otorgue su consentimiento. Te guiaremos a ti y a tu familia a través del sencillo proceso.",
@@ -754,6 +767,9 @@
     "whatToBringPlaceholder": "Los detalles se publicarán más cerca de la fecha del evento.",
     "whatToExpect": "Qué esperar",
     "whatToExpectPlaceholder": "Más información próximamente.",
+
+    "accommodationsHeading": "Accesibilidad y adaptaciones",
+    "accommodationsText": "Nos esforzamos por hacer cada evento accesible. Si necesitas adaptaciones, indícalo en tu inscripción o contáctanos de antemano.",
 
     "registrationHeading": "Inscríbete en este evento",
     "registrationDescription": "Completa el formulario a continuación para asegurar tu lugar.",

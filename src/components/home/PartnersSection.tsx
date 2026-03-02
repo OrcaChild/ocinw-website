@@ -7,7 +7,7 @@ export function PartnersSection() {
   const t = useTranslations("home");
 
   return (
-    <section className="bg-sand-50/50 px-4 py-20 dark:bg-muted/20 sm:px-6 lg:px-8">
+    <section className="bg-sand-50/50 px-4 py-20 dark:bg-white/[0.02] sm:px-6 lg:px-8">
       <div className="mx-auto max-w-7xl text-center">
         <h2 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
           {t("partnersHeading")}

@@ -2,10 +2,10 @@ import { useTranslations } from "next-intl";
 import { Shell, Leaf, Waves, Fish } from "lucide-react";
 
 const tiers = [
-  { key: "TidePool", icon: Shell, gradient: "from-sky-400/20 to-teal-400/20" },
-  { key: "KelpForest", icon: Leaf, gradient: "from-teal-400/20 to-emerald-400/20" },
-  { key: "OpenOcean", icon: Waves, gradient: "from-blue-400/20 to-indigo-400/20" },
-  { key: "OrcaCircle", icon: Fish, gradient: "from-indigo-400/20 to-purple-400/20" },
+  { key: "TidePool", icon: Shell, gradient: "from-ocean-300/20 to-teal-400/20" },
+  { key: "KelpForest", icon: Leaf, gradient: "from-teal-400/20 to-kelp-400/20" },
+  { key: "OpenOcean", icon: Waves, gradient: "from-ocean-400/20 to-ocean-600/20" },
+  { key: "OrcaCircle", icon: Fish, gradient: "from-coral-400/20 to-coral-600/20" },
 ] as const;
 
 export function DonorRecognition() {

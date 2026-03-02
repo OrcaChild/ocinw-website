@@ -99,7 +99,7 @@ function AboutContent() {
         <p className="mt-4 leading-relaxed text-muted-foreground">
           {t("missionPreviewText")}
         </p>
-        <Button asChild variant="outline" className="mt-4">
+        <Button asChild variant="outline" className="mt-4 rounded-full">
           <Link href="/about/mission">{t("subNavMission")}</Link>
         </Button>
       </section>

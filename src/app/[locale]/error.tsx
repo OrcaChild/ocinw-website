@@ -26,11 +26,11 @@ export default function ErrorPage({ reset }: Props) {
         {t("errorMessage")}
       </p>
       <div className="mt-8 flex gap-4">
-        <Button onClick={reset}>
+        <Button onClick={reset} className="rounded-full">
           <RotateCw className="size-4" />
           {t("errorReset")}
         </Button>
-        <Button asChild variant="outline">
+        <Button asChild variant="outline" className="rounded-full">
           <Link href="/">
             <Home className="size-4" />
             {t("errorGoHome")}

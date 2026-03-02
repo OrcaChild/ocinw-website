@@ -103,7 +103,7 @@ function TeamContent() {
       <section className="text-center">
         <h2 className="font-heading text-2xl font-bold">{t("teamJoinCta")}</h2>
         <p className="mt-3 text-muted-foreground">{t("teamJoinDescription")}</p>
-        <Button asChild className="mt-6">
+        <Button asChild className="mt-6 rounded-full">
           <Link href="/volunteer">{t("teamJoinCta")}</Link>
         </Button>
       </section>

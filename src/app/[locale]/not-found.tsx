@@ -19,7 +19,7 @@ export default function NotFoundPage() {
       <p className="mt-4 max-w-md text-muted-foreground">
         {t("notFoundMessage")}
       </p>
-      <Button asChild className="mt-8">
+      <Button asChild className="mt-8 rounded-full">
         <Link href="/">
           <Home className="size-4" />
           {t("notFoundGoHome")}
@@ -31,16 +31,16 @@ export default function NotFoundPage() {
           {t("notFoundPopularHeading")}
         </h2>
         <div className="flex flex-wrap justify-center gap-3">
-          <Button asChild variant="outline" size="sm">
+          <Button asChild variant="outline" size="sm" className="rounded-full">
             <Link href="/about">{tNav("about")}</Link>
           </Button>
-          <Button asChild variant="outline" size="sm">
+          <Button asChild variant="outline" size="sm" className="rounded-full">
             <Link href="/volunteer">{tNav("volunteer")}</Link>
           </Button>
-          <Button asChild variant="outline" size="sm">
+          <Button asChild variant="outline" size="sm" className="rounded-full">
             <Link href="/donate">{tNav("donate")}</Link>
           </Button>
-          <Button asChild variant="outline" size="sm">
+          <Button asChild variant="outline" size="sm" className="rounded-full">
             <Link href="/contact">{tNav("contact")}</Link>
           </Button>
         </div>

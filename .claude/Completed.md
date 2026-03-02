@@ -35,6 +35,8 @@
 | #22     | 2026-02-26  | Content Fixes + Volunteer Form Polish + Beach Guide Plan | 1 |
 | #23     | 2026-02-26  | Species Photos + SEO JSON-LD + Homepage Hero + Team Page | 1 |
 | #24     | 2026-02-26  | Nav Reorder + Hero Single Row + "All welcome." tagline   | 1 |
+| #25     | 2026-03-01  | Design Polish A26–A28 (backgrounds, buttons, brand colors) | 1 |
+| #26     | 2026-03-01  | Zod API Validation + Accessibility Accommodations         | 1 |
 
 ---
 
@@ -1031,6 +1033,69 @@ Simplified volunteer age ranges (removed granular adult options, kept Under 13 /
 - Navigation dropdowns now visually correct (no misalignment)
 - Both new articles appear in article listings (Velite enum fix)
 - Next session can implement the volunteer welcome email using the plan doc
+
+---
+
+## Session #25 — Design Polish A26–A28 (2026-03-01)
+
+- **What:** Resolved 3 remaining design audit items to bring Design Continuity to 10/10.
+- **Why:** A26, A27, A28 were the last low-scoring code items (design inconsistencies).
+- **Commit:** `7aa45d8` — `style: resolve A26-A28 — standardize backgrounds, buttons, brand colors`
+
+### Changes
+
+**A26 — Standardize dark section backgrounds:**
+- `src/components/home/PartnersSection.tsx` — `dark:bg-muted/20` → `dark:bg-white/[0.02]`
+- `src/components/home/ImpactCounter.tsx` — `dark:bg-muted/30` → `dark:bg-white/[0.02]`, `bg-sand-50` → `bg-sand-50/50`
+
+**A27 — Standardize CTA button shapes (rounded-full):**
+- `src/app/[locale]/error.tsx` — both buttons
+- `src/app/[locale]/not-found.tsx` — primary + 4 nav buttons
+- `src/app/[locale]/about/page.tsx` — mission link button
+- `src/app/[locale]/about/team/page.tsx` — join CTA button
+
+**A28 — DonorRecognition brand colors:**
+- `src/components/donate/DonorRecognition.tsx` — replaced sky/emerald/indigo/purple with ocean/teal/kelp/coral gradients
+
+### Acceptance Criteria
+- ✅ `pnpm lint` — 0 errors
+- ✅ `pnpm type-check` — 0 errors
+- ✅ `pnpm test` — 238/238 passing
+- ✅ `pnpm build` — 99 pages
+- ✅ Pushed + VPS deployed
+
+---
+
+## Session #26 — Zod API Validation + Accessibility Accommodations (2026-03-01)
+
+- **What:** Added Zod runtime schemas to weather + tides API clients; added accessibility accommodations sections to volunteer page and event detail page.
+- **Why:** Code Quality 9→10 (all API responses now validated at runtime, no unsafe `as` casts). Inclusivity 9→10 (D10 resolved — accommodations info now visible).
+- **Commit:** `9107527` — `feat: Zod API validation + accessibility accommodations`
+
+### Changes
+
+**Zod API Validation (Code Quality 10/10):**
+- `src/lib/api/weather.ts` — Added `forecastResponseSchema` + `marineResponseSchema` (Zod v4), replaced `as Promise<...>` with `.safeParse()`, added `ForecastResponse`/`MarineResponse` inferred types
+- `src/lib/api/tides.ts` — Added `noaaTidesResponseSchema` (Zod v4), replaced `as NoaaTidesResponse` with `.safeParse()` in both `fetchTidePredictions` and `fetchHourlyTides`
+- Pattern matches existing `geolocation.ts` Nominatim schema
+
+**Accessibility Accommodations (Inclusivity 10/10, D10 resolved):**
+- `src/app/[locale]/volunteer/page.tsx` — New section between "Why Volunteer" and signup form with 4 cards (mobility, sensory, dietary, language) + contact link. Imported `Accessibility`, `Ear`, `UtensilsCrossed`, `Languages` from lucide-react. Adjusted section backgrounds for alternating pattern (FAQ now has sand bg).
+- `src/app/[locale]/conservation/events/[slug]/page.tsx` — Added accommodations card alongside "What to Bring" / "What to Expect" in a 3-column grid. Imported `Accessibility` icon.
+- `messages/en.json` — 13 new volunteer accommodation keys + 2 event accommodation keys
+- `messages/es.json` — matching Spanish translations for all 15 keys
+
+**Documentation:**
+- `.claude/Handoff.md` — Updated scores (Code Quality 10/10, Inclusivity 10/10, Overall 9.6), D10 marked resolved
+- `.claude/ProjectHealth.md` — Updated health dashboard scores
+
+### Acceptance Criteria
+- ✅ `pnpm lint` — 0 errors
+- ✅ `pnpm type-check` — 0 errors
+- ✅ `pnpm test` — 238/238 passing
+- ✅ `pnpm build` — 99 pages
+- ✅ Pushed to origin/main
+- ⬜ VPS deploy pending (user action)
 
 ---
 

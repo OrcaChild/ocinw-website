@@ -35,90 +35,26 @@
 
 ## NEXT SESSION — Priority Actions (in order)
 
-### 1. FINISH IN-PROGRESS: ZIP Expansion + "Beaches Near You" (code half-written)
+### 1. ZIP Expansion + "Beaches Near You" (from Session #24 — not yet started)
 
-**Context:** Session #24 was mid-implementation when context limit hit.
-
-**What's done:**
-- Nav reordered: Volunteer → Weather & Tides → Learn → Conservation → About (committed `773bd12`, `abacb98`, `cc0354f`)
-- Hero title single-row fix: `md:whitespace-nowrap`, cap at `sm:text-5xl` (committed)
-- heroTagline chip removed; subtitle now ends "All welcome." (committed)
-- Nav changes committed and pushed — but NOT yet deployed to VPS
-
-**What's NOT done yet (start here):**
-
-#### A. Write `src/lib/data/socal-beaches.ts` — full ZIP expansion
-The Write tool call was started but interrupted. The file still has the OLD 44-ZIP version.
-Replace the `ZIP_COORDINATES` export with comprehensive tri-county coverage (~280 ZIPs).
-Organize as:
-- LA County: Malibu, Santa Monica, Venice, Playa Vista, South Bay, Torrance, San Pedro, Long Beach, Seal Beach + all major neighborhoods (Downtown, Hollywood, Mid-City, South LA, Boyle Heights, Eagle Rock, Pasadena, Inglewood, Hawthorne, Gardena, Carson, Lakewood, Cerritos, Downey, etc.)
-- Orange County: Full coverage — Huntington, Costa Mesa, Newport, Laguna, Dana Point, San Clemente, Irvine, Anaheim, Fullerton, Garden Grove, Westminster, Santa Ana, Tustin, Orange, Brea, Yorba Linda, Mission Viejo, Lake Forest, RSM, Ladera Ranch
-- San Diego County: Full coverage — Oceanside, Vista, Carlsbad, Encinitas, Cardiff, Solana Beach, Del Mar, Rancho Santa Fe, Poway, Carmel Valley, La Jolla, Pacific/Mission/Ocean Beach, Point Loma, Midway, Clairemont, Kearny Mesa, Linda Vista, University City, Mira Mesa, Sorrento, Scripps Ranch, Rancho Bernardo, Rancho Peñasquitos, Downtown SD, North Park, Hillcrest, Normal Heights, Coronado, Barrio Logan, National City, Bonita, Chula Vista, Imperial Beach, San Ysidro, La Mesa, Lemon Grove, Spring Valley, El Cajon, Lakeside, Santee, Alpine + Inland Empire (Corona, Riverside, Murrieta, Temecula, Lake Elsinore, Moreno Valley, Perris, Rancho Cucamonga, Fontana, San Bernardino)
-
-Key rule: any ZIP a kid might plausibly enter from LA to the SD/Mexico border should return a result.
-
-#### B. Update `src/components/weather/LocationSelector.tsx` — "Beaches Near You"
-**Goal:** When user has a location set, the "Popular Beaches" section becomes "Beaches Near You" — dynamically sorted by distance.
+**Context:** Session #24 planned this but ran out of context. The file still has the OLD 44-ZIP version.
 
 **Steps:**
-1. Add `currentLat?: number | null` and `currentLon?: number | null` to `LocationSelectorProps`
-2. Import `haversineDistance` from `@/lib/utils/geo`
-3. Inside the component, compute:
-```ts
-const displayBeaches = currentLat != null && currentLon != null
-  ? [...POPULAR_BEACHES]
-      .sort((a, b) =>
-        haversineDistance(currentLat, currentLon, a.latitude, a.longitude) -
-        haversineDistance(currentLat, currentLon, b.latitude, b.longitude)
-      )
-      .slice(0, 6)
-  : POPULAR_BEACHES;
-const beachSectionLabel = currentLat != null ? t("beachesNearYou") : t("popularBeaches");
-```
-4. Replace `{POPULAR_BEACHES.map(...)}` with `{displayBeaches.map(...)}`
-5. Replace the section heading to use `beachSectionLabel`
-
-#### C. Update `src/components/weather/WeatherDashboard.tsx`
-Pass coordinates to LocationSelector:
-```tsx
-<LocationSelector
-  ...existing props...
-  currentLat={geo.latitude}
-  currentLon={geo.longitude}
-/>
-```
-
-#### D. Add i18n keys
-`messages/en.json` — in the `"weather"` namespace:
-```json
-"beachesNearYou": "Beaches Near You"
-```
-`messages/es.json`:
-```json
-"beachesNearYou": "Playas Cercanas"
-```
-
-#### E. Quality gates + deploy
-```bash
-pnpm lint && pnpm type-check && pnpm test && pnpm build
-git add -A && git commit -m "feat: comprehensive ZIP coverage + Beaches Near You"
-git push origin main
-ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30 \
-  "cd ~/ocinw-website && git pull && pnpm install --frozen-lockfile && pnpm build && pm2 restart ocinw"
-```
-
----
+1. Replace `ZIP_COORDINATES` in `src/lib/data/socal-beaches.ts` with comprehensive tri-county coverage (~280 ZIPs: LA, Orange, San Diego counties + Inland Empire)
+2. Update `src/components/weather/LocationSelector.tsx` — add `currentLat`/`currentLon` props, sort beaches by distance when location is set ("Beaches Near You")
+3. Update `src/components/weather/WeatherDashboard.tsx` — pass geo coordinates to LocationSelector
+4. Add i18n keys: `"beachesNearYou"` (EN/ES)
+5. Quality gates + commit + push + VPS deploy
 
 ### 2. Run SQL Migrations in Supabase (user action required)
 
 Run in Supabase SQL Editor → these unlock events and parental consent:
-
 1. **`supabase/migrations/002_events_phase10.sql`** — Events tables, RPC function, UNIQUE constraint, deleted_at column
 2. **`supabase/migrations/003_parental_consent.sql`** — Consent request + consent code tables, RLS, indexes
 
 After running: seed 2-3 test events so the Events pages have real content.
 
-### 2. Volunteer Welcome Email (plan ready)
+### 3. Volunteer Welcome Email (plan ready)
 
 Plan at `.claude/plans/volunteer-welcome-email.md`. Steps:
 - `pnpm add resend @react-email/components`
@@ -126,7 +62,7 @@ Plan at `.claude/plans/volunteer-welcome-email.md`. Steps:
 - Wire into `src/app/actions/volunteer.ts` (two `// TODO` comments)
 - Content: welcome + beach day guide (what to bring, what we provide, coral-safe sunscreen only)
 
-### 3. Phase 12 — Pre-Launch Checklist
+### 4. Phase 12 — Pre-Launch Checklist
 
 Once SQL migrations are run:
 - Accessibility audit (axe-core on live pages)
@@ -135,94 +71,39 @@ Once SQL migrations are run:
 - Privacy policy + terms finalization
 - Google Search Console setup (after sitemap submission)
 
-### 4. Low-Priority Design Polish (A26–A28)
-
-- **A26:** Standardize dark section backgrounds (3 patterns: `white/[0.02]`, `muted/30`, `muted/20`)
-- **A27:** Standardize CTA button shapes — some `rounded-md` vs `rounded-full` (not-found, error, about, team)
-- **A28:** DonorRecognition uses non-brand colors (sky, emerald, indigo, purple)
-
 ---
 
-## What Was Completed This Session (#24)
+## What Was Completed This Session (#26)
 
-### Nav Reorder
-- **Desktop + Mobile nav** reordered to: Volunteer → Weather & Tides → Learn → Conservation → About
-- `src/components/layout/DesktopNav.tsx` — items reordered
-- `src/components/layout/MobileNav.tsx` — items reordered (mobile accordion order matches desktop)
-- Committed + pushed; VPS deploy pending (will bundle with ZIP work)
+### Zod API Validation (Code Quality 9→10)
+- `src/lib/api/weather.ts` — Added `forecastResponseSchema` + `marineResponseSchema`, replaced `as` casts with `.safeParse()`
+- `src/lib/api/tides.ts` — Added `noaaTidesResponseSchema`, replaced `as` casts with `.safeParse()` in both fetch functions
+- All 3 API clients (weather, tides, geolocation) now use Zod runtime validation
 
-### Hero — "Guardians of Our Waters" Single Row
-- Removed `md:text-6xl lg:text-7xl` size ramp — font now caps at `sm:text-5xl` (48px)
-- Added `md:whitespace-nowrap` — title renders on one line from tablet up
-- `src/components/home/HeroSection.tsx` — committed
+### Accessibility Accommodations (Inclusivity 9→10, D10 resolved)
+- `src/app/[locale]/volunteer/page.tsx` — New section with 4 cards (mobility, sensory, dietary, language) + contact link
+- `src/app/[locale]/conservation/events/[slug]/page.tsx` — Accommodations card in 3-column grid with "What to Bring" / "What to Expect"
+- 15 new i18n keys in both EN and ES
 
-### Hero — "All welcome." (Subtle LGBTQ+ Inclusive Language)
-- Removed the visible "Youth-led · All ages welcome · Families · Community" chip tagline
-- `heroTagline` key removed from `messages/en.json` and `messages/es.json`
-- Subtitle now ends with "All welcome." (EN) / "Todos bienvenidos." (ES)
-- Subtle, woven into prose — not a separate UI element
-- Committed + pushed
+### Session #25 (earlier today)
+- Design polish: A26 (dark backgrounds), A27 (CTA buttons), A28 (DonorRecognition colors) — Design Continuity 10/10
+- Commit: `7aa45d8`
 
 ### Commits This Session
-- `773bd12` — fix: hero h1 — single row on desktop (cap at 5xl, whitespace-nowrap md+)
-- `abacb98` — fix: remove heroTagline chip — subtle inclusive language in subtitle instead
-- `cc0354f` — fix: subtitle — 'All welcome.' (tighten phrasing)
-- Nav reorder — committed but not yet pushed as of handoff (lint + type-check passed)
+- `7aa45d8` — style: resolve A26-A28 — standardize backgrounds, buttons, brand colors
+- `9107527` — feat: Zod API validation + accessibility accommodations
 
----
-
-## What Was Completed This Session (#23)
-
-### Species Photos + Image Credits (10 photos)
-- Added 10 real species photos to `public/images/species/` — all public domain or CC licensed
-- Added `imageCredit` frontmatter field to velite.config.ts species schema
-- Updated all 10 species MDX files: real species-specific images + proper photo attribution
-- Species page hero wrapped in `<figure>/<figcaption>` to display credit below image
-- Fixed file corruption: removed SOH (`\x01`) byte artifacts from all 10 MDX frontmatter blocks
-  that caused duplicate `featuredImageAlt` keys (caught by new continuity checks)
-
-### SEO — JSON-LD Structured Data
-- **Article pages:** JSON-LD `Article` schema + OG `type: "article"` with `publishedTime` + `authors`
-- **Species pages:** JSON-LD `Article/Thing` schema + richer OG description including conservation status + image
-- **Event pages:** JSON-LD `Event` schema (startDate, endDate, location, organizer, eventStatus
-  mapped to `EventScheduled`/`EventCancelled`) + OG image; server component wrapper for client UI
-- All 3 `dangerouslySetInnerHTML` uses are trusted server-side data (JSON.stringify of schema objects)
-
-### Article Date Fixes
-- 7 articles had March 2026 future dates — corrected to Feb 20–26 to match actual launch week
-
-### Homepage Hero
-- Title: "Young Guardians of Our Waters" → **"Guardians of Our Waters"** (EN + ES)
-- Added `heroTagline` below h1: "Youth-led · All ages welcome · Families · Community"
-  (subtle, `text-white/75` — makes clear the org is youth-run but open to everyone)
-
-### Team Page
-- Removed Scout Rosario and Elenore Rosario + entire "Junior Marine Protectors" section
-- Team page now shows: Jordyn (Founder) + Join the Team CTA
-- Section can be re-added when ready with the right members
-
-### ProjectHealth.md — Section 10: Content Continuity Checks
-- 5 runnable bash/python checks: date integrity, YAML duplicate keys + SOH bytes,
-  referenced image existence, required frontmatter fields, `dangerouslySetInnerHTML` audit
-- These checks would have caught the MDX corruption and future-dated articles automatically
-- Marked A21–A25 as RESOLVED (were still showing open despite being fixed in sessions #21–22)
-
-### Quality Gates (all passing, VPS deployed)
+### Quality Gates
 - ✅ `pnpm lint` — 0 errors
 - ✅ `pnpm type-check` — 0 errors
 - ✅ `pnpm test` — 238/238 passing
-- ✅ `pnpm build` — clean
-- ✅ VPS deployed — PM2 online, `https://www.orcachildinthewild.com` live
-
-### Commits This Session
-- `b31a84d` — feat: add real species photos with image credits
-- `e2bce0d` — feat: SEO — JSON-LD structured data + OG images for articles, species, events
-- `43ced20` — feat: homepage hero — 'Guardians of Our Waters' + everyone welcome tagline
-- `fdcf93f` — fix: remove Scout and Elenore from team page
+- ✅ `pnpm build` — 99 pages
+- ✅ Pushed to origin/main
+- ⬜ VPS deploy pending
 
 ---
 
-## Audit Health Summary (updated Session #23)
+## Audit Health Summary (updated Session #26)
 
 | Dimension         | Score    | Grade | Notes |
 | ----------------- | -------- | ----- | ----- |
@@ -247,7 +128,7 @@ Once SQL migrations are run:
 ## Open Audit Items
 
 All A-series audit items resolved. No open code issues.
-Remaining gaps are content/verification work (D8, D9, D10, O3).
+Remaining gaps are content work (D8, D9).
 
 ---
 

@@ -1,8 +1,8 @@
 # Handoff — Orca Child in the Wild
 
 > **Session Continuity Document**
-> Last updated: 2026-03-01
-> Session: #26 (Zod API validation + Accessibility accommodations)
+> Last updated: 2026-03-21
+> Session: #28 (Project map tour + governance fixes + FAQ update)
 
 ---
 
@@ -73,37 +73,49 @@ Once SQL migrations are run:
 
 ---
 
-## What Was Completed This Session (#26)
+## What Was Completed This Session (#28)
 
-### Zod API Validation (Code Quality 9→10)
-- `src/lib/api/weather.ts` — Added `forecastResponseSchema` + `marineResponseSchema`, replaced `as` casts with `.safeParse()`
-- `src/lib/api/tides.ts` — Added `noaaTidesResponseSchema`, replaced `as` casts with `.safeParse()` in both fetch functions
-- All 3 API clients (weather, tides, geolocation) now use Zod runtime validation
+### Project Map Tour
+- Verified and filled in `~/.claude/docs/projectmap/orcachild.md` -- zero TODO markers remaining
+- All sections verified from codebase: dependencies (40 packages), env vars (10), API routes (1 REST + 6 server actions), database (10 tables), integrations (7 services), file structure, test coverage (238 tests), codebase metrics
 
-### Accessibility Accommodations (Inclusivity 9→10, D10 resolved)
-- `src/app/[locale]/volunteer/page.tsx` — New section with 4 cards (mobility, sensory, dietary, language) + contact link
-- `src/app/[locale]/conservation/events/[slug]/page.tsx` — Accommodations card in 3-column grid with "What to Bring" / "What to Expect"
-- 15 new i18n keys in both EN and ES
+### Governance Fixes
+- Created missing `.claude/AUDIT.md` governance file
+- Fixed 4 stale items in `ProjectHealth.md` (CSP nonces, API validation, i18n, accommodations)
+- Updated health scores to reflect Sessions #21-27 (overall 9.4 -> 9.5)
+- Fixed stale VPS port map in `Handoff.md` and `OPERATIONS.md` (wrong PM2 users/ports)
 
-### Session #25 (earlier today)
-- Design polish: A26 (dark backgrounds), A27 (CTA buttons), A28 (DonorRecognition colors) — Design Continuity 10/10
-- Commit: `7aa45d8`
+### FAQ Content Update
+- Updated volunteer FAQ (EN + ES): all under-18 need parental consent + must be accompanied by adult at all times
+- Previous text only mentioned under-13 needing parental consent
 
-### Commits This Session
-- `7aa45d8` — style: resolve A26-A28 — standardize backgrounds, buttons, brand colors
-- `9107527` — feat: Zod API validation + accessibility accommodations
+### Memories System
+- Added "Shared Memories" step to global session start prompt
+- Saved beach day memory (2026-03-21) and OneDrive reference to project memory
+- Future sessions will check `C:\Users\basro\OneDrive\Memories` at startup
 
 ### Quality Gates
-- ✅ `pnpm lint` — 0 errors
-- ✅ `pnpm type-check` — 0 errors
-- ✅ `pnpm test` — 238/238 passing
-- ✅ `pnpm build` — 99 pages
-- ✅ Pushed to origin/main
-- ⬜ VPS deploy pending
+- ✅ `pnpm lint` -- 0 errors
+- ✅ `pnpm type-check` -- 0 errors
+- ⬜ VPS deploy pending (FAQ text change + hero text from Session #27)
 
 ---
 
-## Audit Health Summary (updated Session #26)
+## What Was Completed Session #27
+
+### Hero Text Update
+- Changed hero heading to "Guardians of Southern California Waters" (two-line layout)
+- Commit: `3495190` -- pushed to origin/main
+
+### VPS Hardening
+- PM2 systemd startup hook for orcachild user, colourparlor memory fix, security patches
+
+### Operations Guide
+- Created `OPERATIONS.md` -- full command reference
+
+---
+
+## Audit Health Summary (updated Session #28)
 
 | Dimension         | Score    | Grade | Notes |
 | ----------------- | -------- | ----- | ----- |
@@ -116,12 +128,12 @@ Once SQL migrations are run:
 | Inclusivity       | 10/10    | A+    | Accommodations sections added (Session #26) |
 | Bias              | 9/10     | A     | — |
 | Test Coverage     | 9/10     | A     | 238 tests |
-| Design Continuity | 10/10    | A+    | A26-A28 resolved (Session #25) |
+| Design Continuity | 10/10    | A+    | Hero text updated (Session #27) |
 | Tech Debt         | 9/10     | A     | — |
 | Dependencies      | 9/10     | A     | 2 high vulns, dev-only |
-| Documentation     | 10/10    | A+    | Continuity checks added |
+| Documentation     | 10/10    | A+    | OPERATIONS.md added (Session #27) |
 | SEO               | 9/10     | A     | JSON-LD on all content pages + sitemap + OG |
-| **Overall**       | **9.6**  | **A** | ↑ Code Quality + Inclusivity now 10/10 |
+| **Overall**       | **9.6**  | **A** | VPS hardened, operations documented |
 
 ---
 
@@ -148,7 +160,7 @@ Remaining gaps are content work (D8, D9).
 2. **Zeffy account not created** — requires registered nonprofit status
 3. **No logo yet** — using Waves icon placeholder
 4. **Original photos in progress** — real species photos now live (CC licensed); Jordyn's own photos to replace when ready
-5. **og-image.jpg not created** — 1200×630 branded image needed for Open Graph previews
+5. **og-image.jpg not created** — 1200x630 branded image needed for Open Graph previews
 6. **Website content is placeholder** — user will work with Jordyn to write real content
 7. **Admin code generation** — currently manual via Supabase SQL Editor (no admin UI yet)
 
@@ -187,15 +199,27 @@ All vulnerabilities from Sessions #7–21 are resolved. Current status: **A+**
 | SSH Key | `~/.ssh/orcachild_vps` |
 | SSH Command | `ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30` |
 | App Path | `/home/orcachild/ocinw-website/` |
-| PM2 Process | `ocinw` (ID 0) |
+| PM2 Process | `ocinw` (under `orcachild` user's PM2, NOT root) |
+| PM2 Startup | `pm2-orcachild.service` (systemd, auto-starts on reboot) |
 | Domain | `www.orcachildinthewild.com` (canonical) |
 | SSL Expiry | 2026-05-26 (auto-renews) |
+
+### Port Map (all sites on this VPS)
+| App | Port | PM2 User | Memory Cap |
+|-----|------|----------|------------|
+| ocinw | 3000 | orcachild | — |
+| colourparlor | 3001 | colourparlor | 250MB |
+| builtbybas | 3002 | builtbybas | — |
+| figaro | 3004 | figaro | — |
+| umami | 3003 | umamiapp | — |
 
 ```bash
 # One-liner deploy:
 ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30 \
   "cd ~/ocinw-website && git pull && pnpm install --frozen-lockfile && pnpm build && pm2 restart ocinw"
 ```
+
+> Full operations guide: `OPERATIONS.md` in project root.
 
 ---
 

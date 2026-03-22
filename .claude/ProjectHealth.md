@@ -1,7 +1,7 @@
 # Project Health — Orca Child in the Wild
 
 > **Comprehensive project health tracker.**
-> Last audited: 2026-02-25 | Audit session: #20
+> Last audited: 2026-02-25 | Audit session: #20 | Scores updated: 2026-03-21
 > Re-run this audit before every phase launch and before production deployment.
 
 ---
@@ -12,20 +12,20 @@
 | ----------------- | ---------- | ----- | ------ |
 | Quality Gates     | 5/5        | A+    | =      |
 | Code Quality      | 10/10      | A+    | Zod on all APIs |
-| Security          | 9/10       | A     | -1     |
+| Security          | 10/10      | A+    | Nonce CSP (Session #21) |
 | Accessibility     | 9/10       | A     | =      |
-| Performance       | 9/10       | A     | =      |
-| i18n              | 8/10       | B+    | -2     |
-| Inclusivity       | 10/10      | A+    | Accommodations added |
-| Bias              | 9/10       | A     | NEW    |
-| Test Coverage     | 9/10       | A     | =      |
-| Design Continuity | 10/10      | A+    | A26-A28 resolved |
-| Tech Debt         | 8/10       | B+    | -1     |
-| Dependencies      | 9/10       | A     | =      |
-| Documentation     | 10/10      | A+    | =      |
-| **Overall**       | **9.4/10** | **A** | ↑ Code Quality + Inclusivity |
+| Performance       | 9/10       | A     | Image sizes fixed (Session #21) |
+| i18n              | 9/10       | A     | Hardcoded EN fixed (Session #21) |
+| Inclusivity       | 10/10      | A+    | Accommodations added (Session #26) |
+| Bias              | 9/10       | A     | =      |
+| Test Coverage     | 9/10       | A     | 238 tests |
+| Design Continuity | 10/10      | A+    | Hero text updated (Session #27) |
+| Tech Debt         | 9/10       | A     | =      |
+| Dependencies      | 9/10       | A     | 2 high vulns, dev-only |
+| Documentation     | 10/10      | A+    | OPERATIONS.md added (Session #27) |
+| **Overall**       | **9.5/10** | **A** | Multiple dimensions improved since audit |
 
-**Summary:** Session #20 comprehensive 7-dimension audit. Codebase grew from ~7,300 to ~14,257 LOC across 10 sessions. Found and fixed 25 issues (design, security, i18n, accessibility, inclusivity). Key remaining items: CSP nonce implementation, hardcoded English in error boundaries/weather, 10 images missing `sizes`, 23 MDX files need Spanish translations.
+**Summary:** Scores updated 2026-03-21 to reflect work done in Sessions #21-27. CSP nonces implemented, hardcoded English in JSX resolved, accommodations info added, image sizes fixed, hero text updated, OPERATIONS.md added. Remaining gaps: 23 MDX files need Spanish translations (D8), 16 MDX files missing readingLevel (D9), Lighthouse/axe-core live runs needed.
 
 ---
 
@@ -96,7 +96,7 @@
 | A13  | MEDIUM   | Bias            | "mentors" references (no mentor program)       | Changed to "communities" in EN and ES                          |
 | A14  | LOW      | Security        | Non-null assertion in VolunteerForm            | Replaced `!` with optional chaining pattern                    |
 | A15  | LOW      | Inclusivity     | "tide pool walks" assumes mobility             | Changed to "tide pool explorations" (2 files)                  |
-| A16  | LOW      | Inclusivity     | "walking near tide pools"                      | Changed to "moving through tide pool areas"                    |
+-------------| A16  | LOW      | Inclusivity     | "walking near tide pools"                      | Changed to "moving through tide pool areas"                    |
 | A17  | LOW      | Inclusivity     | "walking trails" in wetlands content           | Changed to "trails"                                            |
 | A18  | LOW      | Inclusivity     | "walking only on bare rock"                    | Changed to "stepping only on bare rock"                        |
 | A19  | LOW      | Inclusivity     | "walk newer volunteers" (figurative)           | Changed to "guide newer volunteers"                            |
@@ -132,7 +132,7 @@
 | ---- | ------- | ---------------------------------------------- |
 | D8   | Content | 23 MDX files need Spanish translations         |
 | D9   | Content | 16 MDX files missing `readingLevel` frontmatter |
-| D10  | Content | No accessibility accommodations info anywhere  |
+| ~~D10~~ | ~~Content~~ | ~~No accessibility accommodations info anywhere~~ -- RESOLVED (Session #26) |
 
 ---
 
@@ -145,7 +145,7 @@
 | `any` type usage           | PASS (0 instances) |
 | Secrets in code            | PASS (0 hardcoded) |
 | CSP headers (dev)          | PASS   |
-| CSP headers (prod)         | **NEEDS NONCES** (A21) |
+| CSP headers (prod)         | PASS (nonce-based CSP in proxy.ts, Session #21) |
 | X-Frame-Options            | PASS (DENY) |
 | X-Content-Type-Options     | PASS (nosniff) |
 | Referrer-Policy            | PASS   |
@@ -154,7 +154,7 @@
 | Non-null assertions        | PASS (0 after A14 fix) |
 | CSRF protection            | PASS (all 5 server actions + validateConsentCode) |
 | Rate limiting              | PASS (all forms) |
-| External API validation    | MEDIUM (weather/tides lack Zod schemas) |
+| External API validation    | PASS (Zod schemas on all API clients, Session #26) |
 | Slug/input validation      | PASS (iCal route validated) |
 | .gitignore secrets         | PASS |
 
@@ -212,7 +212,7 @@
 | Event date/time locale     | PASS (A5 fixed) |
 | Weather units translatable | PASS   |
 | Locale-aware numbers       | PASS   |
-| No hardcoded English in JSX| **FAIL** (A22-A24: ~14 strings in error/weather components) |
+| No hardcoded English in JSX| PASS (A22-A24 resolved, Session #21) |
 | MDX content in Spanish     | **FAIL** (D8: 0 of 23 files translated) |
 
 ---
@@ -229,7 +229,7 @@
 | Ability-inclusive language  | PASS (A15-A20 fixed) |
 | No mentor references       | PASS (A13 fixed) |
 | Diverse volunteer paths    | PASS (13 options: outdoor + indoor + digital) |
-| Accommodations info        | **MISSING** (D10) |
+| Accommodations info        | PASS (added Session #26) |
 | Spanish content            | **MISSING** (D8: 23 files English-only) |
 
 ---

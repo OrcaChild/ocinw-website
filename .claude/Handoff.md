@@ -87,7 +87,8 @@ Once SQL migrations are run:
 - Patched Next.js 16.1.7 -> 16.2.3 (HIGH DoS vulnerability)
 - Patched next-intl 4.9.0 -> 4.9.1 (MODERATE open redirect vulnerability)
 - All production dependency vulns resolved. 9 remaining are dev-only (vite, hono via shadcn CLI)
-- Quality gates verified: lint clean, type-check clean, build succeeds (91 static pages)
+- Changed default theme from "system" to "light" (day view by default, toggle still available)
+- Quality gates verified: lint clean, type-check clean, 238 tests passing, build succeeds (91 static pages)
 - Flagged Vitest unpinned from 4.0.18 to 4.1.2 (Node 20 compat concern)
 
 ---

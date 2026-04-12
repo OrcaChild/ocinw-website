@@ -90,6 +90,8 @@ Once SQL migrations are run:
 - Changed default theme from "system" to "light" (day view by default, toggle still available)
 - Quality gates verified: lint clean, type-check clean, 238 tests passing, build succeeds (91 static pages)
 - Flagged Vitest unpinned from 4.0.18 to 4.1.2 (Node 20 compat concern)
+- Created SECURITY-AUDIT.md: full 20-section penetration test sweep, 0 critical/high findings
+- Updated Platform Tracking Matrix in global checklist
 
 ---
 

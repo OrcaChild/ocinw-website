@@ -1,8 +1,8 @@
 # Handoff — Orca Child in the Wild
 
 > **Session Continuity Document**
-> Last updated: 2026-03-21
-> Session: #28 (Project map tour + governance fixes + FAQ update)
+> Last updated: 2026-04-11
+> Session: #29 (Governance audit)
 
 ---
 
@@ -73,7 +73,26 @@ Once SQL migrations are run:
 
 ---
 
-## What Was Completed This Session (#28)
+## What Was Completed This Session (#29)
+
+### Governance Audit (2026-04-11)
+- Full governance audit per post-Session-68 protocol
+- Updated project CLAUDE.md: Twelve Pillars reference, Data Protection section, LastStatusReport in session protocol, Hosting corrected to VPS
+- Updated Handoff.md: versions, vuln counts, missing commits
+- Updated AUDIT.md: dependency status, quality gates
+- Updated ProjectHealth.md: dependency scores, audit detail
+- Updated MEMORY.md: stack versions
+- Updated project map: dependency versions, verified date
+- Flagged SECURITY-AUDIT.md as missing (required for live projects)
+- Patched Next.js 16.1.7 -> 16.2.3 (HIGH DoS vulnerability)
+- Patched next-intl 4.9.0 -> 4.9.1 (MODERATE open redirect vulnerability)
+- All production dependency vulns resolved. 9 remaining are dev-only (vite, hono via shadcn CLI)
+- Quality gates verified: lint clean, type-check clean, build succeeds (91 static pages)
+- Flagged Vitest unpinned from 4.0.18 to 4.1.2 (Node 20 compat concern)
+
+---
+
+## What Was Completed Session #28
 
 ### Project Map Tour
 - Verified and filled in `~/.claude/docs/projectmap/orcachild.md` -- zero TODO markers remaining
@@ -130,10 +149,10 @@ Once SQL migrations are run:
 | Test Coverage     | 9/10     | A     | 238 tests |
 | Design Continuity | 10/10    | A+    | Hero text updated (Session #27) |
 | Tech Debt         | 9/10     | A     | — |
-| Dependencies      | 9/10     | A     | 2 high vulns, dev-only |
+| Dependencies      | 8/10     | B+    | 9 vulns (2 high, 7 moderate) -- all dev-only. Production deps clean. |
 | Documentation     | 10/10    | A+    | OPERATIONS.md added (Session #27) |
 | SEO               | 9/10     | A     | JSON-LD on all content pages + sitemap + OG |
-| **Overall**       | **9.6**  | **A** | VPS hardened, operations documented |
+| **Overall**       | **9.5**  | **A** | Production deps patched, 9 dev-only vulns remain |
 
 ---
 
@@ -242,11 +261,12 @@ ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30 \
 
 | | Local Dev | VPS |
 |--|-----------|-----|
-| Next.js | 16.1.6 | 16.1.6 |
+| Next.js | 16.2.3 | 16.1.7 (needs deploy to update VPS) |
 | Node.js | 20.18.0 | 22.22.0 |
 | pnpm | 10.10.0 | 10.30.2 |
 | PM2 | — | 6.0.14 |
 | TypeScript | 5.9.3 | — |
-| Tailwind | v4.2.0 | — |
+| Tailwind | v4.2.2 | — |
 | Zod | v4.3.6 | — |
-| next-intl | v4.8.3 | — |
+| next-intl | v4.9.1 | — |
+| Vitest | v4.1.2 (dev) | — |

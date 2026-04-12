@@ -1,9 +1,20 @@
 # CLAUDE.md — Orca Child in the Wild (OCINW) Project Instructions
 
-> **Universal Pillars:** Security Minded | Structure | Performance | Inclusive | Non-Bias | UX Minded
+> **Twelve Pillars:** Security | Reliability | Accessibility | Modularity | Readability | Maintainability | Observability | Performance | Redundancy | Recovery | Tested & Verified | Documented
 >
-> These six pillars govern every decision across all Rosario family projects.
-> Tech-specific details vary by stack — the principles never do.
+> These Twelve Pillars govern every decision across all Rosario family projects.
+> This project organizes its standards under six focus areas below; the Twelve Pillars apply universally.
+> Priority chain: Security > Performance > Convenience | Accessibility > Aesthetics | Data Privacy > Feature Completeness
+
+---
+
+## Data Protection (Non-Negotiable)
+
+- No deleting, removing, or overwriting ANY file without Bas's explicit permission
+- No running scripts that delete files without a dry-run first
+- No touching files in `~/.claude/projects/`, `.env`, or credentials
+- Always move to backup instead of deleting
+- Always show what will be affected before any bulk operation
 
 ---
 
@@ -52,7 +63,7 @@ These decisions are final. Do not propose alternatives unless explicitly asked.
 | Content | MDX + Velite | Latest |
 | Database | Supabase (PostgreSQL) | Latest |
 | Auth | Supabase Auth | Latest |
-| Hosting | Vercel (free tier) | — |
+| Hosting | Hostinger VPS (production) | — |
 | Package Manager | pnpm | Latest |
 | Maps | Leaflet + React-Leaflet | Latest |
 | Charts | Recharts | Latest |
@@ -448,7 +459,8 @@ Every interaction should feel intentional, clear, and respectful of the user's t
 ### Ending
 1. Update `Handoff.md` — what's done, in-progress, next, blockers, decisions
 2. Move all completed items to `Completed.md`
-3. Recommend next steps
+3. Write/update `~/.claude/docs/LastStatusReport/orcachild.md` -- full granular snapshot
+4. Recommend next steps
 
 ---
 

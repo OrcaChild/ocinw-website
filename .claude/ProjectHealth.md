@@ -1,7 +1,7 @@
 # Project Health — Orca Child in the Wild
 
 > **Comprehensive project health tracker.**
-> Last audited: 2026-02-25 | Audit session: #20 | Scores updated: 2026-03-21
+> Last audited: 2026-02-25 | Audit session: #20 | Scores updated: 2026-04-11
 > Re-run this audit before every phase launch and before production deployment.
 
 ---
@@ -21,11 +21,11 @@
 | Test Coverage     | 9/10       | A     | 238 tests |
 | Design Continuity | 10/10      | A+    | Hero text updated (Session #27) |
 | Tech Debt         | 9/10       | A     | =      |
-| Dependencies      | 9/10       | A     | 2 high vulns, dev-only |
+| Dependencies      | 8/10       | B+    | 9 vulns (2 high, 7 moderate), all dev-only. Production clean. |
 | Documentation     | 10/10      | A+    | OPERATIONS.md added (Session #27) |
-| **Overall**       | **9.5/10** | **A** | Multiple dimensions improved since audit |
+| **Overall**       | **9.5/10** | **A** | Production deps patched, 9 dev-only remain |
 
-**Summary:** Scores updated 2026-03-21 to reflect work done in Sessions #21-27. CSP nonces implemented, hardcoded English in JSX resolved, accommodations info added, image sizes fixed, hero text updated, OPERATIONS.md added. Remaining gaps: 23 MDX files need Spanish translations (D8), 16 MDX files missing readingLevel (D9), Lighthouse/axe-core live runs needed.
+**Summary:** Scores updated 2026-04-11 (Session #29 governance audit + security patches). Next.js patched 16.1.7 -> 16.2.3 (HIGH DoS fixed), next-intl 4.9.0 -> 4.9.1 (open redirect fixed). All production deps clean. 9 dev-only vulns remain (vite via vitest, hono via shadcn CLI). Remaining gaps: 23 MDX files need Spanish translations (D8), 16 MDX files missing readingLevel (D9), Lighthouse/axe-core live runs needed, SECURITY-AUDIT.md missing.
 
 ---
 
@@ -39,10 +39,14 @@
 | `pnpm test`        | PASS (238 tests, 1.4s) |
 | `pnpm audit`       | WARN (2 high, dev-only) |
 
-### Audit Vulnerability Detail
-- **hono** in `shadcn > @modelcontextprotocol/sdk > hono` — dev-only
-- **rollup** `>=4.0.0 <4.59.0` in `vitest > vite > rollup` — Arbitrary File Write via Path Traversal, dev-only
-- **Production impact:** None — both are dev dependencies only
+### Audit Vulnerability Detail (2026-04-11, post-patch)
+- ~~**next** -- DoS with Server Components (HIGH) -- PATCHED 16.1.7 -> 16.2.3~~
+- ~~**next-intl** -- Open redirect (MODERATE) -- PATCHED 4.9.0 -> 4.9.1~~
+- **vite** `>=7.0.0 <=7.3.1` in `vitest > vite` -- `server.fs.deny` bypass + WebSocket file read (2x HIGH, dev-only)
+- **vite** `>=7.0.0 <=7.3.1` in `vitest > vite` -- Path traversal in `.map` handling (1x MODERATE, dev-only)
+- **hono** `<4.12.12` in `shadcn > @modelcontextprotocol/sdk > hono` -- Cookie validation + path traversal + IP matching + serveStatic bypass (5x MODERATE, dev-only)
+- **@hono/node-server** `<1.19.13` in `shadcn > @modelcontextprotocol/sdk` -- serveStatic bypass (1x MODERATE, dev-only)
+- **Production impact:** None -- all remaining vulns are dev-only dependencies.
 
 ---
 

@@ -1,7 +1,7 @@
 # Audit Log -- Orca Child in the Wild
 
 > Issue tracking, tech debt, and audit history.
-> Last updated: 2026-03-21 | Session: #28 (project map tour)
+> Last updated: 2026-04-11 | Session: #29 (governance audit)
 
 ---
 
@@ -32,10 +32,12 @@
 
 | Area | Issue | Priority |
 |------|-------|----------|
-| Dependencies | 2 high vulns (hono, rollup) -- dev-only, no production impact | LOW |
+| Dependencies | 9 vulns (2 high, 7 moderate), all dev-only: 2x Vite (HIGH, dev via vitest), 5x hono/@hono (MODERATE, dev via shadcn), 2x Vite (MODERATE, dev). Production deps clean. | MEDIUM |
+| Vitest unpinned | Was pinned to 4.0.18 for Node 20 compat, now 4.1.2 (pulls Vite 7). Verify tests still work on Node 20 | MEDIUM |
 | ZIP coverage | socal-beaches.ts has only 44 ZIPs -- needs ~280 for tri-county coverage | MEDIUM |
 | Resend | Package not yet installed -- email TODO comments in volunteer.ts | MEDIUM |
 | Lighthouse | No live Lighthouse/axe-core run yet on production | MEDIUM |
+| SECURITY-AUDIT.md | Missing -- required for all live projects per portfolio standard | MEDIUM |
 
 ## Resolved Issues (Sessions #7-27)
 
@@ -60,11 +62,12 @@ Summary:
 | 2026-03-09 | #25 | 0 | 3 | 0 + 3 deferred |
 | 2026-03-09 | #26 | 0 | 1 (D10) | 0 + 2 deferred |
 | 2026-03-21 | #28 | 0 | 0 | 1 + 2 deferred |
+| 2026-04-11 | #29 | 3 (dep vulns) | 0 | 1 + 2 deferred + 3 dep vulns |
 
-## Quality Gates (last verified Session #27)
+## Quality Gates (last verified Session #29 governance audit, 2026-04-11)
 
-- `pnpm lint` -- 0 errors
-- `pnpm type-check` -- 0 errors
-- `pnpm test` -- 238/238 passing
-- `pnpm build` -- production build succeeds
-- `pnpm audit` -- 2 high (dev-only), 0 critical
+- `pnpm lint` -- not re-run this session (was 0 errors at Session #27)
+- `pnpm type-check` -- not re-run this session (was 0 errors at Session #27)
+- `pnpm test` -- not re-run this session (was 238/238 at Session #27, needs Bas permission)
+- `pnpm build` -- not re-run this session (was passing at Session #27)
+- `pnpm audit` -- 9 vulnerabilities (2 high, 7 moderate), all dev-only. 0 production vulnerabilities.

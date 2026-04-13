@@ -64,3 +64,6 @@ next-env.d.ts
 
 # Velite (generated content)
 .velite/
+
+# DejaVu MCP config -- contains API keys, stay local
+.mcp.json

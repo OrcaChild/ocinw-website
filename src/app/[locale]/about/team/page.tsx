@@ -34,7 +34,7 @@ const boardMembers: TeamMember[] = [
   {
     name: "Jordyn Rosario",
     title: "Founder & Executive Director",
-    bio: "Jordyn Rosario founded Orca Child in the Wild out of a deep love for Southern California's coastlines and a belief that young people don't have to wait to make a difference. Jordyn leads OCINW with a hands-on, community-first approach — organizing cleanups, building educational programs, and rallying the next generation of ocean stewards from Los Angeles to San Diego.",
+    bio: "Jordyn Rosario founded Orca Child in the Wild out of a deep love for Southern California's coastlines and a belief that young people don't have to wait to make a difference. Jordyn leads OCINW with a hands-on, community-first approach: organizing cleanups, building educational programs, and rallying the next generation of ocean stewards from Los Angeles to San Diego.",
   },
 ];
 

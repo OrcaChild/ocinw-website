@@ -33,7 +33,7 @@ export default async function ImpactPage({ params }: Props) {
         </h1>
         <p className="mt-6 text-lg text-muted-foreground">
           Every great conservation movement began with a first step. Orca Child in the Wild is just
-          beginning — and every number we track from here will be real, earned, and meaningful.
+          beginning, and every number we track from here will be real, earned, and meaningful.
         </p>
         <p className="mt-4 text-muted-foreground">
           We&apos;re building our programs, recruiting our first volunteers, and preparing for our

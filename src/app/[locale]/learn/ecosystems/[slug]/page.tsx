@@ -27,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!eco) return {};
   return {
     title: eco.title,
-    description: `Explore ${eco.title} — a ${eco.type.toLowerCase()} ecosystem in Southern California.`,
+    description: `Explore ${eco.title}, a ${eco.type.toLowerCase()} ecosystem in Southern California.`,
   };
 }
 

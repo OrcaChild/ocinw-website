@@ -34,7 +34,7 @@ export default async function ProjectsPage({ params }: Props) {
         </h1>
         <p className="mt-6 text-lg text-muted-foreground">
           We&apos;re building our first conservation programs right now. Beach cleanups, water quality
-          monitoring, and habitat restoration projects are in planning — and we need passionate
+          monitoring, and habitat restoration projects are in planning, and we need passionate
           people like you to make them happen.
         </p>
       </div>

@@ -67,3 +67,7 @@ next-env.d.ts
 
 # DejaVu MCP config -- contains API keys, stay local
 .mcp.json
+.mcp.json.bak*
+
+# Claude Code local-only settings (per-machine permissions)
+.claude/settings.local.json

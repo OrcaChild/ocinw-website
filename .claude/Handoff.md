@@ -1,14 +1,100 @@
 # Handoff — Orca Child in the Wild
 
 > **Session Continuity Document**
-> Last updated: 2026-04-11
-> Session: #29 (Governance audit)
+> Last updated: 2026-05-16
+> Session: #30 (CVE-2026-44578 patch — next 16.2.3 → 16.2.6 + transitive overrides)
+> Last commit: `8aa79a9 chore(deps): bump next 16.2.3 to 16.2.6 (CVE-2026-44578 family) + transitive overrides`
 
 ---
 
 ## At A Glance
 
-**Current Phase:** Phase 13 — Live on VPS | **Security:** A+ | **Tests:** 238 passing | **Deployed:** `https://www.orcachildinthewild.com` | **Next Action:** Finish ZIP expansion + "Beaches Near You" feature → SQL migrations → volunteer welcome email
+**Current Phase:** Phase 13 — Live on VPS, patched against CVE-2026-44578 family | **Security:** A+ | **Tests:** 238 passing | **Audit:** 6 vulns / 2 HIGH dev-only (was 35 / 11 HIGH pre-patch) | **Deployed:** `https://www.orcachildinthewild.com` | **Next Action:** Finish ZIP expansion + "Beaches Near You" feature → SQL migrations → volunteer welcome email
+
+---
+
+## What Was Done — Session #30 (2026-05-16)
+
+### Goal: Portfolio CVE-2026-44578 sweep — close the 8/8 milestone
+
+OrcaChild was the 8th and final Next.js project in the portfolio still on a vulnerable Next 16.x. The CVE-2026-44578 family includes **CVE-2026-44573 specifically targeting i18n Pages Router middleware bypass** — OrcaChild's next-intl bilingual EN/ES routing made this advisory directly relevant. Patch closes that exposure.
+
+#### Patch surface
+
+| Change | From | To | Why |
+|---|---|---|---|
+| `next` | 16.2.3 | 16.2.6 | Closes 7 HIGH Next.js advisories (SSRF, middleware/proxy bypass × 3, cache poisoning, DoS) |
+| `eslint-config-next` | 16.1.6 | 16.2.6 | Matching peer |
+| `next-intl` | ^4.9.1 | ^4.9.2 (resolved 4.12.0) | Prototype pollution patch in next-intl's experimental messages flow |
+| **NEW** `pnpm.overrides.fast-uri` | (transitive 3.1.0) | `^3.1.2` | Path traversal + host confusion via percent-encoded chars (2 HIGH) |
+| **NEW** `pnpm.overrides.hono` | (transitive 4.12.9) | `^4.12.18` | 8 moderate advisories on cookie / path traversal / middleware bypass / CSS injection |
+| **NEW** `pnpm.overrides.@hono/node-server` | (transitive 1.19.12) | `^1.19.13` | Middleware bypass via repeated slashes |
+
+Caret-pinning matters: my first try used `>=1.19.13` for `@hono/node-server` and pnpm pulled the 2.0.2 major jump. Re-tightened to `^1.19.13` to stay on 1.x.
+
+#### Local quality gates
+
+| Gate | Result |
+|---|---|
+| `pnpm audit` | **35 vulns / 11 HIGH / 20 moderate / 4 low → 6 vulns / 2 HIGH / 4 moderate.** 29 vulnerabilities resolved. All 7 CVE-2026-44578-family HIGHs cleared on the Next.js side. |
+| `pnpm build` | Clean. `Next.js 16.2.6 (Turbopack)`, 99/99 static pages, **bilingual EN+ES SSG coverage** (articles, species, ecosystems, resources, weather, volunteer, privacy, terms). Velite content generation ran clean before next build. TypeScript clean in 7.8s. No Figaro-style Linux Turbopack manifest bug. |
+| `pnpm lint` | 0 errors / 0 warnings. |
+| `pnpm test` | **238/238 passed in 1.79s** across 13 vitest files. All Supabase calls in `tests/unit/actions/contact.test.ts` + `newsletter.test.ts` mocked via `vi.mock` with `createClient` → `{from: mockFrom}`. No real DB connection. |
+
+Playwright E2E + a11y suites not re-run this session (separate from CVE-patch gate; last known green).
+
+#### Out of scope this commit (separate cleanup)
+
+- `vite >=7.3.2` — 2 HIGH + 1 moderate, dev-only path traversal on dev server (vitest peer). Needs careful version test for vitest 4.x compatibility.
+- `ip-address >=10.1.1` — moderate, deep transitive via `shadcn > @modelcontextprotocol/sdk > express-rate-limit > ip-address`. Dev-only path.
+- `postcss <8.5.10` — upstream-blocked moderate, same shape as BuiltByBas / Marketing Reset / ABHS / Colour Parlor.
+
+#### Deploy
+
+Standard `~/.claude/docs/vps-infrastructure.md` flow as orcachild user:
+
+```bash
+ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30
+cd ~/ocinw-website && git pull origin main && \
+  pnpm install --frozen-lockfile && pnpm build && \
+  pm2 restart ocinw && pm2 save
+```
+
+VPS was 2 commits behind (`a57e4bd → 8aa79a9`). Fast-forward clean. Install 10s; build clean with all bilingual SSG; pm2 restart `ocinw` PID 457379. Server boots `Next.js 16.2.6 Ready in 353ms` on `http://localhost:3000`.
+
+#### External verification
+
+All routes via apex → www redirect chain, EN canonical drops `/en` prefix per next-intl "as-needed" mode, ES keeps `/es`:
+
+| Probe | HTTP | Resolved to | Time |
+|---|---|---|---|
+| `https://orcachildinthewild.com/` | 200 | `https://www.orcachildinthewild.com/` | 0.34s |
+| `https://orcachildinthewild.com/en` | 200 | `https://www.orcachildinthewild.com/` | 0.79s |
+| `https://orcachildinthewild.com/es` | 200 | `https://www.orcachildinthewild.com/es` | 0.33s |
+| `https://orcachildinthewild.com/en/learn/species` | 200 | `https://www.orcachildinthewild.com/learn/species` | 0.37s |
+| `https://orcachildinthewild.com/es/learn/species` | 200 | `https://www.orcachildinthewild.com/es/learn/species` | 0.34s |
+
+Security headers post-deploy: `Strict-Transport-Security: max-age=31536000; includeSubDomains` + `X-Frame-Options: DENY` + `Server: nginx` all present.
+
+#### Decisions (durable)
+
+- **Caret-pin transitive overrides**. `>=X.Y.Z` is too permissive — pnpm will pull a major version jump if one exists. Use `^X.Y.Z` to constrain to same major. First-pass `>=1.19.13` on `@hono/node-server` pulled `2.0.2`; re-tightened to `^1.19.13` resolved to `1.19.14` cleanly.
+- **CVE-2026-44573 lands here specifically**. The i18n-Pages-Router middleware bypass advisory was the most OrcaChild-specific item in the family. Worth flagging in commit message + governance for traceability — future audit reviews will want to know which advisories applied per project.
+- **Turbopack production build works on VPS Linux**. The registry's "Turbopack crashes on dev machine. Use `pnpm dev --webpack`" note was about **local dev only**. Production `pnpm build` with Turbopack default succeeded for 99/99 bilingual SSG pages. No `--webpack` opt-out needed for this codebase. Registry note clarified.
+
+#### Pre-existing PM2 log noise (not introduced by patch)
+
+- `Events fetch error: TypeError: fetch failed` × 4 in error.log — pre-existing external API call failures (NOAA tides? Weather API?). Unrelated to CVE patch.
+- `Error: Failed to find Server Action "x"` — classic Next.js stale-client-cache error. Existing browsers cached an old Server Action ID before this deploy. Self-resolves as users refresh; no fix needed.
+
+#### Follow-ups queued (not part of this session)
+
+- Address out-of-scope items above (vite, ip-address) in a separate audit-cleanup commit.
+- Resume the original Session #29 "Next Action": finish ZIP expansion + "Beaches Near You" feature → SQL migrations → volunteer welcome email.
+
+---
+
+## What Was Done — Session #29 (2026-04-11) — Governance audit
 
 ---
 

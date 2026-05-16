@@ -1,7 +1,30 @@
 # Audit Log -- Orca Child in the Wild
 
 > Issue tracking, tech debt, and audit history.
-> Last updated: 2026-04-11 | Session: #29 (governance audit)
+> Last updated: 2026-05-16 | Session: #30 (CVE-2026-44578 patch)
+
+---
+
+## Session #30 (2026-05-16) — CVE-2026-44578 patch
+
+**Resolved (29 vulnerabilities, 9 HIGHs):**
+- 7 HIGH CVE-2026-44578 family on next.js (16.2.3 → 16.2.6): SSRF + middleware/proxy bypass × 3 + cache poisoning + DoS × 2. **CVE-2026-44573 i18n middleware bypass specifically closed** for OrcaChild's bilingual EN/ES next-intl routing.
+- 2 HIGH fast-uri (path traversal + host confusion via percent-encoded chars; transitive 3.1.0 → ^3.1.2)
+- 1 MODERATE next-intl (prototype pollution in experimental messages; direct dep 4.9.1 → 4.12.0 via ^4.9.2)
+- 8 MODERATE hono (cookie / path traversal / middleware bypass / CSS injection / cache; transitive 4.12.9 → ^4.12.18)
+- 1 MODERATE @hono/node-server (middleware bypass via repeated slashes; transitive 1.19.12 → 1.19.14 via ^1.19.13; caret-pin chosen to avoid 2.0.2 major jump that `>=` permitted)
+- 4 MODERATE next.js (App Router XSS, beforeInteractive XSS, image DoS, RSC cache poisoning)
+- 2 LOW next.js (cache poisoning collisions, middleware redirect)
+
+**Remaining (deferred, separate cleanup):**
+- HIGH × 2: `vite >=7.3.2` — dev-only path traversal on dev server + arbitrary file read via WebSocket. Transitive via vitest. Vitest 4.x peer constraint requires careful version test before bump.
+- MODERATE: `ip-address >=10.1.1` — deep transitive via `shadcn > @modelcontextprotocol/sdk > express-rate-limit > ip-address`. Dev-only.
+- MODERATE: `postcss <8.5.10` — upstream-blocked, same shape as portfolio.
+- MODERATE: `vite` (3rd advisory, optimized-deps `.map` path traversal — same dev-only profile)
+
+**New / surfaced (not introduced by patch):**
+- INFO: Registry's "Turbopack crashes on dev machine. Use `pnpm dev --webpack`" note clarified — applies to local dev only. Production Turbopack build worked clean on VPS Linux for 99/99 bilingual SSG pages.
+- INFO: Pre-existing PM2 error.log noise (4 `Events fetch error: TypeError: fetch failed` + 1 `Failed to find Server Action "x"`) — unrelated to CVE patch. The Server Action error is stale-client-cache and self-resolves.
 
 ---
 

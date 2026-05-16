@@ -1,7 +1,7 @@
 # Project Health — Orca Child in the Wild
 
 > **Comprehensive project health tracker.**
-> Last audited: 2026-02-25 | Audit session: #20 | Scores updated: 2026-04-11
+> Last audited: 2026-05-16 | Audit session: #30 | Scores updated: 2026-05-16
 > Re-run this audit before every phase launch and before production deployment.
 
 ---
@@ -21,11 +21,11 @@
 | Test Coverage     | 9/10       | A     | 238 tests |
 | Design Continuity | 10/10      | A+    | Hero text updated (Session #27) |
 | Tech Debt         | 9/10       | A     | =      |
-| Dependencies      | 8/10       | B+    | 9 vulns (2 high, 7 moderate), all dev-only. Production clean. |
+| Dependencies      | 8/10       | B+    | 6 vulns (2 high vite dev-only, 4 moderate); CVE-2026-44578 family + transitive overrides cleared (35→6, 11→2 HIGH). Production runtime clean. |
 | Documentation     | 10/10      | A+    | OPERATIONS.md added (Session #27) |
 | **Overall**       | **9.5/10** | **A** | Production deps patched, 9 dev-only remain |
 
-**Summary:** Scores updated 2026-04-11 (Session #29 governance audit + security patches). Next.js patched 16.1.7 -> 16.2.3 (HIGH DoS fixed), next-intl 4.9.0 -> 4.9.1 (open redirect fixed). All production deps clean. 9 dev-only vulns remain (vite via vitest, hono via shadcn CLI). Remaining gaps: 23 MDX files need Spanish translations (D8), 16 MDX files missing readingLevel (D9), Lighthouse/axe-core live runs needed, SECURITY-AUDIT.md missing.
+**Summary:** Scores updated 2026-05-16 (Session #30 CVE-2026-44578 portfolio patch). Next.js patched 16.2.3 -> 16.2.6, next-intl 4.9.1 -> ^4.9.2 (resolved 4.12.0; prototype pollution patch). New pnpm.overrides: fast-uri ^3.1.2, hono ^4.12.18, @hono/node-server ^1.19.13 (caret-pinned to stay on 1.x). **CVE-2026-44573 i18n middleware bypass specifically applied** via next-intl bilingual routing — now closed. Audit 35->6 vulns / 11->2 HIGH (29 resolved). All production runtime deps clean. 2 HIGH remain (vite, dev-only via vitest peer — out of scope). Remaining gaps: 23 MDX files need Spanish translations (D8), 16 MDX files missing readingLevel (D9), Lighthouse/axe-core live runs needed.
 
 ---
 
@@ -37,7 +37,7 @@
 | `pnpm type-check`  | PASS   |
 | `pnpm build`       | PASS (91 static pages) |
 | `pnpm test`        | PASS (238 tests, 1.4s) |
-| `pnpm audit`       | WARN (2 high, dev-only) |
+| `pnpm audit`       | WARN (2 high vite dev-only via vitest peer; postcss + ip-address moderates; production runtime clean) |
 
 ### Audit Vulnerability Detail (2026-04-11, post-patch)
 - ~~**next** -- DoS with Server Components (HIGH) -- PATCHED 16.1.7 -> 16.2.3~~

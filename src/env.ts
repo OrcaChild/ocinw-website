@@ -20,6 +20,9 @@ const clientSchema = z.object({
   NEXT_PUBLIC_NOAA_API_URL: z.url(),
   NEXT_PUBLIC_OPEN_METEO_URL: z.url(),
   NEXT_PUBLIC_ZEFFY_EMBED_URL: z.url(),
+  // Donations master switch. Stays "false" until the IRS grants federal
+  // 501(c)(3) tax-exempt status; flip to "true" to open online giving.
+  NEXT_PUBLIC_DONATIONS_ENABLED: z.enum(["true", "false"]).default("false"),
   NEXT_PUBLIC_SITE_URL: z.url(),
   NEXT_PUBLIC_SITE_NAME: z.string().min(1),
 });

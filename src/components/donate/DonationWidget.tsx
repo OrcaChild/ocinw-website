@@ -2,18 +2,70 @@
 
 import { useState } from "react";
 import { useTranslations } from "next-intl";
-import { Heart, Mail } from "lucide-react";
+import { Heart, Mail, Users } from "lucide-react";
+import { Link } from "@/i18n/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface DonationWidgetProps {
   embedUrl: string | undefined;
+  donationsEnabled: boolean;
 }
 
-export function DonationWidget({ embedUrl }: DonationWidgetProps) {
+export function DonationWidget({ embedUrl, donationsEnabled }: DonationWidgetProps) {
   const t = useTranslations("donate");
   const [isLoading, setIsLoading] = useState(true);
 
   const isConfigured = embedUrl && embedUrl.includes("zeffy.com");
+
+  // Donations are paused until the IRS grants federal 501(c)(3) status.
+  // Show a clear notice and a disabled Donate control instead of the form.
+  if (!donationsEnabled) {
+    return (
+      <section className="bg-sand-50/50 px-4 py-20 dark:bg-white/[0.02] sm:px-6 lg:px-8">
+        <div className="mx-auto max-w-3xl">
+          <div className="text-center">
+            <h2 className="font-heading text-3xl font-bold tracking-tight sm:text-4xl">
+              {t("statusNoticeHeading")}
+            </h2>
+          </div>
+
+          <div className="mt-10 overflow-hidden rounded-2xl bg-white shadow-lg dark:bg-card">
+            <div className="flex flex-col items-center gap-6 p-12 text-center">
+              <div className="flex size-16 items-center justify-center rounded-full bg-primary/10">
+                <Heart className="size-8 text-primary" aria-hidden="true" />
+              </div>
+              <p
+                id="donations-status-notice"
+                className="max-w-md text-muted-foreground"
+              >
+                {t("statusNoticeBody")}
+              </p>
+              <div className="flex flex-col items-center gap-3 sm:flex-row">
+                <button
+                  type="button"
+                  disabled
+                  aria-disabled="true"
+                  aria-describedby="donations-status-notice"
+                  title={t("statusNoticeButtonTooltip")}
+                  className="inline-flex cursor-not-allowed items-center gap-2 rounded-full bg-muted px-6 py-3 text-sm font-medium text-muted-foreground opacity-70"
+                >
+                  <Heart className="size-4" aria-hidden="true" />
+                  {t("statusNoticeButton")}
+                </button>
+                <Link
+                  href="/volunteer"
+                  className="inline-flex items-center gap-2 rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
+                >
+                  <Users className="size-4" aria-hidden="true" />
+                  {t("statusNoticeVolunteerCta")}
+                </Link>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section className="bg-sand-50/50 px-4 py-20 dark:bg-white/[0.02] sm:px-6 lg:px-8">

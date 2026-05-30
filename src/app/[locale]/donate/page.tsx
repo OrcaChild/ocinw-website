@@ -46,6 +46,7 @@ function DonateContent() {
   const t = useTranslations("donate");
 
   const zeffyUrl = process.env.NEXT_PUBLIC_ZEFFY_EMBED_URL;
+  const donationsEnabled = process.env.NEXT_PUBLIC_DONATIONS_ENABLED === "true";
 
   return (
     <>
@@ -106,8 +107,8 @@ function DonateContent() {
       {/* Impact Tiers */}
       <DonationTiers />
 
-      {/* Donation Form (Zeffy embed) */}
-      <DonationWidget embedUrl={zeffyUrl} />
+      {/* Donation Form (Zeffy embed) — disabled until federal 501(c)(3) status lands */}
+      <DonationWidget embedUrl={zeffyUrl} donationsEnabled={donationsEnabled} />
 
       {/* Donor Recognition */}
       <DonorRecognition />

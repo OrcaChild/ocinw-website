@@ -69,5 +69,5 @@ next-env.d.ts
 .mcp.json
 .mcp.json.bak*
 
-# Claude Code local-only settings (per-machine permissions)
-.claude/settings.local.json
+# Claude Code governance — local-only, never tracked (per portfolio standard)
+.claude/

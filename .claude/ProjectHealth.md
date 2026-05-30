@@ -1,8 +1,10 @@
 # Project Health — Orca Child in the Wild
 
 > **Comprehensive project health tracker.**
-> Last audited: 2026-05-16 | Audit session: #30 | Scores updated: 2026-05-16
+> Last audited: 2026-05-30 | Audit session: #31 | Scores updated: 2026-05-16 (deps); 2026-05-30 (compliance/UX)
 > Re-run this audit before every phase launch and before production deployment.
+>
+> **Session #31 (2026-05-30):** Donations disabled behind `NEXT_PUBLIC_DONATIONS_ENABLED` (default false) + 501(c)(3) site wording corrected to "California nonprofit; federal status pending" (Matthew Creamer compliance flag) + 3-way theme toggle + system-default theme. 3 commits live on prod (`cf23644`). Gates per commit: type-check 0 / lint 0 / build 99/99 SSG. Compliance pillar materially improved (site no longer implies tax-deductibility before IRS determination).
 
 ---
 
@@ -33,10 +35,10 @@
 
 | Gate               | Status |
 | ------------------ | ------ |
-| `pnpm lint`        | PASS (0 errors, 1 warning) |
-| `pnpm type-check`  | PASS   |
-| `pnpm build`       | PASS (91 static pages) |
-| `pnpm test`        | PASS (238 tests, 1.4s) |
+| `pnpm lint`        | PASS (0 errors, 0 warnings — verified Session #31) |
+| `pnpm type-check`  | PASS (verified Session #31) |
+| `pnpm build`       | PASS (99 bilingual SSG pages — verified Session #31) |
+| `pnpm test`        | PASS (238 tests; last run Session #30, not re-run #31 — copy/UI-only change) |
 | `pnpm audit`       | WARN (2 high vite dev-only via vitest peer; postcss + ip-address moderates; production runtime clean) |
 
 ### Audit Vulnerability Detail (2026-04-11, post-patch)

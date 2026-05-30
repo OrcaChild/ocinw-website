@@ -1,7 +1,25 @@
 # Audit Log -- Orca Child in the Wild
 
 > Issue tracking, tech debt, and audit history.
-> Last updated: 2026-05-16 | Session: #30 (CVE-2026-44578 patch)
+> Last updated: 2026-05-30 | Session: #31 (Donate compliance fix + dark-mode UX)
+
+---
+
+## Session #31 (2026-05-30) — Donate compliance fix + dark-mode UX
+
+**Compliance (notable — resolved this session):**
+- **C1 — Misrepresented tax status (resolved).** Site claimed federal `501(c)(3)` status in `donate.taxText` + `footer.nonprofit`, implying donations were tax-deductible. OCINW holds only the California public-benefit incorporation; federal IRS 501(c)(3) is still pending. Flagged privately by **Matthew Creamer**. Fix: disabled online giving behind `NEXT_PUBLIC_DONATIONS_ENABLED` (default false) + reworded all 501(c)(3) claims to "California nonprofit public benefit corporation; federal 501(c)(3) status pending" (EN+ES). Commit `e2578f4`, live on prod.
+
+**UX (shipped):**
+- 3-way theme toggle (Light/Dark/System) — commit `220ebff`.
+- Default theme `light` → `system` (first-time visitors auto-detect OS preference) — commit `cf23644`.
+
+**No new vulnerabilities.** Dependency posture unchanged from Session #30 (no `pnpm install` of new packages; flag + copy + client-component changes only). Audit remains 6 vulns / 2 HIGH (vite dev-only, out of scope).
+
+**New tracked item:**
+- **O4 — Donations disabled pending IRS 501(c)(3).** Re-enable when the federal determination letter lands: set `NEXT_PUBLIC_DONATIONS_ENABLED=true` + **rebuild** (page is SSG) + restore tax-deductible copy + set real EIN (`donate.taxEin` currently "Pending"). Status: OPEN (intentional hold, not a defect).
+
+**Governance deviation flagged:** OrcaChild `.claude/` is git-tracked with legacy filenames (`Handoff.md`/`Completed.md`) vs. the local-only `.claude/` portfolio standard. Migration deferred to Bas's decision.
 
 ---
 

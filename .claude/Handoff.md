@@ -1,15 +1,57 @@
 # Handoff — Orca Child in the Wild
 
 > **Session Continuity Document**
-> Last updated: 2026-05-16
-> Session: #30 (CVE-2026-44578 patch — next 16.2.3 → 16.2.6 + transitive overrides)
-> Last commit: `8aa79a9 chore(deps): bump next 16.2.3 to 16.2.6 (CVE-2026-44578 family) + transitive overrides`
+> Last updated: 2026-05-30
+> Session: #31 (Donate compliance fix + dark-mode UX)
+> Last commit: `cf23644 feat(theme): default to system preference for first-time visitors`
 
 ---
 
 ## At A Glance
 
-**Current Phase:** Phase 13 — Live on VPS, patched against CVE-2026-44578 family | **Security:** A+ | **Tests:** 238 passing | **Audit:** 6 vulns / 2 HIGH dev-only (was 35 / 11 HIGH pre-patch) | **Deployed:** `https://www.orcachildinthewild.com` | **Next Action:** Finish ZIP expansion + "Beaches Near You" feature → SQL migrations → volunteer welcome email
+**Current Phase:** Phase 13 — Live on VPS | **Security:** A+ | **Tests:** 238 passing (not re-run this session; theme/copy-only change) | **Audit:** 6 vulns / 2 HIGH dev-only | **Deployed:** `https://www.orcachildinthewild.com` | **Donations:** DISABLED (federal 501(c)(3) pending — `NEXT_PUBLIC_DONATIONS_ENABLED=false`) | **Theme:** System default + 3-way toggle | **Next Action:** Re-enable donations after IRS determination → resume ZIP expansion + "Beaches Near You" → SQL migrations → volunteer welcome email
+
+---
+
+## What Was Done — Session #31 (2026-05-30)
+
+### Goal: Compliance fix flagged privately by Matthew Creamer + dark-mode UX
+
+**Trigger:** Matthew Creamer messaged Bas privately — the site presented OCINW as a federal `501(c)(3)` (donations tax-deductible) while OCINW only holds the **California** public-benefit incorporation (approved 2026-05-29). Federal 501(c)(3) is a separate IRS application; donations only become tax-deductible once the IRS letter lands. An early donor could give expecting a write-off they can't claim. Bas: "disable the donate button for now" + "put a notice that we are seeking federal status."
+
+#### Changes (3 commits, all gate-verified on dev → deployed → externally verified)
+
+| Commit | Change |
+|---|---|
+| `e2578f4` | **Donate giving disabled + 501(c)(3) wording corrected.** New validated env flag `NEXT_PUBLIC_DONATIONS_ENABLED` (Zod enum `"true"`/`"false"`, default `false`) in `src/env.ts` + `.env.example`. `DonationWidget.tsx` gains a disabled state: greyed `aria-disabled` Donate button (tooltip) + "Donations Opening Soon" notice + working Volunteer CTA, shown when the flag is off. Reworded `donate.taxText` + `footer.nonprofit` (EN+ES) from "registered 501(c)(3)" → "California nonprofit public benefit corporation; federal 501(c)(3) status pending." New `donate.statusNotice*` keys (EN+ES). |
+| `220ebff` | **3-way theme toggle.** `ThemeToggle.tsx` replaced the 2-way light/dark flip with a Light/Dark/System dropdown (Radix DropdownMenu radio group). One component change covers desktop (Header) + mobile (MobileNav). |
+| `cf23644` | **Default theme `light` → `system`.** `src/app/layout.tsx` ThemeProvider `defaultTheme="system"` — first-time visitors auto-detect their OS dark/light preference; returning visitors keep their saved choice; "System" option lets anyone return to auto-detect. |
+
+#### Files touched (7)
+`src/env.ts`, `.env.example`, `messages/en.json`, `messages/es.json`, `src/app/[locale]/donate/page.tsx`, `src/components/donate/DonationWidget.tsx`, `src/components/shared/ThemeToggle.tsx`, `src/app/layout.tsx`
+
+#### Quality gates (each commit, raw exit 0)
+`pnpm type-check` clean · `pnpm lint` 0/0 · `pnpm build` 99/99 bilingual SSG. (Vitest suite not re-run — change is copy + a client component + an env flag, no logic under test touched. 238 last known green.)
+
+#### Deploy + external verification (https://orcachildinthewild.com)
+Standard `sudo -u orcachild` flow per VPS doc, `pm2 restart ocinw` each time. `/`, `/es`, `/donate` all HTTP **200** after each deploy. Verified live: "Donations Opening Soon" + "currently applying for federal 501(c)(3)" + "California nonprofit public benefit corporation" present; old "registered 501(c)(3)" claim + live `<iframe>` gone; `aria-disabled="true"` Donate button present; footer EN "Federal 501(c)(3) status pending" / ES "Estatus federal 501(c)(3) en trámite"; theme toggle present both locales; `"system"` default in shipped HTML.
+
+#### Decisions (durable)
+- **Donations gated by env flag, not code deletion** — re-enabling later is a config change, no code edit. Default `false` is fail-safe.
+- **⚠️ `/donate` is statically prerendered (SSG)** — the flag is baked in at build time. **Re-enabling needs `NEXT_PUBLIC_DONATIONS_ENABLED=true` in VPS `.env.local` AND a rebuild** (`pnpm build && pm2 restart ocinw`), not just a restart.
+- **Nav/hero/home Donate buttons left as links** to `/donate` (Bas chose "defaults stand") — they lead to the page that explains status + offers other ways to help, rather than vanishing.
+- **System-default theme** matches the original pre-Session-#29 behavior; Session #29 had set it to `light`, now reverted to `system` per Bas.
+
+#### Cold-start gotcha (re-confirmed, not new)
+First external probe immediately after `pm2 restart` returned **502** (Next.js process up but port not yet bound); 200 on re-probe ~10s later. Documented in `~/.claude/docs/vps-infrastructure.md` — wait ~30-60s before trusting post-restart HTTP checks.
+
+#### Follow-ups queued
+- **Re-enable donations** once the IRS 501(c)(3) determination letter lands: flag → `true` + rebuild.
+- **Update `donate.taxEin`** from "Pending" when the EIN is issued.
+- Resume the prior queued work (ZIP expansion / "Beaches Near You", SQL migrations 002+003, volunteer welcome email — unchanged from Session #30).
+
+#### Governance deviation flagged (Bas's decision)
+OrcaChild `.claude/` is **git-tracked with legacy filenames** (`Handoff.md`/`Completed.md`), predating the portfolio standard (local-only `.claude/`, uppercase `HANDOFF.md`/`COMPLETED.md`). Not migrated this session — flagged for Bas to decide whether to run the untrack+rename migration.
 
 ---
 
@@ -120,6 +162,15 @@ Security headers post-deploy: `Strict-Transport-Security: max-age=31536000; incl
 ---
 
 ## NEXT SESSION — Priority Actions (in order)
+
+### 0. Re-enable donations WHEN (and only when) the IRS 501(c)(3) letter lands
+
+Donations are intentionally disabled (Session #31, Matthew Creamer compliance flag). To re-open online giving once federal tax-exempt status is granted:
+1. On the VPS, set `NEXT_PUBLIC_DONATIONS_ENABLED=true` in `/home/orcachild/ocinw-website/.env.local`
+2. **Rebuild** (the donate page is SSG, so the flag is baked at build time): `pnpm build && pm2 restart ocinw`
+3. Update `donate.taxText` (EN+ES) back to tax-deductible language and set `donate.taxEin` to the real EIN (currently "Pending")
+4. Update `footer.nonprofit` (EN+ES) to confirmed 501(c)(3) status
+5. Verify the live Zeffy form renders + external HTTP 200 on `/donate` + `/es/donate`
 
 ### 1. ZIP Expansion + "Beaches Near You" (from Session #24 — not yet started)
 

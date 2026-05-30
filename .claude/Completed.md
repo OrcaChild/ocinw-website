@@ -1099,4 +1099,40 @@ Simplified volunteer age ranges (removed granular adult options, kept Under 13 /
 
 ---
 
+## Session #31 — 2026-05-30 — Donate compliance fix + dark-mode UX
+
+**Trigger:** Matthew Creamer privately flagged to Bas that the site claimed federal `501(c)(3)` status (implying tax-deductible donations) when OCINW holds only the **California** public-benefit incorporation (approved 2026-05-29). Federal IRS 501(c)(3) is a separate, still-pending application; donations aren't tax-deductible until the IRS letter lands. Bas: disable the donate button + post a "seeking federal status" notice.
+
+**Three commits, each gate-verified on dev → deployed via `sudo -u orcachild` flow → externally verified on https://orcachildinthewild.com:**
+
+- **`e2578f4` fix(donate): disable giving + correct 501(c)(3) status wording**
+  - New env flag `NEXT_PUBLIC_DONATIONS_ENABLED` (Zod enum `"true"`/`"false"`, default `false`) in `src/env.ts` + documented in `.env.example`.
+  - `DonationWidget.tsx`: when flag off, renders "Donations Opening Soon" notice + greyed `aria-disabled` Donate button (tooltip) + working Volunteer CTA, instead of the Zeffy `<iframe>`.
+  - Reworded `donate.taxText` + `footer.nonprofit` (EN+ES): "registered 501(c)(3)" → "California nonprofit public benefit corporation; federal 501(c)(3) status pending." New `donate.statusNotice*` keys (EN+ES).
+  - `donate/page.tsx` reads the flag and passes `donationsEnabled` to the widget.
+- **`220ebff` feat(theme): 3-way theme switch (Light / Dark / System)**
+  - `ThemeToggle.tsx` swapped the 2-way flip for a Radix DropdownMenu radio group (Light/Dark/System). One component change covers desktop (Header) + mobile (MobileNav). "System" returns the user to OS auto-detect after a manual override.
+- **`cf23644` feat(theme): default to system preference for first-time visitors**
+  - `src/app/layout.tsx` ThemeProvider `defaultTheme="light"` → `"system"`. New visitors auto-detect OS dark/light; returning visitors keep their saved choice.
+
+**Files (8):** `src/env.ts`, `.env.example`, `messages/en.json`, `messages/es.json`, `src/app/[locale]/donate/page.tsx`, `src/components/donate/DonationWidget.tsx`, `src/components/shared/ThemeToggle.tsx`, `src/app/layout.tsx`.
+
+**Gates (each commit, raw exit 0):** type-check clean · lint 0/0 · build 99/99 bilingual SSG. Vitest suite not re-run (copy + client component + env flag; no tested logic touched; 238 last known green).
+
+**External verify (prod):** `/`, `/es`, `/donate` → 200 after each deploy. Confirmed live: new notice + corrected wording present; old claim + live iframe gone; disabled button present; footer corrected EN+ES; theme toggle present both locales; `"system"` default shipped. First post-restart probe 502 (documented Next cold-start race), 200 ~10s later.
+
+**Durable decisions / gotchas:**
+- Donations gated by env flag (fail-safe default `false`), not code deletion — re-enable is config, not code.
+- **`/donate` is SSG** → flag baked at build time → re-enabling needs flag=true **AND a rebuild**, not just pm2 restart.
+- Nav/hero/home Donate buttons left as links (Bas: "defaults stand").
+- Theme default reverted `light`→`system` (Session #29 had set light; Bas wants OS auto-detect first).
+
+**Follow-ups:** re-enable donations after IRS determination (flag + rebuild + restore tax-deductible copy + real EIN); resume Session #30's queued work (ZIP expansion, SQL migrations 002+003, volunteer welcome email).
+
+**Governance note:** OrcaChild `.claude/` remains git-tracked with legacy filenames (`Handoff.md`/`Completed.md`) — deviation from the local-only `.claude/` portfolio standard; migration flagged for Bas's decision, not done this session.
+
+**Commits:** `e2578f4`, `220ebff`, `cf23644` (all on origin/main, all live on prod).
+
+---
+
 *Next entry will be added when the next piece of work is completed.*

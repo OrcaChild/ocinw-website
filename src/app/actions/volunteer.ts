@@ -82,24 +82,24 @@ export async function submitVolunteerForm(
   const isMinor = data.ageRange === "under-13" || data.ageRange === "13-17";
   const supabase = await createClient();
 
-  // For minors: validate and prepare to consume the consent code
+  // For minors: atomically claim the consent code BEFORE creating the
+  // volunteer row (2026-06-03 sweep C8). The used_at IS NULL and expires_at
+  // guards run inside one conditional UPDATE, so two concurrent submissions
+  // can never both claim the same code; the loser matches zero rows.
   let consentCodeValue: string | null = null;
   if (isMinor) {
     consentCodeValue = (data.consentCode ?? "").toUpperCase().trim();
+    const nowIso = new Date().toISOString();
 
-    const { data: codeRow, error: codeError } = await supabase
+    const { data: claimed, error: claimError } = await supabase
       .from("consent_codes")
-      .select("id, used_at, expires_at")
+      .update({ used_at: nowIso })
       .eq("code", consentCodeValue)
-      .single();
+      .is("used_at", null)
+      .gt("expires_at", nowIso)
+      .select("id");
 
-    if (codeError || !codeRow) {
-      return { status: "invalid_code" };
-    }
-    if (codeRow.used_at !== null) {
-      return { status: "invalid_code" };
-    }
-    if (new Date(codeRow.expires_at) < new Date()) {
+    if (claimError || !claimed || claimed.length === 0) {
       return { status: "invalid_code" };
     }
   }
@@ -137,6 +137,16 @@ export async function submitVolunteerForm(
     .single();
 
   if (error) {
+    // Release the claimed consent code so the parent's code survives a
+    // failed submission (the claim ran before this insert). The
+    // used_by_volunteer_id IS NULL guard keeps a completed claim intact.
+    if (isMinor && consentCodeValue) {
+      await supabase
+        .from("consent_codes")
+        .update({ used_at: null })
+        .eq("code", consentCodeValue)
+        .is("used_by_volunteer_id", null);
+    }
     if (error.code === "23505") {
       return { status: "duplicate" };
     }
@@ -144,14 +154,13 @@ export async function submitVolunteerForm(
     return { status: "error", message: "Something went wrong. Please try again." };
   }
 
-  // Consume the consent code (single-use — mark as used, link to volunteer)
+  // Link the already-claimed code to the volunteer row. The single-use
+  // consume (used_at) happened atomically before the insert; this only
+  // backfills the linkage.
   if (isMinor && insertedVolunteer && consentCodeValue) {
     await supabase
       .from("consent_codes")
-      .update({
-        used_at: new Date().toISOString(),
-        used_by_volunteer_id: insertedVolunteer.id,
-      })
+      .update({ used_by_volunteer_id: insertedVolunteer.id })
       .eq("code", consentCodeValue);
   }
 

@@ -5,19 +5,19 @@ import { ArrowRight } from "lucide-react";
 const placeholders = [
   {
     headingKey: "featuredArticlesHeading" as const,
-    image: "/images/marine/ocean-wave.jpg",
+    image: "/images/home/featured-articles-anacapa-arch.jpg",
     imageAlt: "featuredArticlesImageAlt" as const,
     tag: "featuredArticlesTag" as const,
   },
   {
     headingKey: "featuredSpeciesHeading" as const,
-    image: "/images/marine/sea-turtle.jpg",
+    image: "/images/home/featured-species-garibaldi.jpg",
     imageAlt: "featuredSpeciesImageAlt" as const,
     tag: "featuredSpeciesTag" as const,
   },
   {
     headingKey: "featuredEventsHeading" as const,
-    image: "/images/activities/beach-cleanup.jpg",
+    image: "/images/home/featured-events-cabrillo-volunteers.jpg",
     imageAlt: "featuredEventsImageAlt" as const,
     tag: "featuredEventsTag" as const,
   },

@@ -116,17 +116,24 @@ export default async function ArticlePage({ params }: Props) {
 
         {/* Featured Image */}
         {article.featuredImage && (
-          <div className="mt-8 overflow-hidden rounded-2xl">
-            <Image
-              src={article.featuredImage}
-              alt={article.featuredImageAlt ?? ""}
-              width={800}
-              height={450}
-              priority
-              sizes="(max-width: 672px) 100vw, 672px"
-              className="aspect-[16/9] w-full object-cover"
-            />
-          </div>
+          <figure className="mt-8">
+            <div className="overflow-hidden rounded-2xl">
+              <Image
+                src={article.featuredImage}
+                alt={article.featuredImageAlt ?? ""}
+                width={800}
+                height={450}
+                priority
+                sizes="(max-width: 672px) 100vw, 672px"
+                className="aspect-[16/9] w-full object-cover"
+              />
+            </div>
+            {article.imageCredit && (
+              <figcaption className="mt-1.5 text-right text-xs text-muted-foreground/70">
+                {article.imageCredit}
+              </figcaption>
+            )}
+          </figure>
         )}
 
         {/* MDX Body */}

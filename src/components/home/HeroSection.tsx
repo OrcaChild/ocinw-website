@@ -11,7 +11,7 @@ export function HeroSection() {
     <section className="relative flex min-h-[85vh] flex-col items-center justify-center overflow-hidden">
       {/* Full-bleed background image */}
       <Image
-        src="/images/hero/coastal-golden-hour.jpg"
+        src="/images/home/hero-el-matador-sunset.jpg"
         alt={t("heroImageAlt")}
         fill
         priority

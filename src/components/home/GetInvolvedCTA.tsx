@@ -17,7 +17,7 @@ export function GetInvolvedCTA() {
           {/* Volunteer card — full image background */}
           <div className="group relative h-80 overflow-hidden rounded-2xl shadow-md transition-shadow duration-300 hover:shadow-xl sm:h-96">
             <Image
-              src="/images/activities/volunteers-cleanup.jpg"
+              src="/images/home/involved-volunteer-cabrillo.jpg"
               alt={t("involvedVolunteerImageAlt")}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"
@@ -55,7 +55,7 @@ export function GetInvolvedCTA() {
           {/* Donate card — full image background */}
           <div className="group relative h-80 overflow-hidden rounded-2xl shadow-md transition-shadow duration-300 hover:shadow-xl sm:h-96">
             <Image
-              src="/images/landscapes/ocean-sunset.jpg"
+              src="/images/home/involved-donate-sunset-cliffs.jpg"
               alt={t("involvedDonateImageAlt")}
               fill
               className="object-cover transition-transform duration-500 group-hover:scale-105"

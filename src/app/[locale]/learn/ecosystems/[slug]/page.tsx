@@ -53,17 +53,24 @@ export default async function EcosystemDetailPage({ params }: Props) {
         </Link>
 
         {eco.featuredImage && (
-          <div className="mt-6 overflow-hidden rounded-2xl">
-            <Image
-              src={eco.featuredImage}
-              alt={eco.featuredImageAlt ?? ""}
-              width={900}
-              height={500}
-              priority
-              sizes="(max-width: 896px) 100vw, 896px"
-              className="aspect-[16/9] w-full object-cover"
-            />
-          </div>
+          <figure className="mt-6">
+            <div className="overflow-hidden rounded-2xl">
+              <Image
+                src={eco.featuredImage}
+                alt={eco.featuredImageAlt ?? ""}
+                width={900}
+                height={500}
+                priority
+                sizes="(max-width: 896px) 100vw, 896px"
+                className="aspect-[16/9] w-full object-cover"
+              />
+            </div>
+            {eco.imageCredit && (
+              <figcaption className="mt-1.5 text-right text-xs text-muted-foreground/70">
+                {eco.imageCredit}
+              </figcaption>
+            )}
+          </figure>
         )}
 
         <header className="mt-8">

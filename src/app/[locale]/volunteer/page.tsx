@@ -19,7 +19,6 @@ import {
   Award,
   Accessibility,
   Ear,
-  UtensilsCrossed,
   Languages,
 } from "lucide-react";
 import { VolunteerForm } from "@/components/volunteer/VolunteerForm";
@@ -127,21 +126,20 @@ function VolunteerContent() {
         </div>
       </section>
 
-      {/* Accessibility & Accommodations */}
+      {/* Accessibility */}
       <section className="bg-sand-50/50 px-4 py-20 dark:bg-white/[0.02] sm:px-6 lg:px-8">
         <div className="mx-auto max-w-5xl">
           <h2 className="text-center font-heading text-3xl font-bold tracking-tight sm:text-4xl">
-            {t("accommodationsHeading")}
+            {t("accessibilityHeading")}
           </h2>
           <p className="mx-auto mt-4 max-w-2xl text-center text-muted-foreground">
-            {t("accommodationsDescription")}
+            {t("accessibilityDescription")}
           </p>
           <div className="mt-12 grid gap-6 sm:grid-cols-2">
             {([
-              { icon: Accessibility, titleKey: "accommodationMobility", textKey: "accommodationMobilityText", iconClass: "text-ocean-600 dark:text-ocean-400" },
-              { icon: Ear, titleKey: "accommodationSensory", textKey: "accommodationSensoryText", iconClass: "text-teal-600 dark:text-teal-400" },
-              { icon: UtensilsCrossed, titleKey: "accommodationDietary", textKey: "accommodationDietaryText", iconClass: "text-coral-600 dark:text-coral-400" },
-              { icon: Languages, titleKey: "accommodationLanguage", textKey: "accommodationLanguageText", iconClass: "text-kelp-600 dark:text-kelp-400" },
+              { icon: Accessibility, titleKey: "accessibilityMobility", textKey: "accessibilityMobilityText", iconClass: "text-ocean-600 dark:text-ocean-400" },
+              { icon: Ear, titleKey: "accessibilitySensory", textKey: "accessibilitySensoryText", iconClass: "text-teal-600 dark:text-teal-400" },
+              { icon: Languages, titleKey: "accessibilityLanguage", textKey: "accessibilityLanguageText", iconClass: "text-kelp-600 dark:text-kelp-400" },
             ] as const).map(({ icon: Icon, titleKey, textKey, iconClass }) => (
               <div
                 key={titleKey}
@@ -165,7 +163,7 @@ function VolunteerContent() {
             ))}
           </div>
           <p className="mt-8 text-center text-sm text-muted-foreground">
-            {t("accommodationContact")}{" "}
+            {t("accessibilityContact")}{" "}
             <Link href="/contact" className="font-medium text-primary hover:underline">
               orcachildinthewild@gmail.com
             </Link>

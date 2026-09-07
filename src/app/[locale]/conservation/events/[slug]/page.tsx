@@ -260,7 +260,7 @@ function EventDetailContent({ event }: { event: EventWithCapacity }) {
           </Link>
         </div>
 
-        {/* What to Bring / What to Expect / Accommodations */}
+        {/* What to Bring / What to Expect / Accessibility */}
         <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
           <div className="rounded-2xl border border-border/50 p-6">
             <h2 className="font-heading text-xl font-bold">{t("whatToBring")}</h2>
@@ -273,9 +273,9 @@ function EventDetailContent({ event }: { event: EventWithCapacity }) {
           <div className="rounded-2xl border border-border/50 p-6 sm:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2">
               <Accessibility className="size-5 text-ocean-600 dark:text-ocean-400" aria-hidden="true" />
-              <h2 className="font-heading text-xl font-bold">{t("accommodationsHeading")}</h2>
+              <h2 className="font-heading text-xl font-bold">{t("accessibilityHeading")}</h2>
             </div>
-            <p className="mt-2 text-sm text-muted-foreground">{t("accommodationsText")}</p>
+            <p className="mt-2 text-sm text-muted-foreground">{t("accessibilityText")}</p>
           </div>
         </div>
 

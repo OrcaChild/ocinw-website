@@ -91,81 +91,59 @@ ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30
 | Host | 72.62.200.30 |
 | SSH Port | 2222 |
 | SSH Key | `~/.ssh/orcachild_vps` |
-| User | `orcachild` (app) / `root` (via Hostinger web console) |
-| App Path | `/home/orcachild/ocinw-website/` |
+| Login user | `orcachild` (server admin, has sudo) / `root` (via Hostinger web console) |
+| App user | `ocinw` (no login, no sudo; the site runs as this user since 2026-10-24) |
+| App Path | `/var/www/ocinw/ocinw-website/` (home `/var/www/ocinw`) |
 | Domain | `www.orcachildinthewild.com` |
 | SSL Expiry | 2026-05-26 (auto-renews via Certbot) |
+
+> **Why two users:** the site used to run as `orcachild`, which has full sudo. A bug in
+> the website could then have taken over the whole server, including other clients' sites.
+> Now the site runs as `ocinw`, which can't read the admin account or use sudo. Log in as
+> `orcachild`, then run every git/pnpm/pm2 command **as `ocinw`** (never as orcachild or root).
+> The old copy at `/home/orcachild/ocinw-website/` is a rollback copy only; do not deploy there.
 
 ### Deploy (one-liner from local machine)
 ```bash
 ssh -i ~/.ssh/orcachild_vps -p 2222 orcachild@72.62.200.30 \
-  "cd ~/ocinw-website && git pull && pnpm install --frozen-lockfile && pnpm build && pm2 restart ocinw"
+  "sudo -u ocinw env PATH=/usr/local/bin:/usr/bin:/bin HOME=/var/www/ocinw bash -c 'cd /var/www/ocinw/ocinw-website && git pull --ff-only && CI=true pnpm install --frozen-lockfile && pnpm build && pm2 restart ocinw'"
 ```
 
-### Deploy (from VPS as orcachild)
-```bash
-cd ~/ocinw-website
-git pull
-pnpm install --frozen-lockfile
-pnpm build
-pm2 restart ocinw
-```
-
-### Deploy (from VPS as root)
-```bash
-su - orcachild -c "cd ~/ocinw-website && git pull && pnpm install --frozen-lockfile && pnpm build && pm2 restart ocinw"
-```
+Note: the build writes into the live `.next` folder, so page styles/scripts can fail to load
+for the minute the build runs. A safer build-then-swap deploy is being designed.
 
 ---
 
 ## VPS — PM2 Process Management
 
 > **IMPORTANT:** Each app runs under its own Linux user's PM2 instance.
-> OCINW runs under `orcachild`. Other apps: colourparlor, builtbybas, figaro, umamiapp each have their own user.
+> OCINW runs under `ocinw`. Every other site on the server has its own user too.
 
-### OCINW PM2 Commands (as orcachild or via su)
+### OCINW PM2 Commands (log in as orcachild first)
 ```bash
-su - orcachild -c "pm2 list"              # Check status
-su - orcachild -c "pm2 restart ocinw"     # Restart app
-su - orcachild -c "pm2 stop ocinw"        # Stop app
-su - orcachild -c "pm2 logs ocinw"        # View logs
-su - orcachild -c "pm2 logs ocinw --lines 50"  # Last 50 lines
-su - orcachild -c "pm2 monit"             # Real-time monitoring
-su - orcachild -c "pm2 save"              # Save process list for auto-restart
+OC="sudo -u ocinw env PATH=/usr/local/bin:/usr/bin:/bin HOME=/var/www/ocinw"
+$OC pm2 list                      # Check status
+$OC pm2 restart ocinw             # Restart app
+$OC pm2 logs ocinw --lines 50     # Last 50 log lines
+$OC pm2 save                      # Save process list for auto-restart
 ```
 
-### Root PM2 Commands (other sites)
-```bash
-pm2 list                    # All root-managed apps
-pm2 restart colourparlor    # Restart specific app
-pm2 restart all             # Restart all root apps
-pm2 logs <name>             # View logs
-pm2 save                    # Save for auto-restart
-```
+The process is defined in `/var/www/ocinw/ecosystem.config.cjs` (outside the repo):
+`pnpm start` on port 3000. Do not add `-H 127.0.0.1` to it: the language redirect on `/`
+then breaks with a 500 (found in staging 2026-10-24).
 
 ### Port Map
-| App | Port | PM2 User | Memory Cap |
-|-----|------|----------|------------|
-| ocinw | 3000 | orcachild | — |
-| colourparlor | 3001 | colourparlor | 250MB |
-| builtbybas | 3002 | builtbybas | — |
-| figaro | 3004 | figaro | — |
-| umami | 3003 | umamiapp | — |
+| App | Port | PM2 User |
+|-----|------|----------|
+| ocinw | 3000 | ocinw |
+
+The other sites' ports live in Bas's VPS notes.
 
 ### Auto-Start on Reboot
-Both PM2 instances have systemd startup hooks:
-- `pm2-orcachild.service` — starts OCINW
-- Root PM2 — starts other sites
-
-If you need to re-enable:
+`pm2-ocinw.service` (systemd, enabled) starts OCINW from the saved process list. To check it:
 ```bash
-# For orcachild user (run as root):
-pm2 startup systemd -u orcachild --hp /home/orcachild
-su - orcachild -c "pm2 save"
-
-# For root:
-pm2 startup systemd
-pm2 save
+sudo systemctl status pm2-ocinw
+sudo systemctl restart pm2-ocinw   # proves it comes back on its own
 ```
 
 ---

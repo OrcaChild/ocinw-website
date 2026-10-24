@@ -29,6 +29,7 @@ export function TideChart({ tides }: TideChartProps) {
   const locale = useLocale();
   const unitFt = t("unitFt");
   const [chartData, setChartData] = useState<ChartDataPoint[]>([]);
+  const [annotations, setAnnotations] = useState<TideData["predictions"]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -36,12 +37,21 @@ export function TideChart({ tides }: TideChartProps) {
 
     async function loadHourly() {
       setLoading(true);
+      // One clock read per load: the chart window and the hi/lo labels share it.
+      const now = Date.now();
+      const cutoff = now + 24 * 60 * 60 * 1000;
+      setAnnotations(
+        tides.predictions
+          .filter((p) => {
+            const pTime = new Date(p.time).getTime();
+            return pTime >= now && pTime <= cutoff;
+          })
+          .slice(0, 4),
+      );
       try {
         const hourly = await fetchHourlyTides(tides.station.id);
         if (cancelled) return;
 
-        const now = Date.now();
-        const cutoff = now + 24 * 60 * 60 * 1000;
         const filtered = hourly.filter((p) => {
           const pTime = new Date(p.time).getTime();
           return pTime >= now - 60 * 60 * 1000 && pTime <= cutoff;
@@ -70,14 +80,6 @@ export function TideChart({ tides }: TideChartProps) {
     void loadHourly();
     return () => { cancelled = true; };
   }, [tides.station.id, tides.predictions, locale]);
-
-  // Hi/Lo annotations
-  const annotations = tides.predictions
-    .filter((p) => {
-      const pTime = new Date(p.time).getTime();
-      return pTime >= Date.now() && pTime <= Date.now() + 24 * 60 * 60 * 1000;
-    })
-    .slice(0, 4);
 
   return (
     <Card>
